@@ -1,0 +1,67 @@
+import { Tools } from '@/shared/interfaces';
+import { DEFAULT_CURSOR } from '@/shared/constants';
+
+import { useActiveLayerContext } from '@/context';
+import { useCanvasContext } from '@/context';
+import { useTextEditorContext } from '@/context';
+import { useToolbarContext } from '@/context';
+
+import { CanvasEntityType } from '@/entities/interfaces';
+import { isCanvasSelection } from '@/entities/lib';
+
+export function useCanvasOnMove() {
+  const { renderManager, camera } = useCanvasContext();
+  const { activeLayer } = useActiveLayerContext();
+  const { tool, setCursor, setTool, resizeDirection, setResizeDirection } = useToolbarContext();
+  const { setIsLayerEditable } = useTextEditorContext();
+
+  return function (e: React.MouseEvent<HTMLCanvasElement>) {
+    if (!camera || !renderManager) return;
+
+    if (activeLayer) {
+      if (!camera.isDragging) {
+        const { x, y } = camera.handleClick(e.nativeEvent);
+        const selection = activeLayer.getChildByType(CanvasEntityType.SELECTION);
+
+        if (selection && isCanvasSelection(selection)) {
+          const corner = selection.isPointInCorner(x, y);
+          const side = selection.isPointInStroke(x, y);
+
+          if (corner) {
+            if (['top-left', 'bottom-right'].includes(corner)) {
+              setCursor('nwse-resize');
+            } else if (['top-right', 'bottom-left'].includes(corner)) {
+              setCursor('nesw-resize');
+            }
+            setResizeDirection(corner);
+            setTool(Tools.RESIZER);
+          } else if (side) {
+            if (['top', 'bottom'].includes(side)) {
+              setCursor('ns-resize');
+            } else if (['left', 'right'].includes(side)) {
+              setCursor('ew-resize');
+            }
+            setResizeDirection(side);
+            setTool(Tools.RESIZER);
+          } else {
+            setCursor(DEFAULT_CURSOR);
+            setTool(Tools.SELECT);
+          }
+        }
+      } else if (tool === Tools.SELECT) {
+        setIsLayerEditable(false);
+        activeLayer.move(e.movementX, e.movementY);
+        renderManager.reDraw();
+      } else if (tool === Tools.RESIZER) {
+        setIsLayerEditable(false);
+        activeLayer.resize(e.movementX, e.movementY, resizeDirection);
+        renderManager.reDraw();
+      }
+    }
+
+    if (camera.isDragging && tool === Tools.HAND) {
+      camera.handleMouseMove(e.nativeEvent);
+      renderManager.reDraw();
+    }
+  };
+}

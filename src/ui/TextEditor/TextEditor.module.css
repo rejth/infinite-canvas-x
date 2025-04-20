@@ -1,0 +1,27 @@
+.textEditor {
+  box-sizing: border-box;
+  background: transparent;
+  position: absolute;
+  padding: 0;
+  z-index: 10;
+  line-break: anywhere;
+  overflow: hidden;
+  resize: none;
+  border: none;
+  outline: none;
+  transform-origin: top left;
+  text-align: center;
+}
+
+.textEditor::placeholder {
+  color: var(--muted-foreground);
+}
+
+.textEditor:focus-visible {
+  outline: none;
+}
+
+.textEditor:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

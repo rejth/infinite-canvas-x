@@ -1,0 +1,57 @@
+.toolbar {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  margin: 1rem;
+  padding: 0.5em 0.4em 0.2em;
+  box-shadow: 0 2px 6px 0 #00263a0f;
+  background-color: #ffffff;
+
+  border: 2px solid #f4f4f6;
+  border-radius: 6px;
+  transform: translateX(-50%);
+  pointer-events: all;
+  z-index: 100;
+}
+
+.tool {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0.2em 0.2em;
+  cursor: pointer;
+}
+
+.icon {
+  font-size: 1em !important;
+  display: inline-block;
+  width: 3em;
+  min-width: 2em;
+  height: 3em;
+  padding: 0.5em 0.5rem;
+  margin: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.disabled {
+  color: #d3d3d3;
+  pointer-events: none;
+}
+
+.active {
+  background-color: #f4f4f6;
+}
+
+.text {
+  font-size: 0.8em;
+  margin-top: 0.5em;
+  text-align: center;
+  user-select: none;
+}
