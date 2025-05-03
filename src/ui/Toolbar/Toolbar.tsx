@@ -2,6 +2,8 @@ import { Tools, Tool } from '@/shared/interfaces';
 import { CURSORS, DEFAULT_CURSOR } from '@/shared/constants';
 import { Icon } from '@/shared/ui/Icon/Icon';
 
+import { cn } from '@/lib/utils';
+
 import { useActiveLayerContext, useCanvasContext, useTextEditorContext, useToolbarContext } from '@/context';
 
 import styles from './Toolbar.module.css';
@@ -30,7 +32,7 @@ const tools: ToolItem[] = [
     type: Tools.AREA,
     icon: 'text-area',
     hoverText: 'Drag to add a new text area',
-    disabled: false,
+    disabled: true,
   },
   {
     id: 'text',
@@ -38,7 +40,7 @@ const tools: ToolItem[] = [
     type: Tools.TEXT,
     icon: 'text',
     hoverText: 'Drag to add a new text',
-    disabled: false,
+    disabled: true,
   },
   {
     id: 'pan',
@@ -62,7 +64,7 @@ const tools: ToolItem[] = [
     type: Tools.CONNECT,
     icon: 'connect',
     hoverText: 'Connect tool',
-    disabled: false,
+    disabled: true,
   },
   {
     id: 'trash',
@@ -80,21 +82,28 @@ export const Toolbar = () => {
   const { activeLayer, setActiveLayer } = useActiveLayerContext();
   const { tool, setTool, setCursor } = useToolbarContext();
 
+  const resetActiveLayer = () => {
+    setIsLayerEditable(false);
+    resetTextEditor();
+    setActiveLayer(null);
+    activeLayer?.setActive(false);
+  };
+
   const handleClick = (tool: Tool) => {
     setTool(tool);
+
+    if (tool === Tools.DELETE && activeLayer) {
+      renderManager?.removeLayer(activeLayer);
+      resetActiveLayer();
+    } else if (activeLayer) {
+      resetActiveLayer();
+      renderManager?.reDraw();
+    }
 
     if (tool === Tools.HAND) {
       setCursor(CURSORS[tool]);
     } else {
       setCursor(DEFAULT_CURSOR);
-    }
-
-    if (activeLayer) {
-      setIsLayerEditable(false);
-      resetTextEditor();
-      setActiveLayer(null);
-      activeLayer.setActive(false);
-      renderManager?.reDraw();
     }
   };
 
@@ -102,16 +111,24 @@ export const Toolbar = () => {
     return selectedTool === tool && !disabled ? styles.active : '';
   };
 
+  const getDisabledStyle = (disabled: boolean) => {
+    return disabled ? styles.disabled : '';
+  };
+
   return (
     <ul id="toolbar" className={styles.toolbar}>
       {tools.map(({ id, type, label, icon, hoverText, disabled }) => (
         <li key={id}>
-          <span id={id} role="button" tabIndex={0} className={styles.tool} onClick={() => handleClick(type)}>
-            <span
-              className={`${styles.icon} ${getActiveStyle(type, disabled)} ${disabled ? styles.disabled : ''}`}
-              title={hoverText}
-            >
-              <Icon name={icon} />
+          <span
+            id={id}
+            role="button"
+            tabIndex={0}
+            title={hoverText}
+            className={cn(styles.tool, getDisabledStyle(disabled))}
+            onClick={() => handleClick(type)}
+          >
+            <span className={cn(styles.icon, getActiveStyle(type, disabled))}>
+              <Icon name={icon} color={getDisabledStyle(disabled)} />
             </span>
             <span className={styles.text}>{label}</span>
           </span>

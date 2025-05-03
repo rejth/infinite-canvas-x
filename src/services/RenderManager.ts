@@ -116,9 +116,7 @@ export class RenderManager {
       }
     }
 
-    if (redrawOptions?.callBack) {
-      redrawOptions.callBack();
-    }
+    redrawOptions?.callBack?.();
   }
 
   reDrawSync(redrawOptions?: RedrawOptions) {

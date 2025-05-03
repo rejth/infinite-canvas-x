@@ -94,6 +94,10 @@ export class Renderer {
     };
   }
 
+  translate(x: number, y: number) {
+    this.#ctx.translate(x, y);
+  }
+
   scale(scaleX: number, scaleY: number) {
     this.#ctx.scale(scaleX, scaleY);
     const transform = this.getTransformMatrix();

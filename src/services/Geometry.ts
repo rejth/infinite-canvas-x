@@ -98,6 +98,14 @@ export class Geometry {
         Math.sqrt(Math.pow(pointB.x - pointA.x, 2) + Math.pow(pointB.y - pointA.y, 2))
     );
   }
+
+  scaleToPercentage(scale: number): number {
+    return Math.max(10, Math.min(Math.ceil((scale * 200) / 10), 200));
+  }
+
+  zoomPercentageToScale(percentage: number): number {
+    return (percentage * 10) / 200;
+  }
 }
 
 export const geometry = new Geometry();

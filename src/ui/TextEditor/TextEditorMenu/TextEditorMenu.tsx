@@ -21,14 +21,6 @@ import { isCanvasRect } from '@/entities/lib';
 import { ColorTile } from '../ColorTile/ColorTile';
 import styles from './TextEditorMenu.module.css';
 
-interface TextState {
-  bold: boolean;
-  italic: boolean;
-  underline: boolean;
-  fontSize: number;
-  textAlign: TextAlign;
-}
-
 interface TextEditorMenuProps {
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
   position: Point;
@@ -46,6 +38,8 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
     if (rect && isCanvasRect(rect)) return rect.getOptions().color;
     return COLORS.TRANSPARENT;
   });
+
+  if (!activeLayer || !renderer) return null;
 
   const handleBackgroundColorChange = (color: COLORS) => {
     if (!activeLayer) return;
@@ -71,12 +65,12 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
     textareaRef?.current?.focus();
   };
 
-  const handleFontStyleChange = (field: keyof TextState) => {
-    if (field === 'bold') {
+  const handleFontStyleChange = (field: FontStyle | TextDecoration) => {
+    if (field === FontStyle.BOLD) {
       setBold((state) => !state);
-    } else if (field === 'italic') {
+    } else if (field === FontStyle.ITALIC) {
       setItalic((state) => !state);
-    } else if (field === 'underline') {
+    } else if (field === TextDecoration.UNDERLINE) {
       setUnderline((state) => !state);
     }
     textareaRef?.current?.focus();
@@ -102,29 +96,30 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
   };
 
   const FONT_STYLE_LIST = [
-    { value: FontStyle.BOLD, ariaLabel: 'Toggle bold', Icon: Bold, onClick: () => handleFontStyleChange('bold') },
+    {
+      value: FontStyle.BOLD,
+      ariaLabel: 'Toggle bold',
+      Icon: Bold,
+      onClick: () => handleFontStyleChange(FontStyle.BOLD),
+    },
     {
       value: FontStyle.ITALIC,
       ariaLabel: 'Toggle italic',
       Icon: Italic,
-      onClick: () => handleFontStyleChange('italic'),
+      onClick: () => handleFontStyleChange(FontStyle.ITALIC),
     },
     {
       value: TextDecoration.UNDERLINE,
       ariaLabel: 'Toggle underline',
       Icon: Underline,
-      onClick: () => handleFontStyleChange('underline'),
+      onClick: () => handleFontStyleChange(TextDecoration.UNDERLINE),
     },
   ];
 
   const TEXT_ALIGN_OPTION = {
     value: textAlign,
     ariaLabel: 'Toggle alignment',
-    Icon: {
-      [TextAlign.LEFT]: AlignLeft,
-      [TextAlign.CENTER]: AlignCenter,
-      [TextAlign.RIGHT]: AlignRight,
-    }[textAlign],
+    Icon: { [TextAlign.LEFT]: AlignLeft, [TextAlign.CENTER]: AlignCenter, [TextAlign.RIGHT]: AlignRight }[textAlign],
   };
 
   const FONT_SIZE_OPTIONS = [
@@ -137,8 +132,6 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
     italic ? FontStyle.ITALIC : '',
     underline ? TextDecoration.UNDERLINE : '',
   ].filter(Boolean);
-
-  if (!activeLayer || !renderer) return null;
 
   const [width] = activeLayer.getWidthHeight();
   const { scale } = activeLayer.getOptions();

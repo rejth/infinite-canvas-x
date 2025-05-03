@@ -1,3 +1,5 @@
+import { useCallback, useEffect } from 'react';
+
 import { CustomEvents } from '@/shared/interfaces';
 import { useDidMountEffect } from '@/shared/hooks/useDidMountEffect';
 
@@ -34,19 +36,19 @@ export const Canvas = ({ setCanvasRef }: Props) => {
     camera?.handleMouseUp();
   };
 
-  const handleZoomStopped = () => {
+  const handleZoomStopped = useCallback(() => {
     renderManager?.reDraw({ forceRender: true });
-  };
+  }, [renderManager]);
 
   const handleTouchMove = () => null;
 
-  useDidMountEffect(() => {
-    window.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
-  });
-
-  useDidMountEffect(() => {
+  useEffect(() => {
     document.addEventListener(CustomEvents.ZOOMING_STOPPED, handleZoomStopped);
     return () => document.removeEventListener(CustomEvents.ZOOMING_STOPPED, handleZoomStopped);
+  }, [handleZoomStopped]);
+
+  useDidMountEffect(() => {
+    window.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
   });
 
   return (

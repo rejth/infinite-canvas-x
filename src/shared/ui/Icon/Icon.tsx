@@ -23,7 +23,7 @@ const SIZES: Sizes = {
 type Props = {
   name?: string;
   size?: 'responsive' | 'xsmall' | 'small' | 'medium' | 'large';
-  color?: string;
+  color?: CSSModuleClasses[string];
 };
 
 export const Icon = ({ name = '', size = SIZE_RESPONSIVE, color = '' }: Props) => {

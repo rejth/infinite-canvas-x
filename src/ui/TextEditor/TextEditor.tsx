@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { DEFAULT_SCALE, SMALL_PADDING, DEFAULT_FONT_WEIGHT, DEFAULT_RECT_SIZE } from '@/shared/constants';
-import { CustomEvents, DoubleClickCustomEvent } from '@/shared/interfaces';
+import { CustomEvents, DoubleClickCustomEvent, FontStyle, TextDecoration } from '@/shared/interfaces';
 
 import { useCanvasContext } from '@/context';
 import { useTextEditorContext } from '@/context';
@@ -96,7 +96,6 @@ export const TextEditor = () => {
     return () => window.removeEventListener(CustomEvents.DOUBLE_CLICK, handleDoubleClick as unknown as EventListener);
   }, [activeLayer, handleDoubleClick]);
 
-  const isVisible = activeLayer && isLayerEditable;
   if (!activeLayer || !renderer) return null;
 
   const rect = activeLayer.getChildByType(CanvasEntityType.RECT);
@@ -106,6 +105,7 @@ export const TextEditor = () => {
   const transform = renderer.getTransformMatrix();
   const inverseScale = DEFAULT_SCALE / (transform.scaleX / transform.initialScale);
   const editorScale = scale / inverseScale;
+  const isVisible = activeLayer && isLayerEditable;
 
   return (
     <>
@@ -128,9 +128,9 @@ export const TextEditor = () => {
           transform: `scale(${editorScale})`,
           textAlign: textAlign,
           fontSize: `${fontSize}px`,
-          fontStyle: italic ? 'italic' : undefined,
-          fontWeight: bold ? 800 : Number(DEFAULT_FONT_WEIGHT),
-          textDecoration: underline ? 'underline' : undefined,
+          fontStyle: italic ? FontStyle.ITALIC : undefined,
+          fontWeight: bold ? FontStyle.BOLD : Number(DEFAULT_FONT_WEIGHT),
+          textDecoration: underline ? TextDecoration.UNDERLINE : undefined,
         }}
       />
     </>

@@ -1,4 +1,5 @@
 import type { DoubleClickCustomEvent } from '@/shared/interfaces';
+import { ZOOM_MIN, ZOOM_MAX } from '@/shared/constants';
 
 import { Point } from '@/entities/Point';
 import { isCanvasRect } from '@/entities/lib';
@@ -10,7 +11,6 @@ import { geometry } from '@/services/Geometry';
 export class Camera {
   static #instance: Camera | null = null;
 
-  #ctx!: CanvasRenderingContext2D;
   #renderer!: Renderer;
   #currentTransformedPosition!: Point;
   #currentPosition!: Point;
@@ -18,12 +18,11 @@ export class Camera {
 
   isDragging = false;
 
-  constructor(context: CanvasRenderingContext2D, renderer: Renderer) {
+  constructor(renderer: Renderer) {
     if (Camera.#instance) {
       return Camera.#instance;
     }
 
-    this.#ctx = context;
     this.#renderer = renderer;
     this.#dragStartPosition = new Point(0, 0);
     this.#currentTransformedPosition = new Point(0, 0);
@@ -51,7 +50,7 @@ export class Camera {
 
     this.#currentTransformedPosition = this.#renderer.getTransformedPoint(new Point(e.pageX, e.pageY));
 
-    this.#ctx.translate(
+    this.#renderer.translate(
       this.#currentTransformedPosition.x - this.#dragStartPosition.x,
       this.#currentTransformedPosition.y - this.#dragStartPosition.y,
     );
@@ -81,48 +80,81 @@ export class Camera {
   }
 
   handleWheelChange(e: WheelEvent) {
-    this.#dragStartPosition = this.#renderer.getTransformedPoint(new Point(e.pageX, e.pageY));
-    this.#currentPosition = new Point(e.pageX, e.pageY);
-
-    if (e.ctrlKey) {
-      this.#zoomCanvas(e);
-    } else {
-      this.#moveCanvas(e);
-    }
+    const startPoint = new Point(e.pageX, e.pageY);
+    this.#dragStartPosition = this.#renderer.getTransformedPoint(startPoint);
+    this.#currentPosition = startPoint;
   }
 
-  #moveCanvas(e: WheelEvent) {
+  moveCanvas(e: WheelEvent) {
     this.#currentPosition = new Point(this.#currentPosition.x + e.deltaX * -1, this.#currentPosition.y + e.deltaY * -1);
-    this.#currentTransformedPosition = this.#renderer.getTransformedPoint(this.#currentPosition);
 
-    this.#ctx.translate(
+    if (this.#dragStartPosition.isNull()) {
+      return false;
+    }
+
+    this.#currentTransformedPosition = this.#renderer.getTransformedPoint(this.#currentPosition);
+    this.#renderer.translate(
       this.#currentTransformedPosition.x - this.#dragStartPosition.x,
       this.#currentTransformedPosition.y - this.#dragStartPosition.y,
     );
+
+    return true;
   }
 
-  #zoomCanvas(e: WheelEvent) {
+  zoomCanvas(e: WheelEvent) {
     this.#currentPosition = new Point(this.#currentPosition.x + e.deltaX * -1, this.#currentPosition.y + e.deltaY * -1);
     this.#currentTransformedPosition = this.#renderer.getTransformedPoint(this.#currentPosition);
 
     const zoom = e.deltaY < 0 ? 1.1 : 0.9;
     const transformMatrix = this.#renderer.getTransformMatrix();
 
-    const nextZoomPercentage = this.#scaleToPercentage(transformMatrix.scaleX * zoom);
-    const scale = this.#zoomPercentageToScale(nextZoomPercentage) / transformMatrix.scaleX;
+    const nextZoomPercentage = geometry.scaleToPercentage(transformMatrix.scaleX * zoom);
+    const scale = geometry.zoomPercentageToScale(nextZoomPercentage) / transformMatrix.scaleX;
 
-    if (nextZoomPercentage <= 200 && nextZoomPercentage >= 10) {
-      this.#ctx.translate(this.#currentTransformedPosition.x, this.#currentTransformedPosition.y);
+    let isZoomed = false;
+
+    if (nextZoomPercentage <= ZOOM_MAX && nextZoomPercentage >= ZOOM_MIN) {
+      this.#renderer.translate(this.#currentTransformedPosition.x, this.#currentTransformedPosition.y);
       this.#renderer.scale(scale, scale);
-      this.#ctx.translate(-this.#currentTransformedPosition.x, -this.#currentTransformedPosition.y);
+      this.#renderer.translate(-this.#currentTransformedPosition.x, -this.#currentTransformedPosition.y);
+      isZoomed = true;
     }
+
+    return { isZoomed, nextZoomPercentage, scale };
   }
 
-  #scaleToPercentage(scale: number): number {
-    return Math.max(10, Math.min(Math.ceil((scale * 200) / 10), 200));
+  zoomCanvasWithStep(zoomPercentage: number, step: number, edge: number, activeLayer: LayerInterface | null) {
+    const { scaleX } = this.#renderer.getTransformMatrix();
+
+    const nextZoomPercentage = step > 0 ? Math.min(zoomPercentage + step, edge) : Math.max(zoomPercentage + step, edge);
+    const scale = geometry.zoomPercentageToScale(nextZoomPercentage) / scaleX;
+
+    let currentTransformedPosition = this.#renderer.getTransformedPoint(
+      new Point(window.innerWidth / 2, window.innerHeight / 2),
+    );
+
+    if (activeLayer) {
+      const options = activeLayer.getOptions();
+
+      currentTransformedPosition = new Point(
+        options.x + (options.width * scale) / 2,
+        options.y + (options.height * scale) / 2,
+      );
+    }
+
+    let isZoomed = false;
+
+    if (step > 0 ? nextZoomPercentage <= edge : nextZoomPercentage >= edge) {
+      this.#renderer.translate(currentTransformedPosition.x, currentTransformedPosition.y);
+      this.#renderer.scale(scale, scale);
+      this.#renderer.translate(-currentTransformedPosition.x, -currentTransformedPosition.y);
+      isZoomed = true;
+    }
+
+    return { isZoomed, nextZoomPercentage, scale };
   }
 
-  #zoomPercentageToScale(percentage: number): number {
-    return (percentage * 10) / 200;
+  handleDragStopped() {
+    this.#dragStartPosition = new Point(0, 0);
   }
 }

@@ -12,6 +12,7 @@ import { Renderer } from '@/services/Renderer';
 import { RenderManager } from '@/services/RenderManager';
 import { Camera } from '@/services/Camera';
 
+import { Zoom } from '@/ui/Toolbar/Zoom';
 import { Toolbar } from '@/ui/Toolbar/Toolbar';
 import { TextEditor } from '@/ui/TextEditor/TextEditor';
 import { Canvas } from '@/ui/Canvas';
@@ -22,7 +23,7 @@ let renderer: Renderer | null = null;
 let renderManager: RenderManager | null = null;
 let camera: Camera | null = null;
 
-export function App() {
+function App() {
   const [, setCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const setCanvasRef = useCallback((canvas: HTMLCanvasElement | null) => {
@@ -40,7 +41,7 @@ export function App() {
 
     renderer = new Renderer(context, scale);
     renderManager = new RenderManager(renderer);
-    camera = new Camera(context, renderer);
+    camera = new Camera(renderer);
 
     renderer.drawBackground();
     setCanvas(canvas);
@@ -54,6 +55,7 @@ export function App() {
           <TextEditorProvider>
             <>
               <Toolbar />
+              <Zoom />
               <TextEditor />
               <Canvas setCanvasRef={setCanvasRef} />
             </>

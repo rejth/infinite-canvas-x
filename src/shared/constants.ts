@@ -27,6 +27,10 @@ export const DEFAULT_CURSOR = 'default';
 export const DEFAULT_RESIZE_DIRECTION = 'right';
 export const DEFAULT_ZOOM_PERCENTAGE = 40;
 
+export const ZOOM_STEP = 10;
+export const ZOOM_MIN = 10;
+export const ZOOM_MAX = 200;
+
 export const enum COLORS {
   STICKER_YELLOW = '#ffd670',
   STICKER_ORANGE = '#ff9770',

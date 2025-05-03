@@ -5,3 +5,8 @@
 .container use {
   fill: currentColor;
 }
+
+.disabled {
+  color: #d3d3d3;
+  pointer-events: none;
+}
