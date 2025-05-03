@@ -85,10 +85,14 @@ export class Camera {
     this.#currentPosition = startPoint;
   }
 
+  isDragStartPositionNull() {
+    return this.#dragStartPosition.x === 0 && this.#dragStartPosition.y === 0;
+  }
+
   moveCanvas(e: WheelEvent) {
     this.#currentPosition = new Point(this.#currentPosition.x + e.deltaX * -1, this.#currentPosition.y + e.deltaY * -1);
 
-    if (this.#dragStartPosition.isNull()) {
+    if (this.isDragStartPositionNull()) {
       return false;
     }
 
