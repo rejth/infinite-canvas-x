@@ -28,10 +28,10 @@ export class Selection extends BaseCanvasEntity<StrokeDrawOptions> {
     if (Math.abs(geometry.getDistanceBetweenPointAndLine(point, topLeft, topRight)) / height <= DEFAULT_CORNER) {
       return 'top';
     }
-    if (Math.abs(geometry.getDistanceBetweenPointAndLine(point, topLeft, bottomLeft)) / height <= DEFAULT_CORNER) {
+    if (Math.abs(geometry.getDistanceBetweenPointAndLine(point, topLeft, bottomLeft)) <= DEFAULT_CORNER) {
       return 'left';
     }
-    if (Math.abs(geometry.getDistanceBetweenPointAndLine(point, topRight, bottomRight)) / height <= DEFAULT_CORNER) {
+    if (Math.abs(geometry.getDistanceBetweenPointAndLine(point, topRight, bottomRight)) <= DEFAULT_CORNER) {
       return 'right';
     }
     if (Math.abs(geometry.getDistanceBetweenPointAndLine(point, bottomLeft, bottomRight)) / height <= DEFAULT_CORNER) {

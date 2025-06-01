@@ -6,9 +6,10 @@ import { CanvasText } from '@/entities/CanvasText';
 import { CanvasRect } from '@/entities/CanvasRect';
 import { Selection } from '@/entities/Selection';
 import { CanvasImage } from '@/entities/CanvasImage';
+import { Point } from '@/entities/Point';
 
 import { type Renderer } from '@/services/Renderer';
-import { Point } from '@/entities/Point';
+import { FpsManager } from '@/services/FpsManager';
 
 type RedrawOptions = {
   exceptType?: CanvasEntityType;
@@ -24,12 +25,16 @@ export class RenderManager {
   #layersCounter = 0;
   #layers: LayerInterface[] = [];
 
-  constructor(renderer: Renderer) {
+  constructor(renderer: Renderer, enableFpsManager?: boolean) {
     if (RenderManager.#instance) {
       return RenderManager.#instance;
     }
 
     this.#renderer = renderer;
+
+    if (enableFpsManager) {
+      new FpsManager();
+    }
 
     RenderManager.#instance = this;
   }
