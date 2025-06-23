@@ -4,13 +4,13 @@ import { CanvasRect, RectDrawOptions } from '@/entities/CanvasRect';
 import { CanvasText, TextDrawOptions } from '@/entities/CanvasText';
 import { BaseCanvasEntityInterface, BaseDrawOptions, CanvasEntityType, LayerInterface } from '@/entities/interfaces';
 
-type SerializedLayer<T extends BaseDrawOptions = BaseDrawOptions> = {
+export type SerializedLayer<T extends BaseDrawOptions = BaseDrawOptions> = {
   type: CanvasEntityType;
   options: T;
   children: SerializedCanvasObject<T>[];
 };
 
-type SerializedCanvasObject<T extends BaseDrawOptions = BaseDrawOptions> = {
+export type SerializedCanvasObject<T extends BaseDrawOptions = BaseDrawOptions> = {
   type: CanvasEntityType;
   options: T;
   minDimension: number;
@@ -29,23 +29,25 @@ const isSerializedEntityText = (
 };
 
 export class LayerSerializer {
-  public static serialize(layer: LayerInterface): SerializedLayer | null {
+  private constructor() {}
+
+  static serialize(layer: LayerInterface): SerializedLayer | null {
     if (layer.getType() === CanvasEntityType.LAYER) {
-      return this.serializeLayer(layer);
+      return this.#serializeLayer(layer);
     }
 
     return null;
   }
 
-  public static deserialize(serializedLayer: SerializedLayer): Layer | null {
+  static deserialize(serializedLayer: SerializedLayer): Layer | null {
     if (serializedLayer.type === CanvasEntityType.LAYER) {
-      return this.deserializeLayer(serializedLayer);
+      return this.#deserializeLayer(serializedLayer);
     }
 
     return null;
   }
 
-  public static serializeLayer(layer: LayerInterface): SerializedLayer {
+  static #serializeLayer(layer: LayerInterface): SerializedLayer {
     const data: SerializedLayer = {
       type: layer.getType(),
       options: layer.getOptions(),
@@ -53,21 +55,13 @@ export class LayerSerializer {
     };
 
     for (const child of layer.getChildren()) {
-      data.children.push(this.serializeCanvasObject(child));
+      data.children.push(this.#serializeCanvasObject(child));
     }
 
     return data;
   }
 
-  private static serializeCanvasObject(canvasObject: BaseCanvasEntityInterface): SerializedCanvasObject {
-    return {
-      type: canvasObject.getType(),
-      options: canvasObject.getOptions(),
-      minDimension: canvasObject.getMinDimension(),
-    };
-  }
-
-  private static deserializeLayer(serializedLayer: SerializedLayer): Layer {
+  static #deserializeLayer(serializedLayer: SerializedLayer): Layer {
     const layer = new Layer(serializedLayer.options);
 
     for (const child of serializedLayer.children) {
@@ -80,5 +74,13 @@ export class LayerSerializer {
     }
 
     return layer;
+  }
+
+  static #serializeCanvasObject(canvasObject: BaseCanvasEntityInterface): SerializedCanvasObject {
+    return {
+      type: canvasObject.getType(),
+      options: canvasObject.getOptions(),
+      minDimension: canvasObject.getMinDimension(),
+    };
   }
 }

@@ -1,9 +1,7 @@
 export class FpsManager {
   fps = 0;
-
   averageFPS = 0;
-
-  #history: number[] = [];
+  private history: number[] = [];
 
   constructor() {
     const times: number[] = [];
@@ -17,16 +15,16 @@ export class FpsManager {
 
       times.push(now);
       this.fps = times.length;
-      this.#history.push(this.fps);
+      this.history.push(this.fps);
 
-      if (this.#history.length === 11) {
-        this.#history.shift();
+      if (this.history.length === 11) {
+        this.history.shift();
       }
 
       let sum = 0;
 
-      for (let i = 0; i < this.#history.length; i += 1) {
-        sum += this.#history[i];
+      for (let i = 0; i < this.history.length; i += 1) {
+        sum += this.history[i];
       }
 
       this.averageFPS = Math.floor(sum / 10);

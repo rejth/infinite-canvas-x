@@ -6,17 +6,17 @@ import { BaseCanvasEntity } from '@/entities/BaseCanvasEntity';
 import { Selection } from '@/entities/Selection';
 
 export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInterface {
-  #id: LayerId | null = null;
-  #active = false;
-  #children: Array<BaseCanvasEntityInterface<BaseDrawOptions>> = [];
+  private id: LayerId | null = null;
+  private active = false;
+  private readonly children: Array<BaseCanvasEntityInterface<BaseDrawOptions>> = [];
 
-  #needToRender = true;
+  private needToRender = true;
 
   constructor(options: BaseDrawOptions) {
     super(options);
 
     this.setType(CanvasEntityType.LAYER);
-    this.#children.push(
+    this.children.push(
       new Selection({
         ...options,
         lineWidth: DEFAULT_SELECTION_LINE_WIDTH,
@@ -27,27 +27,27 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
   }
 
   setActive(state: boolean) {
-    this.#active = state;
+    this.active = state;
   }
 
   isActive() {
-    return this.#active;
+    return this.active;
   }
 
   setId(id: LayerId) {
-    this.#id = id;
+    this.id = id;
   }
 
   getId(): LayerId | null {
-    return this.#id;
+    return this.id;
   }
 
   addChild<T extends BaseDrawOptions>(child: BaseCanvasEntityInterface<T>) {
-    this.#children.push(child);
+    this.children.push(child);
   }
 
   getChildren<T extends BaseDrawOptions>(): Array<BaseCanvasEntityInterface<T>> {
-    return this.#children as Array<BaseCanvasEntityInterface<T>>;
+    return this.children as Array<BaseCanvasEntityInterface<T>>;
   }
 
   move(movementX: number, movementY: number) {
@@ -60,7 +60,7 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
   }
 
   moveChildrenAccordingly(movementX: number, movementY: number) {
-    for (const child of this.#children) {
+    for (const child of this.children) {
       child.move(movementX, movementY);
     }
   }
@@ -150,24 +150,24 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
   }
 
   resizeChildrenAccordingly(movementX: number, movementY: number) {
-    for (const child of this.#children) {
+    for (const child of this.children) {
       child.resize(movementX, movementY);
     }
   }
 
   containsChildWithType(type: CanvasEntityType) {
-    return this.#children.some((child) => child.getType() === type);
+    return this.children.some((child) => child.getType() === type);
   }
 
   getChildByType<T extends BaseDrawOptions>(type: CanvasEntityType): BaseCanvasEntityInterface<T> | null {
-    return (this.#children as BaseCanvasEntityInterface<T>[]).find((child) => child.getType() === type) ?? null;
+    return (this.children as BaseCanvasEntityInterface<T>[]).find((child) => child.getType() === type) ?? null;
   }
 
   setShouldBeRendered(shouldRender: boolean) {
-    this.#needToRender = shouldRender;
+    this.needToRender = shouldRender;
   }
 
   shouldBeRendered(): boolean {
-    return this.#needToRender;
+    return this.needToRender;
   }
 }

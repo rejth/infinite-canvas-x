@@ -2,11 +2,11 @@ import type { RectBounds, RectDimension, RectPosition, RectCorners, BBox } from 
 import { Point } from '@/entities/Point';
 
 export class Geometry {
-  #getMousePosition(e: MouseEvent): Point {
+  getMousePosition(e: MouseEvent): Point {
     return new Point(e.pageX, e.pageY);
   }
 
-  #getTouchPosition(e: TouchEvent): Point {
+  getTouchPosition(e: TouchEvent): Point {
     const { left, top } = (<Element>e.target).getBoundingClientRect();
     const { clientX, clientY } = e.changedTouches[0];
     return new Point(clientX - left, clientY - top);
@@ -14,9 +14,9 @@ export class Geometry {
 
   calculatePosition(e: MouseEvent | TouchEvent): Point {
     if (e instanceof MouseEvent) {
-      return this.#getMousePosition(e);
+      return this.getMousePosition(e);
     } else if (window.TouchEvent && e instanceof TouchEvent) {
-      return this.#getTouchPosition(e);
+      return this.getTouchPosition(e);
     }
     return new Point(0, 0);
   }

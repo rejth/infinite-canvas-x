@@ -5,7 +5,8 @@ import { useActiveLayerContext } from '@/context';
 import { useCanvasContext } from '@/context';
 
 import { LayerInterface } from '@/entities/interfaces';
-import { LayerSerializer } from '@/entities/LayerSerializer';
+
+import { LayerSerializer } from '@/services/LayerSerializer';
 
 export function useKeyboard() {
   const { renderManager } = useCanvasContext();

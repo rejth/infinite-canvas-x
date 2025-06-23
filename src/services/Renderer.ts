@@ -13,44 +13,42 @@ import type {
   TransformationMatrix,
 } from '@/shared/interfaces';
 import { TextAlign, TextDecoration } from '@/shared/interfaces';
-import { COLORS, DEFAULT_FONT_WEIGHT, DEFAULT_SCALE, SMALL_PADDING } from '@/shared/constants';
+import { COLORS, DEFAULT_CANVAS_SCALE, DEFAULT_FONT_WEIGHT, DEFAULT_SCALE, SMALL_PADDING } from '@/shared/constants';
 
 import { geometry } from '@/services/Geometry';
 
 import { Point } from '@/entities/Point';
 
 export class Renderer {
-  #ctx: CanvasRenderingContext2D;
-  #width: number;
-  #height: number;
-  #initialPixelRatio: PixelRatio;
-  #pixelRatio: PixelRatio;
+  private width: number;
+  private height: number;
+  private initialPixelRatio: PixelRatio;
+  private pixelRatio: PixelRatio;
 
-  constructor(context: CanvasRenderingContext2D, initialPixelRatio: PixelRatio) {
-    this.#ctx = context;
-    this.#width = window.innerWidth;
-    this.#height = window.innerHeight;
-    this.#initialPixelRatio = initialPixelRatio;
-    this.#pixelRatio = initialPixelRatio;
+  constructor(protected readonly ctx: CanvasRenderingContext2D) {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.initialPixelRatio = DEFAULT_CANVAS_SCALE;
+    this.pixelRatio = DEFAULT_CANVAS_SCALE;
 
-    this.#ctx.scale(this.#pixelRatio, this.#pixelRatio);
+    this.ctx.scale(this.pixelRatio, this.pixelRatio);
   }
 
   getContext(): CanvasRenderingContext2D {
-    return this.#ctx;
+    return this.ctx;
   }
 
   getCanvasOptions(): CanvasOptions {
     return {
-      width: this.#width,
-      height: this.#height,
-      initialPixelRatio: this.#initialPixelRatio,
-      pixelRatio: this.#pixelRatio,
+      width: this.width,
+      height: this.height,
+      initialPixelRatio: this.initialPixelRatio,
+      pixelRatio: this.pixelRatio,
     };
   }
 
   getTransformMatrix(): TransformationMatrix {
-    const transform = this.#ctx.getTransform();
+    const transform = this.ctx.getTransform();
 
     return {
       scaleX: transform.a,
@@ -59,7 +57,7 @@ export class Renderer {
       scaleY: transform.d,
       translationX: transform.e,
       translationY: transform.f,
-      initialScale: this.#initialPixelRatio,
+      initialScale: this.initialPixelRatio,
     };
   }
 
@@ -95,13 +93,13 @@ export class Renderer {
   }
 
   translate(x: number, y: number) {
-    this.#ctx.translate(x, y);
+    this.ctx.translate(x, y);
   }
 
   scale(scaleX: number, scaleY: number) {
-    this.#ctx.scale(scaleX, scaleY);
+    this.ctx.scale(scaleX, scaleY);
     const transform = this.getTransformMatrix();
-    this.#pixelRatio = transform.scaleX ?? DEFAULT_SCALE;
+    this.pixelRatio = transform.scaleX ?? DEFAULT_SCALE;
   }
 
   /**
@@ -115,7 +113,7 @@ export class Renderer {
    */
   clearRect({ x, y, width, height }: RectDimension, callBack: () => void) {
     requestAnimationFrame(() => {
-      this.#ctx.clearRect(x, y, width, height);
+      this.ctx.clearRect(x, y, width, height);
       callBack();
     });
   }
@@ -126,32 +124,32 @@ export class Renderer {
    * @param {{ x: number, y: number, width: number, height: number }}
    */
   clearRectSync({ x, y, width, height }: RectDimension) {
-    this.#ctx.clearRect(x, y, width, height);
+    this.ctx.clearRect(x, y, width, height);
   }
 
   fillRect(options: RectDrawOptions) {
     const { x, y, width, height, color, shadowColor, shadowOffsetY, shadowOffsetX, shadowBlur } = options;
 
-    this.#ctx.save();
+    this.ctx.save();
 
     if (color) {
-      this.#ctx.fillStyle = color;
+      this.ctx.fillStyle = color;
     }
     if (shadowColor) {
-      this.#ctx.shadowColor = shadowColor;
+      this.ctx.shadowColor = shadowColor;
     }
     if (shadowOffsetY) {
-      this.#ctx.shadowOffsetY = shadowOffsetY;
+      this.ctx.shadowOffsetY = shadowOffsetY;
     }
     if (shadowOffsetX) {
-      this.#ctx.shadowOffsetX = shadowOffsetX;
+      this.ctx.shadowOffsetX = shadowOffsetX;
     }
     if (shadowBlur) {
-      this.#ctx.shadowBlur = shadowBlur;
+      this.ctx.shadowBlur = shadowBlur;
     }
 
-    this.#ctx.fillRect(x, y, width, height);
-    this.#ctx.restore();
+    this.ctx.fillRect(x, y, width, height);
+    this.ctx.restore();
   }
 
   fillRoundedRect(options: RoundedRectDrawOptions) {
@@ -159,95 +157,95 @@ export class Renderer {
 
     const { topLeft, topRight, bottomLeft, bottomRight } = geometry.getRectCorners(x, y, width, height);
 
-    this.#ctx.save();
-    this.#ctx.fillStyle = color;
-    this.#ctx.lineWidth = 4;
+    this.ctx.save();
+    this.ctx.fillStyle = color;
+    this.ctx.lineWidth = 4;
 
     if (shadowColor) {
-      this.#ctx.shadowColor = shadowColor;
+      this.ctx.shadowColor = shadowColor;
     }
     if (shadowOffsetY) {
-      this.#ctx.shadowOffsetY = shadowOffsetY;
+      this.ctx.shadowOffsetY = shadowOffsetY;
     }
     if (shadowOffsetX) {
-      this.#ctx.shadowOffsetX = shadowOffsetX;
+      this.ctx.shadowOffsetX = shadowOffsetX;
     }
     if (shadowBlur) {
-      this.#ctx.shadowBlur = shadowBlur;
+      this.ctx.shadowBlur = shadowBlur;
     }
 
-    this.#ctx.beginPath();
-    this.#ctx.moveTo(topLeft.x + radius, topLeft.y);
+    this.ctx.beginPath();
+    this.ctx.moveTo(topLeft.x + radius, topLeft.y);
 
-    this.#ctx.lineTo(topRight.x - radius, topRight.y);
-    this.#ctx.quadraticCurveTo(topRight.x, topRight.y, topRight.x, topRight.y + radius);
+    this.ctx.lineTo(topRight.x - radius, topRight.y);
+    this.ctx.quadraticCurveTo(topRight.x, topRight.y, topRight.x, topRight.y + radius);
 
-    this.#ctx.lineTo(bottomRight.x, bottomRight.y - radius);
-    this.#ctx.quadraticCurveTo(bottomRight.x, bottomRight.y, bottomRight.x - radius, bottomRight.y);
+    this.ctx.lineTo(bottomRight.x, bottomRight.y - radius);
+    this.ctx.quadraticCurveTo(bottomRight.x, bottomRight.y, bottomRight.x - radius, bottomRight.y);
 
-    this.#ctx.lineTo(bottomLeft.x + radius, bottomLeft.y);
-    this.#ctx.quadraticCurveTo(bottomLeft.x, bottomLeft.y, bottomLeft.x, bottomLeft.y - radius);
+    this.ctx.lineTo(bottomLeft.x + radius, bottomLeft.y);
+    this.ctx.quadraticCurveTo(bottomLeft.x, bottomLeft.y, bottomLeft.x, bottomLeft.y - radius);
 
-    this.#ctx.lineTo(topLeft.x, topLeft.y + radius);
-    this.#ctx.quadraticCurveTo(topLeft.x, topLeft.y, topLeft.x + radius, topLeft.y);
+    this.ctx.lineTo(topLeft.x, topLeft.y + radius);
+    this.ctx.quadraticCurveTo(topLeft.x, topLeft.y, topLeft.x + radius, topLeft.y);
 
-    this.#ctx.fill();
-    this.#ctx.closePath();
+    this.ctx.fill();
+    this.ctx.closePath();
 
-    this.#ctx.restore();
+    this.ctx.restore();
   }
 
   strokeRect(options: StrokeDrawOptions) {
     const { x, y, width, height, lineWidth, color } = options;
 
-    this.#ctx.save();
-    this.#ctx.lineWidth = lineWidth;
-    this.#ctx.strokeStyle = color;
-    this.#ctx.strokeRect(x, y, width, height);
-    this.#ctx.restore();
+    this.ctx.save();
+    this.ctx.lineWidth = lineWidth;
+    this.ctx.strokeStyle = color;
+    this.ctx.strokeRect(x, y, width, height);
+    this.ctx.restore();
   }
 
   fillCircle(options: CircleDrawOptions) {
     const { x, y, radius, color } = options;
 
-    this.#ctx.save();
-    this.#ctx.beginPath();
-    this.#ctx.fillStyle = color;
-    this.#ctx.arc(x, y, radius, 0, Math.PI * 2);
-    this.#ctx.fill();
-    this.#ctx.restore();
+    this.ctx.save();
+    this.ctx.beginPath();
+    this.ctx.fillStyle = color;
+    this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.restore();
   }
 
   strokeQuadraticCurve(options: QuadraticCurveDrawOptions) {
     const { start, control, end, color, lineWidth } = options;
 
-    this.#ctx.beginPath();
-    this.#ctx.moveTo(start.x, start.y);
-    this.#ctx.quadraticCurveTo(control.x, control.y, end.x, end.y);
+    this.ctx.beginPath();
+    this.ctx.moveTo(start.x, start.y);
+    this.ctx.quadraticCurveTo(control.x, control.y, end.x, end.y);
 
-    this.#ctx.strokeStyle = color;
-    this.#ctx.lineWidth = lineWidth;
-    this.#ctx.stroke();
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = lineWidth;
+    this.ctx.stroke();
   }
 
   strokeBezierCurve(options: BezierCurveDrawOptions) {
     const { start, cp1, cp2, end, color, lineWidth } = options;
 
-    this.#ctx.beginPath();
-    this.#ctx.moveTo(start.x, start.y);
-    this.#ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
+    this.ctx.beginPath();
+    this.ctx.moveTo(start.x, start.y);
+    this.ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
 
-    this.#ctx.strokeStyle = color;
-    this.#ctx.lineWidth = lineWidth;
-    this.#ctx.stroke();
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = lineWidth;
+    this.ctx.stroke();
   }
 
   drawImage(options: ImageDrawOptions) {
     const { x, y, width, height, image } = options;
 
-    this.#ctx.save();
-    this.#ctx.drawImage(image, x, y, width, height);
-    this.#ctx.restore();
+    this.ctx.save();
+    this.ctx.drawImage(image, x, y, width, height);
+    this.ctx.restore();
   }
 
   drawTextUnderline(
@@ -332,7 +330,7 @@ export class Renderer {
       }
     }
 
-    this.#ctx.drawImage(offscreenCanvas, x, y, width, height);
+    this.ctx.drawImage(offscreenCanvas, x, y, width, height);
 
     return offscreenCanvas;
   }
@@ -343,7 +341,7 @@ export class Renderer {
     const radius = 0.5;
 
     const { initialPixelRatio, pixelRatio } = this.getCanvasOptions();
-    const transform = this.#ctx.getTransform();
+    const transform = this.ctx.getTransform();
 
     const offscreenCanvas = new OffscreenCanvas(width, height);
     offscreenCanvas.width = Math.floor(width * pixelRatio);
@@ -357,18 +355,18 @@ export class Renderer {
     ctx.arc(1, 1, radius, 0, 2 * Math.PI);
     ctx.fill();
 
-    const pattern = this.#ctx.createPattern(offscreenCanvas, 'repeat');
+    const pattern = this.ctx.createPattern(offscreenCanvas, 'repeat');
     if (!pattern) return;
 
-    this.#ctx.save();
-    this.#ctx.setTransform(initialPixelRatio, transform.b, transform.c, initialPixelRatio, transform.e, transform.f);
-    this.#ctx.fillStyle = pattern;
-    this.#ctx.fillRect(
+    this.ctx.save();
+    this.ctx.setTransform(initialPixelRatio, transform.b, transform.c, initialPixelRatio, transform.e, transform.f);
+    this.ctx.fillStyle = pattern;
+    this.ctx.fillRect(
       -transform.e / initialPixelRatio,
       -transform.f / initialPixelRatio,
       window.innerWidth,
       window.innerHeight,
     );
-    this.#ctx.restore();
+    this.ctx.restore();
   }
 }

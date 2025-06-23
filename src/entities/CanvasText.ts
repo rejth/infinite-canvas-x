@@ -13,8 +13,8 @@ export interface TextDrawOptions extends BaseDrawOptions {
 }
 
 export class CanvasText extends BaseCanvasEntity<TextDrawOptions> {
-  #snapshot: CanvasImageSource | null = null;
-  #preparedText: string[] = [];
+  private snapshot: CanvasImageSource | null = null;
+  private preparedText: string[] = [];
 
   constructor(options: TextDrawOptions) {
     super(options);
@@ -23,15 +23,15 @@ export class CanvasText extends BaseCanvasEntity<TextDrawOptions> {
   }
 
   getPreparedText(): string[] {
-    return this.#preparedText;
+    return this.preparedText;
   }
 
   getSnapshot(): CanvasImageSource | null {
-    return this.#snapshot;
+    return this.snapshot;
   }
 
   setSnapshot(snapshot: CanvasImageSource | null) {
-    this.#snapshot = snapshot;
+    this.snapshot = snapshot;
   }
 
   setText(text: string, fontSize: number, fontStyle: string, textAlign: TextAlign, textDecoration: TextDecoration) {
@@ -94,6 +94,6 @@ export class CanvasText extends BaseCanvasEntity<TextDrawOptions> {
       }
     }
 
-    this.#preparedText = preparedText;
+    this.preparedText = preparedText;
   }
 }

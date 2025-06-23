@@ -10,6 +10,7 @@ import { Point } from '@/entities/Point';
 
 import { type Renderer } from '@/services/Renderer';
 import { FpsManager } from '@/services/FpsManager';
+import { StorageService } from '@/services/Storage/Storage';
 
 type RedrawOptions = {
   exceptType?: CanvasEntityType;
@@ -19,43 +20,55 @@ type RedrawOptions = {
 };
 
 export class RenderManager {
-  static #instance: RenderManager | null = null;
+  private static instance: RenderManager | null = null;
 
-  #renderer!: Renderer;
-  #layersCounter = 0;
-  #layers: LayerInterface[] = [];
+  private layers: LayerInterface[] = [];
+  private layersCounter = 0;
+  private storage: StorageService | null = null;
 
-  constructor(renderer: Renderer, enableFpsManager?: boolean) {
-    if (RenderManager.#instance) {
-      return RenderManager.#instance;
+  private constructor(protected readonly renderer: Renderer) {}
+
+  static async create(renderer: Renderer, enableFpsManager = false) {
+    if (RenderManager.instance) {
+      return RenderManager.instance;
     }
 
-    this.#renderer = renderer;
+    const instance = new RenderManager(renderer);
+    await instance.initialize(enableFpsManager);
+    RenderManager.instance = instance;
+
+    return instance;
+  }
+
+  private async initialize(enableFpsManager = false) {
+    this.storage = await StorageService.create();
 
     if (enableFpsManager) {
       new FpsManager();
     }
+  }
 
-    RenderManager.#instance = this;
+  getStorage(): StorageService | null {
+    return this.storage;
   }
 
   getContext() {
-    return this.#renderer.getContext();
+    return this.renderer.getContext();
   }
 
   getLayers(): LayerInterface[] {
-    return this.#layers;
+    return this.layers;
   }
 
   addLayer(layer: LayerInterface) {
-    this.#layersCounter += 1;
-    layer.setId(this.#layersCounter);
-    this.#layers.push(layer);
+    this.layersCounter += 1;
+    layer.setId(this.layersCounter);
+    this.layers.push(layer);
     this.drawLayer(layer);
   }
 
   removeLayer(layer: LayerInterface) {
-    this.#layers = this.#layers.filter((item) => item.getId() !== layer.getId());
+    this.layers = this.layers.filter((item) => item.getId() !== layer.getId());
     this.reDraw();
   }
 
@@ -76,10 +89,10 @@ export class RenderManager {
   }
 
   findLayerByCoordinates(point: Point): LayerInterface | null {
-    let length = this.#layers.length - 1;
+    let length = this.layers.length - 1;
 
     while (length >= 0) {
-      const layer = this.#layers[length];
+      const layer = this.layers[length];
 
       if (layer.isPointInside(point)) {
         return layer;
@@ -92,11 +105,11 @@ export class RenderManager {
   }
 
   findMultipleLayersByCoordinates(point: Point): LayerInterface[] {
-    let length = this.#layers.length - 1;
+    let length = this.layers.length - 1;
     const layers: LayerInterface[] = [];
 
     while (length >= 0) {
-      const layer = this.#layers[length];
+      const layer = this.layers[length];
 
       if (layer.isPointInside(point)) {
         layers.push(layer);
@@ -109,7 +122,7 @@ export class RenderManager {
   }
 
   drawScene(redrawOptions?: RedrawOptions) {
-    for (const layer of this.#layers) {
+    for (const layer of this.layers) {
       if (layer.shouldBeRendered()) {
         if (redrawOptions?.exceptLayer) {
           if (layer.getId() !== redrawOptions?.exceptLayer.getId()) {
@@ -125,26 +138,26 @@ export class RenderManager {
   }
 
   reDrawSync(redrawOptions?: RedrawOptions) {
-    this.#renderer.clearRectSync(this.#renderer.getTransformedArea());
-    this.#renderer.drawBackground();
+    this.renderer.clearRectSync(this.renderer.getTransformedArea());
+    this.renderer.drawBackground();
     this.drawScene(redrawOptions);
   }
 
   reDraw(redrawOptions?: RedrawOptions) {
-    this.#renderer.clearRect(this.#renderer.getTransformedArea(), () => {
-      this.#renderer.drawBackground();
+    this.renderer.clearRect(this.renderer.getTransformedArea(), () => {
+      this.renderer.drawBackground();
       this.drawScene(redrawOptions);
     });
   }
 
   #drawRect(child: CanvasRect) {
     const drawOptions = child.getOptions();
-    this.#renderer.fillRect(drawOptions);
+    this.renderer.fillRect(drawOptions);
   }
 
   #drawImage(child: CanvasImage) {
     const drawOptions = child.getOptions();
-    this.#renderer.drawImage(drawOptions);
+    this.renderer.drawImage(drawOptions);
   }
 
   #drawSelection(child: Selection) {
@@ -155,11 +168,11 @@ export class RenderManager {
     for (corner in corners) {
       if (corners[corner]) {
         const { x, y } = corners[corner];
-        this.#renderer.fillCircle({ x, y, radius: DEFAULT_CORNER, color: COLORS.SELECTION });
+        this.renderer.fillCircle({ x, y, radius: DEFAULT_CORNER, color: COLORS.SELECTION });
       }
     }
 
-    this.#renderer.strokeRect(drawOptions);
+    this.renderer.strokeRect(drawOptions);
   }
 
   #drawText(text: CanvasText, forceRender: boolean) {
@@ -167,9 +180,9 @@ export class RenderManager {
     const drawOptions = text.getOptions();
 
     if (currentSnapshot && !forceRender) {
-      this.#renderer.drawImage({ ...drawOptions, image: currentSnapshot });
+      this.renderer.drawImage({ ...drawOptions, image: currentSnapshot });
     } else {
-      const snapshot = this.#renderer.renderTextSnapshot(text.getPreparedText(), drawOptions);
+      const snapshot = this.renderer.renderTextSnapshot(text.getPreparedText(), drawOptions);
       text.setSnapshot(snapshot);
     }
   }
