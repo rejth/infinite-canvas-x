@@ -173,9 +173,9 @@ export abstract class BaseStore {
     return this.handleRequest(objectStore.getAll());
   }
 
-  async getAllFromTo<T>(start: number, end: number): Promise<T[]> {
+  async getAllFromTo<T>(fromId: number, toId: number): Promise<T[]> {
     const objectStore = this.createReadTransaction();
-    return this.handleRequest(objectStore.getAll(IDBKeyRange.bound(start, end)));
+    return this.handleRequest(objectStore.getAll(IDBKeyRange.bound(fromId, toId)));
   }
 
   async getAllFrom<T>(fromId: number): Promise<T[]> {
@@ -206,7 +206,7 @@ export abstract class BaseStore {
     });
   }
 
-  async batchAdd<T>(objects: T[]) {
+  async bulkAdd<T>(objects: T[]) {
     return this.withTransaction(async ({ objectStore, logStore }) => {
       const requests = objects.map((object) => {
         return this.handleRequest(objectStore.add(object));
@@ -228,7 +228,7 @@ export abstract class BaseStore {
     });
   }
 
-  async batchPut<T>(objects: T[]) {
+  async bulkPut<T>(objects: T[]) {
     return this.withTransaction(async ({ objectStore, logStore }) => {
       const requests = objects.map((object) => {
         return this.handleRequest(objectStore.put(object));
@@ -250,7 +250,7 @@ export abstract class BaseStore {
     });
   }
 
-  async batchDelete(ids: number[]) {
+  async bulkDelete(ids: number[]) {
     return this.withTransaction(async ({ objectStore, logStore }) => {
       const requests = ids.map((id) => {
         return this.handleRequest(objectStore.delete(id));
@@ -291,6 +291,31 @@ export abstract class BaseStore {
     return this.slice(this.createReadCursorIterator<T>(), start, stop, step);
   }
 
+  update<T>(id: number, newValue: Partial<T>) {
+    const { objectStore, transaction } = this.createWriteObjectStore();
+    const cursorRequest = objectStore.openCursor();
+
+    cursorRequest.onsuccess = (event: Event) => {
+      const cursor: IDBCursorWithValue | null = (event.target as IDBRequest).result;
+
+      if (!cursor) {
+        transaction.abort();
+        return;
+      }
+      if (cursor.value.id === id) {
+        cursor.update({ ...cursor.value, ...newValue });
+        return;
+      }
+
+      cursor.continue();
+    };
+
+    cursorRequest.onerror = () => {
+      transaction.abort();
+      throw cursorRequest.error;
+    };
+  }
+
   updateAll<T>(newValue: Partial<T>) {
     const { objectStore, transaction } = this.createWriteObjectStore();
     const cursorRequest = objectStore.openCursor();
@@ -327,6 +352,32 @@ export abstract class BaseStore {
 
       setByPath(cursor.value, path, value);
       cursor.update(cursor.value);
+      cursor.continue();
+    };
+
+    cursorRequest.onerror = () => {
+      transaction.abort();
+      throw cursorRequest.error;
+    };
+  }
+
+  updateByPath(id: number, path: string, value: unknown) {
+    const { objectStore, transaction } = this.createWriteObjectStore();
+    const cursorRequest = objectStore.openCursor();
+
+    cursorRequest.onsuccess = (event: Event) => {
+      const cursor: IDBCursorWithValue | null = (event.target as IDBRequest).result;
+
+      if (!cursor) {
+        transaction.abort();
+        return;
+      }
+      if (cursor.value.id === id) {
+        setByPath(cursor.value, path, value);
+        cursor.update(cursor.value);
+        return;
+      }
+
       cursor.continue();
     };
 
