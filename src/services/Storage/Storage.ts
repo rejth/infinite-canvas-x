@@ -4,8 +4,6 @@ import { LogStore } from './LogStore';
 import { generateMockData } from './mockData';
 import { v1, v2 } from './schemas';
 
-// import './test';
-
 export class StorageService {
   private static instance: StorageService | null = null;
 

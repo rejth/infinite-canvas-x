@@ -163,7 +163,7 @@ export abstract class BaseStore {
     return this.handleRequest(objectStore.count());
   }
 
-  async get<T>(id: number): Promise<T> {
+  async get<T>(id: IDBValidKey): Promise<T> {
     const objectStore = this.createReadTransaction();
     return this.handleRequest(objectStore.get(id));
   }
@@ -173,43 +173,43 @@ export abstract class BaseStore {
     return this.handleRequest(objectStore.getAll());
   }
 
-  async getAllFromTo<T>(fromId: number, toId: number): Promise<T[]> {
+  async getAllFromTo<T>(fromId: IDBValidKey, toId: IDBValidKey): Promise<T[]> {
     const objectStore = this.createReadTransaction();
     return this.handleRequest(objectStore.getAll(IDBKeyRange.bound(fromId, toId)));
   }
 
-  async getAllFrom<T>(fromId: number): Promise<T[]> {
+  async getAllFrom<T>(fromId: IDBValidKey): Promise<T[]> {
     const objectStore = this.createReadTransaction();
     return this.handleRequest(objectStore.getAll(IDBKeyRange.lowerBound(fromId, true)));
   }
 
-  async getAllKeysFrom<T>(fromId: number): Promise<T[]> {
+  async getAllKeysFrom(fromId: IDBValidKey): Promise<IDBValidKey[]> {
     const objectStore = this.createReadTransaction();
     return this.handleRequest(objectStore.getAllKeys(IDBKeyRange.lowerBound(fromId, true)));
   }
 
-  async getAllTo<T>(toId: number): Promise<T[]> {
+  async getAllTo<T>(toId: IDBValidKey): Promise<T[]> {
     const objectStore = this.createReadTransaction();
     return this.handleRequest(objectStore.getAll(IDBKeyRange.upperBound(toId, true)));
   }
 
-  async getAllKeysTo<T>(toId: number): Promise<T[]> {
+  async getAllKeysTo(toId: IDBValidKey): Promise<IDBValidKey[]> {
     const objectStore = this.createReadTransaction();
     return this.handleRequest(objectStore.getAllKeys(IDBKeyRange.upperBound(toId, true)));
   }
 
-  async add<T>(object: T) {
-    return this.withTransaction(async ({ objectStore, logStore }) => {
-      const result = await this.handleRequest(objectStore.add(object));
+  async add<T>(object: T): Promise<IDBValidKey> {
+    return this.withTransaction<IDBValidKey>(async ({ objectStore, logStore }) => {
+      const result = await this.handleRequest<IDBValidKey>(objectStore.add(object));
       await this.log(result, logStore, LogType.ADD);
       return result;
     });
   }
 
-  async bulkAdd<T>(objects: T[]) {
-    return this.withTransaction(async ({ objectStore, logStore }) => {
+  async bulkAdd<T>(objects: T[]): Promise<IDBValidKey[]> {
+    return this.withTransaction<IDBValidKey[]>(async ({ objectStore, logStore }) => {
       const requests = objects.map((object) => {
-        return this.handleRequest(objectStore.add(object));
+        return this.handleRequest<IDBValidKey>(objectStore.add(object));
       });
 
       const results = await Promise.all(requests);
@@ -220,18 +220,18 @@ export abstract class BaseStore {
     });
   }
 
-  async put<T>(object: T) {
-    return this.withTransaction(async ({ objectStore, logStore }) => {
-      const result = await this.handleRequest(objectStore.put(object));
+  async put<T>(object: T): Promise<IDBValidKey> {
+    return this.withTransaction<IDBValidKey>(async ({ objectStore, logStore }) => {
+      const result = await this.handleRequest<IDBValidKey>(objectStore.put(object));
       await this.log(result, logStore, LogType.PUT);
       return result;
     });
   }
 
-  async bulkPut<T>(objects: T[]) {
-    return this.withTransaction(async ({ objectStore, logStore }) => {
+  async bulkPut<T>(objects: T[]): Promise<IDBValidKey[]> {
+    return this.withTransaction<IDBValidKey[]>(async ({ objectStore, logStore }) => {
       const requests = objects.map((object) => {
-        return this.handleRequest(objectStore.put(object));
+        return this.handleRequest<IDBValidKey>(objectStore.put(object));
       });
 
       const results = await Promise.all(requests);
@@ -242,18 +242,18 @@ export abstract class BaseStore {
     });
   }
 
-  async delete(id: number) {
-    return this.withTransaction(async ({ objectStore, logStore }) => {
-      const result = await this.handleRequest(objectStore.delete(id));
+  async delete(id: IDBValidKey): Promise<void> {
+    return this.withTransaction<void>(async ({ objectStore, logStore }) => {
+      const result = await this.handleRequest<void>(objectStore.delete(id));
       await this.log(result, logStore, LogType.DELETE);
       return result;
     });
   }
 
-  async bulkDelete(ids: number[]) {
-    return this.withTransaction(async ({ objectStore, logStore }) => {
+  async bulkDelete(ids: IDBValidKey[]): Promise<void[]> {
+    return this.withTransaction<void[]>(async ({ objectStore, logStore }) => {
       const requests = ids.map((id) => {
-        return this.handleRequest(objectStore.delete(id));
+        return this.handleRequest<void>(objectStore.delete(id));
       });
 
       const results = await Promise.all(requests);
@@ -264,9 +264,9 @@ export abstract class BaseStore {
     });
   }
 
-  async clear() {
-    return this.withTransaction(async ({ objectStore }) => {
-      const result = await this.handleRequest(objectStore.clear());
+  async clear(): Promise<void> {
+    return this.withTransaction<void>(async ({ objectStore }) => {
+      const result = await this.handleRequest<void>(objectStore.clear());
       return result;
     });
   }
@@ -283,7 +283,7 @@ export abstract class BaseStore {
     return this.take(this.createReadCursorIterator<T>(), limit);
   }
 
-  findAndMapAllBy<T, R>(predicate: (value: T) => boolean, mappers: Array<(value: T) => R>): AsyncGenerator<R> {
+  reduce<T, R>(predicate: (value: T) => boolean, mappers: Array<(value: T) => R>): AsyncGenerator<R> {
     return this.map<T, R>(this.filter(this.createReadCursorIterator<T>(), predicate), mappers);
   }
 
@@ -291,7 +291,7 @@ export abstract class BaseStore {
     return this.slice(this.createReadCursorIterator<T>(), start, stop, step);
   }
 
-  update<T>(id: number, newValue: Partial<T>) {
+  update<T>(id: IDBValidKey, newValue: Partial<T>) {
     const { objectStore, transaction } = this.createWriteObjectStore();
     const cursorRequest = objectStore.openCursor();
 
@@ -361,7 +361,7 @@ export abstract class BaseStore {
     };
   }
 
-  updateByPath(id: number, path: string, value: unknown) {
+  updateByPath(id: IDBValidKey, path: string, value: unknown) {
     const { objectStore, transaction } = this.createWriteObjectStore();
     const cursorRequest = objectStore.openCursor();
 
