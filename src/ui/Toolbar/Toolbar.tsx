@@ -27,22 +27,6 @@ const tools: ToolItem[] = [
     disabled: false,
   },
   {
-    id: 'area',
-    label: 'Area',
-    type: Tools.AREA,
-    icon: 'text-area',
-    hoverText: 'Drag to add a new text area',
-    disabled: true,
-  },
-  {
-    id: 'text',
-    label: 'Text',
-    type: Tools.TEXT,
-    icon: 'text',
-    hoverText: 'Drag to add a new text',
-    disabled: true,
-  },
-  {
     id: 'pan',
     label: 'Pan',
     type: Tools.HAND,
