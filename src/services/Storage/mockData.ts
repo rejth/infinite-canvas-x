@@ -4,6 +4,7 @@ import { CanvasStateDB, StoreName } from './interfaces';
 import { CANVAS_STATE_ID, DEFAULT_TOOL, DEFAULT_ZOOM_PERCENTAGE } from '@/shared/constants';
 
 const layer1 = {
+  id: 1,
   type: CanvasEntityType.LAYER,
   options: {
     x: 100,
@@ -56,6 +57,7 @@ const layer1 = {
 };
 
 const layer2 = {
+  id: 2,
   type: CanvasEntityType.LAYER,
   options: {
     x: 450,
@@ -108,6 +110,7 @@ const layer2 = {
 };
 
 const layer3 = {
+  id: 3,
   type: CanvasEntityType.LAYER,
   options: {
     x: 200,
@@ -160,6 +163,7 @@ const layer3 = {
 };
 
 const layer4 = {
+  id: 4,
   type: CanvasEntityType.LAYER,
   options: {
     x: 550,
@@ -212,6 +216,7 @@ const layer4 = {
 };
 
 const layer5 = {
+  id: 5,
   type: CanvasEntityType.LAYER,
   options: {
     x: 300,
