@@ -61,6 +61,17 @@ export class Renderer {
     };
   }
 
+  setTransformMatrix(transformMatrix: TransformationMatrix) {
+    this.ctx.setTransform(
+      transformMatrix.scaleX,
+      transformMatrix.skewY,
+      transformMatrix.skewX,
+      transformMatrix.scaleY,
+      transformMatrix.translationX,
+      transformMatrix.translationY,
+    );
+  }
+
   /*
    * https://roblouie.com/article/617/transforming-mouse-coordinates-to-canvas-coordinates/
    * This method has been modified. The original method doesn't take in account current scale.

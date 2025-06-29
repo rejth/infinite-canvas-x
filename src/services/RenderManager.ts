@@ -1,4 +1,5 @@
 import { COLORS, DEFAULT_CORNER } from '@/shared/constants';
+import { TransformationMatrix } from '@/shared/interfaces';
 
 import { BaseDrawOptions, CanvasEntityType, LayerInterface } from '@/entities/interfaces';
 import { isCanvasSelection, isCanvasImage, isCanvasText, isCanvasRect } from '@/entities/lib';
@@ -11,6 +12,7 @@ import { Point } from '@/entities/Point';
 import { type Renderer } from '@/services/Renderer';
 import { FpsManager } from '@/services/FpsManager';
 import { StorageService } from '@/services/Storage/Storage';
+import { PouchDBService } from '@/services/Storage/PouchDBService';
 
 type RedrawOptions = {
   exceptType?: CanvasEntityType;
@@ -25,6 +27,7 @@ export class RenderManager {
   private layers: LayerInterface[] = [];
   private layersCounter = 0;
   private storage: StorageService | null = null;
+  private pouchDB: PouchDBService | null = null;
 
   private constructor(protected readonly renderer: Renderer) {}
 
@@ -41,15 +44,20 @@ export class RenderManager {
   }
 
   private async initialize(enableFpsManager = false) {
-    this.storage = await StorageService.create();
+    // this.storage = await StorageService.create();
+    // this.pouchDB = await PouchDBService.create();
 
     if (enableFpsManager) {
       new FpsManager();
     }
   }
 
-  getStorage(): StorageService | null {
+  getIndexedDBStorage(): StorageService | null {
     return this.storage;
+  }
+
+  getPouchDBStorage(): PouchDBService | null {
+    return this.pouchDB;
   }
 
   getContext() {
@@ -65,6 +73,12 @@ export class RenderManager {
     layer.setId(this.layersCounter);
     this.layers.push(layer);
     this.drawLayer(layer);
+  }
+
+  bulkAdd(layers: LayerInterface[]) {
+    this.layers = layers;
+    this.layersCounter = layers.length;
+    this.drawScene();
   }
 
   removeLayer(layer: LayerInterface) {
@@ -148,6 +162,14 @@ export class RenderManager {
       this.renderer.drawBackground();
       this.drawScene(redrawOptions);
     });
+  }
+
+  setTransformMatrix(transformMatrix: TransformationMatrix) {
+    this.renderer.setTransformMatrix(transformMatrix);
+  }
+
+  getTransformMatrix(): TransformationMatrix {
+    return this.renderer.getTransformMatrix();
   }
 
   #drawRect(child: CanvasRect) {

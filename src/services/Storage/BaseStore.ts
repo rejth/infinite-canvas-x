@@ -1,7 +1,7 @@
 import { setByPath } from '@/lib/utils';
-import { StoreName, LogType } from './interfaces';
+import { StoreName } from './interfaces';
 
-type TransactionOperation<T> = (stores: { objectStore: IDBObjectStore; logStore: IDBObjectStore }) => Promise<T>;
+type TransactionOperation<T> = (stores: { objectStore: IDBObjectStore }) => Promise<T>;
 
 export abstract class BaseStore {
   constructor(
@@ -14,7 +14,7 @@ export abstract class BaseStore {
   }
 
   protected createWriteTransaction(): IDBTransaction {
-    return this.db.transaction([this.storeName, StoreName.LOG], 'readwrite');
+    return this.db.transaction(this.storeName, 'readwrite');
   }
 
   protected createWriteObjectStore() {
@@ -23,7 +23,6 @@ export abstract class BaseStore {
     return {
       transaction,
       objectStore: transaction.objectStore(this.storeName),
-      logStore: transaction.objectStore(StoreName.LOG),
     };
   }
 
@@ -58,10 +57,6 @@ export abstract class BaseStore {
     };
   }
 
-  protected async log(result: unknown, logStore: IDBObjectStore, type: LogType) {
-    await this.handleRequest(logStore.add({ id: result, type, time: Date.now() }));
-  }
-
   protected async handleRequest<T>(request: IDBRequest): Promise<T> {
     return new Promise((resolve, reject) => {
       const requestEvent = 'oncomplete' in request ? 'complete' : 'success';
@@ -82,10 +77,10 @@ export abstract class BaseStore {
   }
 
   protected async withTransaction<T>(operation: TransactionOperation<T>): Promise<T> {
-    const { objectStore, logStore, transaction } = this.createWriteObjectStore();
+    const { objectStore, transaction } = this.createWriteObjectStore();
 
     try {
-      const result = await operation({ objectStore, logStore });
+      const result = await operation({ objectStore });
 
       await new Promise<void>((resolve, reject) => {
         transaction.oncomplete = () => resolve();
@@ -199,66 +194,57 @@ export abstract class BaseStore {
   }
 
   async add<T>(object: T): Promise<IDBValidKey> {
-    return this.withTransaction<IDBValidKey>(async ({ objectStore, logStore }) => {
+    return this.withTransaction<IDBValidKey>(async ({ objectStore }) => {
       const result = await this.handleRequest<IDBValidKey>(objectStore.add(object));
-      await this.log(result, logStore, LogType.ADD);
       return result;
     });
   }
 
   async bulkAdd<T>(objects: T[]): Promise<IDBValidKey[]> {
-    return this.withTransaction<IDBValidKey[]>(async ({ objectStore, logStore }) => {
+    return this.withTransaction<IDBValidKey[]>(async ({ objectStore }) => {
       const requests = objects.map((object) => {
         return this.handleRequest<IDBValidKey>(objectStore.add(object));
       });
 
       const results = await Promise.all(requests);
 
-      await Promise.all(results.map((result) => this.log(result, logStore, LogType.ADD)));
-
       return results;
     });
   }
 
   async put<T>(object: T): Promise<IDBValidKey> {
-    return this.withTransaction<IDBValidKey>(async ({ objectStore, logStore }) => {
+    return this.withTransaction<IDBValidKey>(async ({ objectStore }) => {
       const result = await this.handleRequest<IDBValidKey>(objectStore.put(object));
-      await this.log(result, logStore, LogType.PUT);
       return result;
     });
   }
 
   async bulkPut<T>(objects: T[]): Promise<IDBValidKey[]> {
-    return this.withTransaction<IDBValidKey[]>(async ({ objectStore, logStore }) => {
+    return this.withTransaction<IDBValidKey[]>(async ({ objectStore }) => {
       const requests = objects.map((object) => {
         return this.handleRequest<IDBValidKey>(objectStore.put(object));
       });
 
       const results = await Promise.all(requests);
 
-      await Promise.all(results.map((result) => this.log(result, logStore, LogType.PUT)));
-
       return results;
     });
   }
 
   async delete(id: IDBValidKey): Promise<void> {
-    return this.withTransaction<void>(async ({ objectStore, logStore }) => {
+    return this.withTransaction<void>(async ({ objectStore }) => {
       const result = await this.handleRequest<void>(objectStore.delete(id));
-      await this.log(result, logStore, LogType.DELETE);
       return result;
     });
   }
 
   async bulkDelete(ids: IDBValidKey[]): Promise<void[]> {
-    return this.withTransaction<void[]>(async ({ objectStore, logStore }) => {
+    return this.withTransaction<void[]>(async ({ objectStore }) => {
       const requests = ids.map((id) => {
         return this.handleRequest<void>(objectStore.delete(id));
       });
 
       const results = await Promise.all(requests);
-
-      await Promise.all(results.map((result) => this.log(result, logStore, LogType.DELETE)));
 
       return results;
     });

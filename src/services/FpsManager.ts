@@ -1,7 +1,7 @@
 export class FpsManager {
   fps = 0;
   averageFPS = 0;
-  private history: number[] = [];
+  private readonly history: number[] = [];
 
   constructor() {
     const times: number[] = [];

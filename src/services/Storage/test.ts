@@ -3,7 +3,7 @@ import { StoreName } from './interfaces';
 
 class TestStore extends BaseStore {
   constructor(db: IDBDatabase) {
-    super(db, StoreName.LAYERS);
+    super(db, StoreName.CANVAS_STATE);
   }
 }
 
@@ -86,12 +86,8 @@ async function createMockDB(): Promise<IDBDatabase> {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
-      if (!db.objectStoreNames.contains(StoreName.LAYERS)) {
-        db.createObjectStore(StoreName.LAYERS, { keyPath: 'id', autoIncrement: true });
-      }
-
-      if (!db.objectStoreNames.contains(StoreName.LOG)) {
-        db.createObjectStore(StoreName.LOG, { keyPath: 'id', autoIncrement: true });
+      if (!db.objectStoreNames.contains(StoreName.CANVAS_STATE)) {
+        db.createObjectStore(StoreName.CANVAS_STATE, { keyPath: 'id', autoIncrement: true });
       }
     };
   });
@@ -360,8 +356,6 @@ async function testSlice() {
     console.error('❌ slice test failed:', error);
   }
 }
-
-// ... existing code ...
 
 async function testUpdate() {
   console.log('📝 Testing update function...');

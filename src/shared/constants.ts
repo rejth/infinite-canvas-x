@@ -1,5 +1,7 @@
 import { Tools, type Color } from '@/shared/interfaces';
 
+export const CANVAS_STATE_ID = 'canvas-state';
+
 export const DEFAULT_FONT = 'Times New Roman';
 export const DEFAULT_FONT_SIZE = 16;
 export const DEFAULT_FONT_WEIGHT = '400';

@@ -1,5 +1,7 @@
 import { CanvasEntityType } from '@/entities/interfaces';
 import { TextAlign, TextDecoration } from '@/shared/interfaces';
+import { CanvasStateDB, StoreName } from './interfaces';
+import { CANVAS_STATE_ID, DEFAULT_TOOL, DEFAULT_ZOOM_PERCENTAGE } from '@/shared/constants';
 
 const layer1 = {
   type: CanvasEntityType.LAYER,
@@ -261,12 +263,24 @@ const layer5 = {
   ],
 };
 
-const mockData = [layer1, layer2, layer3, layer4, layer5];
+const mockData: CanvasStateDB = {
+  _id: CANVAS_STATE_ID,
+  layers: [layer1, layer2, layer3, layer4, layer5],
+  transformMatrix: {
+    scaleX: 1,
+    scaleY: 1,
+    skewX: 0,
+    skewY: 0,
+    translationX: 0,
+    translationY: 0,
+    initialScale: 1,
+  },
+  tool: DEFAULT_TOOL,
+  zoomPercentage: DEFAULT_ZOOM_PERCENTAGE,
+};
 
 export const generateMockData = (transaction: IDBTransaction | null) => {
   if (!transaction) return;
 
-  mockData.forEach((layer) => {
-    transaction.objectStore('layers').add(layer);
-  });
+  transaction.objectStore(StoreName.CANVAS_STATE).add(mockData);
 };

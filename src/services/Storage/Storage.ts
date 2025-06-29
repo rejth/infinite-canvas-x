@@ -1,15 +1,13 @@
 import { StoreName } from './interfaces';
-import { LayerStore } from './LayerStore';
-import { LogStore } from './LogStore';
+import { CanvasStateStore } from './CanvasStateStore';
 import { generateMockData } from './mockData';
-import { v1, v2 } from './schemas';
+import { v1 } from './schemas';
 
 export class StorageService {
   private static instance: StorageService | null = null;
 
   private db: IDBDatabase | null = null;
-  private layerStore: LayerStore | null = null;
-  private logStore: LogStore | null = null;
+  private canvasStateStore: CanvasStateStore | null = null;
   private readonly name = 'canvas-db';
   private readonly version = 1;
 
@@ -19,12 +17,8 @@ export class StorageService {
     return this.db;
   }
 
-  get layers(): LayerStore {
-    return this.layerStore!;
-  }
-
-  get logs(): LogStore {
-    return this.logStore!;
+  get canvasState(): CanvasStateStore {
+    return this.canvasStateStore!;
   }
 
   static async create(): Promise<StorageService> {
@@ -42,8 +36,7 @@ export class StorageService {
   private async initialize(): Promise<void> {
     try {
       this.db = await this.openConnection();
-      this.layerStore = new LayerStore(this.db, StoreName.LAYERS);
-      this.logStore = new LogStore(this.db, StoreName.LOG);
+      this.canvasStateStore = new CanvasStateStore(this.db, StoreName.CANVAS_STATE);
     } catch (error) {
       console.error('Failed to initialize database:', error);
       throw error;
@@ -62,9 +55,6 @@ export class StorageService {
           case 0:
             v1.createSchema(db);
             generateMockData(transaction);
-            break;
-          case 1:
-            v2.updateSchema(db);
             break;
           default:
             break;

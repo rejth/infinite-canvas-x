@@ -12,10 +12,12 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
 
   private needToRender = true;
 
-  constructor(options: BaseDrawOptions) {
+  constructor(options: BaseDrawOptions, id: LayerId | null = null) {
     super(options);
 
+    this.setId(id);
     this.setType(CanvasEntityType.LAYER);
+
     this.children.push(
       new Selection({
         ...options,
@@ -34,7 +36,7 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
     return this.active;
   }
 
-  setId(id: LayerId) {
+  setId(id: LayerId | null) {
     this.id = id;
   }
 

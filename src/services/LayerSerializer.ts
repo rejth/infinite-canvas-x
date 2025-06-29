@@ -1,10 +1,11 @@
+import { LayerId } from '@/shared/interfaces';
 import { Layer } from '@/entities/Layer';
-
 import { CanvasRect, RectDrawOptions } from '@/entities/CanvasRect';
 import { CanvasText, TextDrawOptions } from '@/entities/CanvasText';
 import { BaseCanvasEntityInterface, BaseDrawOptions, CanvasEntityType, LayerInterface } from '@/entities/interfaces';
 
 export type SerializedLayer<T extends BaseDrawOptions = BaseDrawOptions> = {
+  id: LayerId | null;
   type: CanvasEntityType;
   options: T;
   children: SerializedCanvasObject<T>[];
@@ -31,38 +32,43 @@ const isSerializedEntityText = (
 export class LayerSerializer {
   private constructor() {}
 
-  static serialize(layer: LayerInterface): SerializedLayer | null {
+  static serialize(layer: LayerInterface | null): SerializedLayer | null {
+    if (!layer) {
+      return null;
+    }
+
     if (layer.getType() === CanvasEntityType.LAYER) {
-      return this.#serializeLayer(layer);
+      return this.serializeLayer(layer);
     }
 
     return null;
   }
 
-  static deserialize(serializedLayer: SerializedLayer): Layer | null {
+  static deserialize(serializedLayer: SerializedLayer): LayerInterface | null {
     if (serializedLayer.type === CanvasEntityType.LAYER) {
-      return this.#deserializeLayer(serializedLayer);
+      return this.deserializeLayer(serializedLayer);
     }
 
     return null;
   }
 
-  static #serializeLayer(layer: LayerInterface): SerializedLayer {
+  private static serializeLayer(layer: LayerInterface): SerializedLayer {
     const data: SerializedLayer = {
+      id: layer.getId(),
       type: layer.getType(),
       options: layer.getOptions(),
       children: [],
     };
 
     for (const child of layer.getChildren()) {
-      data.children.push(this.#serializeCanvasObject(child));
+      data.children.push(this.serializeCanvasObject(child));
     }
 
     return data;
   }
 
-  static #deserializeLayer(serializedLayer: SerializedLayer): Layer {
-    const layer = new Layer(serializedLayer.options);
+  private static deserializeLayer(serializedLayer: SerializedLayer): LayerInterface {
+    const layer = new Layer(serializedLayer.options, serializedLayer.id);
 
     for (const child of serializedLayer.children) {
       if (isSerializedEntityRect(child)) {
@@ -76,7 +82,7 @@ export class LayerSerializer {
     return layer;
   }
 
-  static #serializeCanvasObject(canvasObject: BaseCanvasEntityInterface): SerializedCanvasObject {
+  private static serializeCanvasObject(canvasObject: BaseCanvasEntityInterface): SerializedCanvasObject {
     return {
       type: canvasObject.getType(),
       options: canvasObject.getOptions(),

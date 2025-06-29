@@ -1,16 +1,21 @@
 import { useCallback, useEffect } from 'react';
 
-import { CustomEvents } from '@/shared/interfaces';
+import { CustomEvents, Tools } from '@/shared/interfaces';
 import { useDidMountEffect } from '@/shared/hooks/useDidMountEffect';
+import { CANVAS_STATE_ID, DEFAULT_ZOOM_PERCENTAGE } from '@/shared/constants';
 
 import { useCanvasContext } from '@/context';
 import { useToolbarContext } from '@/context';
+
+import { LayerSerializer } from '@/services/LayerSerializer';
+import { CanvasStateDB } from '@/services/Storage/interfaces';
 
 import { useKeyboard } from '@/features/useKeyboard';
 import { useCanvasOnClick } from '@/features/useCanvasOnClick';
 import { useCanvasOnMove } from '@/features/useCanvasOnMove';
 import { useCanvasOnWheel } from '@/features/useCanvasOnWheel';
 import { useCanvasOnDoubleClick } from '@/features/useCanvasOnDoubleClick';
+// import { useAutosave } from '@/features/useAutosave';
 
 type Props = {
   setCanvasRef: (canvas: HTMLCanvasElement) => void;
@@ -18,7 +23,7 @@ type Props = {
 
 export const Canvas = ({ setCanvasRef }: Props) => {
   const { renderManager, camera } = useCanvasContext();
-  const { cursor } = useToolbarContext();
+  const { cursor, setTool, setZoomPercentage } = useToolbarContext();
 
   const handleClick = useCanvasOnClick();
   const handleWheel = useCanvasOnWheel();
@@ -26,6 +31,7 @@ export const Canvas = ({ setCanvasRef }: Props) => {
   const handleDoubleClick = useCanvasOnDoubleClick();
 
   useKeyboard();
+  // useAutosave();
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     camera?.handleMouseDown(e.nativeEvent);
@@ -41,6 +47,37 @@ export const Canvas = ({ setCanvasRef }: Props) => {
   }, [renderManager]);
 
   const handleTouchMove = () => null;
+
+  useEffect(() => {
+    if (!renderManager) return;
+
+    const storage = renderManager.getPouchDBStorage();
+    const localDB = storage?.getLocalDB();
+
+    if (!localDB) return;
+
+    localDB
+      .get(CANVAS_STATE_ID)
+      .then((doc) => {
+        const { layers, transformMatrix, tool, zoomPercentage } = doc as CanvasStateDB;
+
+        renderManager.bulkAdd(layers.map((layer) => LayerSerializer.deserialize(layer)!));
+        renderManager.setTransformMatrix(transformMatrix);
+        renderManager.reDrawSync();
+
+        setTool(tool as Tools);
+        setZoomPercentage(zoomPercentage);
+      })
+      .catch(() => {
+        localDB.put({
+          _id: CANVAS_STATE_ID,
+          layers: [],
+          tool: Tools.SELECT,
+          zoomPercentage: DEFAULT_ZOOM_PERCENTAGE,
+          transformMatrix: renderManager.getTransformMatrix(),
+        });
+      });
+  }, [renderManager, setTool, setZoomPercentage]);
 
   useEffect(() => {
     document.addEventListener(CustomEvents.ZOOMING_STOPPED, handleZoomStopped);

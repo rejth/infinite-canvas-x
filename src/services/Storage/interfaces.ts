@@ -1,14 +1,15 @@
+import { TransformationMatrix } from '@/shared/interfaces';
 import { SerializedLayer } from '../LayerSerializer';
 
-export type SerializedLayerStored = SerializedLayer & { id: number };
-
-export const enum LogType {
-  ADD = 'add',
-  PUT = 'put',
-  DELETE = 'delete',
+export const enum StoreName {
+  CANVAS_STATE = 'canvas-state',
 }
 
-export const enum StoreName {
-  LAYERS = 'layers',
-  LOG = 'log',
+export interface CanvasStateDB {
+  _id: string;
+  layers: SerializedLayer[];
+  transformMatrix: TransformationMatrix;
+  tool: string;
+  zoomPercentage: number;
+  _rev?: string;
 }
