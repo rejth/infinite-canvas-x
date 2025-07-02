@@ -9,6 +9,11 @@ type Props = {
 
 export const ActiveLayerProvider = ({ children }: Props) => {
   const [activeLayer, setActiveLayer] = useState<LayerInterface | null>(null);
+  const [lastActiveLayer, setLastActiveLayer] = useState<LayerInterface | null>(null);
 
-  return <ActiveLayerContext.Provider value={{ activeLayer, setActiveLayer }}>{children}</ActiveLayerContext.Provider>;
+  return (
+    <ActiveLayerContext.Provider value={{ activeLayer, setActiveLayer, lastActiveLayer, setLastActiveLayer }}>
+      {children}
+    </ActiveLayerContext.Provider>
+  );
 };

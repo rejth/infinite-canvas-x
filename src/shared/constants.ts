@@ -27,11 +27,11 @@ export const DEFAULT_TOOL = Tools.SELECT;
 export const DEFAULT_CURSOR = 'default';
 
 export const DEFAULT_RESIZE_DIRECTION = 'right';
-export const DEFAULT_ZOOM_PERCENTAGE = 40;
+export const DEFAULT_ZOOM_PERCENTAGE = 45;
 
 export const ZOOM_STEP = 10;
-export const ZOOM_MIN = 10;
-export const ZOOM_MAX = 200;
+export const ZOOM_MIN = 15;
+export const ZOOM_MAX = 195;
 
 export const enum COLORS {
   STICKER_YELLOW = '#ffd670',
@@ -43,7 +43,7 @@ export const enum COLORS {
   STICKER_BLUE = '#70d6ff',
   STICKER_PINK = '#ff70a6',
   SELECTION = '#3a86ff',
-  GRID = '#d2d6db',
+  GRID = '#9ca3af',
   TEXT_AREA = '#f6f2ff',
   FONT = '#000000',
   TRANSPARENT = 'transparent',

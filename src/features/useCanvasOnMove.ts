@@ -50,18 +50,16 @@ export function useCanvasOnMove() {
         }
       } else if (tool === Tools.SELECT) {
         setIsLayerEditable(false);
-        activeLayer.move(e.movementX, e.movementY);
-        renderManager.reDraw();
+        renderManager.moveLayer(activeLayer, e.movementX, e.movementY);
       } else if (tool === Tools.RESIZER) {
         setIsLayerEditable(false);
-        activeLayer.resize(e.movementX, e.movementY, resizeDirection);
-        renderManager.reDraw();
+        renderManager.resizeLayer(activeLayer, e.movementX, e.movementY, resizeDirection);
       }
     }
 
     if (camera.isDragging && tool === Tools.HAND) {
       camera.handleMouseMove(e.nativeEvent);
-      renderManager.reDraw();
+      renderManager.reDrawOnNextFrame();
     }
   };
 }

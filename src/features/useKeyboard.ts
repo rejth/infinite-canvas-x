@@ -10,7 +10,7 @@ import { LayerSerializer } from '@/services/LayerSerializer';
 
 export function useKeyboard() {
   const { renderManager } = useCanvasContext();
-  const { activeLayer, setActiveLayer } = useActiveLayerContext();
+  const { activeLayer, setActiveLayer, setLastActiveLayer } = useActiveLayerContext();
   const { isLayerEditable } = useTextEditorContext();
   const { setIsLayerEditable } = useTextEditorContext();
 
@@ -20,9 +20,10 @@ export function useKeyboard() {
   const handleRemoveLayer = useCallback(() => {
     if (activeLayer && !isLayerEditable) {
       renderManager?.removeLayer(activeLayer);
+      setLastActiveLayer(activeLayer);
       setActiveLayer(null);
     }
-  }, [isLayerEditable, activeLayer, renderManager, setActiveLayer]);
+  }, [isLayerEditable, activeLayer, renderManager, setActiveLayer, setLastActiveLayer]);
 
   const handleKeyUp = useCallback(() => {
     setCommandPressed(false);
@@ -33,9 +34,10 @@ export function useKeyboard() {
       if (e.key === 'Escape') {
         if (activeLayer) {
           activeLayer.setActive(false);
+          setLastActiveLayer(activeLayer);
           setActiveLayer(null);
           setIsLayerEditable(false);
-          renderManager?.reDraw();
+          renderManager?.reDrawOnNextFrame();
         }
         return;
       }
@@ -73,7 +75,7 @@ export function useKeyboard() {
               layerCopy.setActive(true);
               renderManager?.addLayer(layerCopy);
               setActiveLayer(layerCopy);
-              renderManager?.reDraw();
+              renderManager?.reDrawOnNextFrame();
             }
           }
         }
@@ -88,6 +90,7 @@ export function useKeyboard() {
       handleRemoveLayer,
       setActiveLayer,
       setIsLayerEditable,
+      setLastActiveLayer,
     ],
   );
 

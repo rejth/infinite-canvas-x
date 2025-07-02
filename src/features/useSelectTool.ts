@@ -8,7 +8,7 @@ import { useSaveText } from '@/features/useSaveText';
 
 export const useSelectTool = () => {
   const { renderManager } = useCanvasContext();
-  const { activeLayer, setActiveLayer } = useActiveLayerContext();
+  const { activeLayer, setActiveLayer, setLastActiveLayer } = useActiveLayerContext();
   const { resetTextEditor } = useTextEditorContext();
 
   const saveText = useSaveText();
@@ -23,7 +23,7 @@ export const useSelectTool = () => {
       if (layer) {
         layer.setActive(true);
         setActiveLayer(layer);
-        renderManager.reDraw();
+        renderManager.reDrawOnNextFrame();
       }
     } else if (!activeLayer.isPointInside(point)) {
       // If the active layer is not at the point, find any other layer at the point, set it as active and redraw the canvas
@@ -36,12 +36,13 @@ export const useSelectTool = () => {
       } else {
         // If no layer is found, that means the point is outside any layer, so we need to set the active layer to null
         activeLayer.setActive(false);
+        setLastActiveLayer(activeLayer);
         setActiveLayer(null);
       }
 
       saveText();
       resetTextEditor();
-      renderManager.reDraw();
+      renderManager.reDrawOnNextFrame();
     } else {
       // If the active layer is at the point, find all layers that overlap at the same point. There might be multiple layers, like text over a shape with a selection
       const layers = renderManager.findMultipleLayersByCoordinates(point);
@@ -58,7 +59,7 @@ export const useSelectTool = () => {
             layer.setActive(true);
             activeLayer.setActive(false);
             setActiveLayer(layer);
-            renderManager.reDraw();
+            renderManager.reDrawOnNextFrame();
             break;
           }
 

@@ -1,6 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { DEFAULT_CANVAS_SCALE } from '@/shared/constants';
 import { Icons } from '@/shared/ui/icons';
 
 import { CanvasContextProvider } from '@/context/CanvasContext/CanvasContextProvider';
@@ -9,32 +8,33 @@ import { TextEditorProvider } from '@/context/TextEditorContext/TextEditorContex
 import { ToolbarProvider } from '@/context/ToolbarContext/ToolbarContextProvider';
 
 import { Renderer } from '@/services/Renderer';
-import { RenderManager } from '@/services/RenderManager';
+import { type BaseRenderManager, RenderManager, createProxyCanvas } from '@/services/RenderManager';
 import { Camera } from '@/services/Camera';
 
 import { Zoom } from '@/ui/Toolbar/Zoom';
 import { Toolbar } from '@/ui/Toolbar/Toolbar';
 import { TextEditor } from '@/ui/TextEditor/TextEditor';
-import { Canvas } from '@/ui/Canvas';
+import { Canvas } from '@/ui/Canvas/Canvas';
 
 import './App.module.css';
 
 function App() {
   const [, setCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [, setBackgroundCanvas] = useState<HTMLCanvasElement | null>(null);
+
   const rendererRef = useRef<Renderer | null>(null);
-  const renderManagerRef = useRef<RenderManager | null>(null);
+  const renderManagerRef = useRef<BaseRenderManager | null>(null);
   const cameraRef = useRef<Camera | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const backgroundCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const setCanvasRef = useCallback(async (canvas: HTMLCanvasElement | null) => {
-    if (!canvas) return;
+  const initializeCanvas = useCallback(async () => {
+    const canvas = canvasRef.current;
+    const backgroundCanvas = backgroundCanvasRef.current;
 
-    const context = canvas.getContext('2d');
-    if (!context) return;
+    if (!canvas || !backgroundCanvas || renderManagerRef.current) return;
 
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
-    canvas.width = Math.floor(window.innerWidth * DEFAULT_CANVAS_SCALE);
-    canvas.height = Math.floor(window.innerHeight * DEFAULT_CANVAS_SCALE);
+    const context = createProxyCanvas(canvas, backgroundCanvas);
 
     rendererRef.current = new Renderer(context);
     rendererRef.current.drawBackground();
@@ -43,7 +43,30 @@ function App() {
     renderManagerRef.current = await RenderManager.create(rendererRef.current);
 
     setCanvas(canvas);
+    setBackgroundCanvas(backgroundCanvas);
   }, []);
+
+  const setCanvasRef = useCallback(
+    (canvas: HTMLCanvasElement) => {
+      canvasRef.current = canvas;
+      // Only initialize if both canvases are now available
+      if (backgroundCanvasRef.current) {
+        initializeCanvas();
+      }
+    },
+    [initializeCanvas],
+  );
+
+  const setBackgroundCanvasRef = useCallback(
+    (backgroundCanvas: HTMLCanvasElement) => {
+      backgroundCanvasRef.current = backgroundCanvas;
+      // Only initialize if both canvases are now available
+      if (canvasRef.current) {
+        initializeCanvas();
+      }
+    },
+    [initializeCanvas],
+  );
 
   return (
     <ToolbarProvider>
@@ -61,7 +84,7 @@ function App() {
               <Toolbar />
               <Zoom />
               <TextEditor />
-              <Canvas setCanvasRef={setCanvasRef} />
+              <Canvas setCanvasRef={setCanvasRef} setBackgroundCanvasRef={setBackgroundCanvasRef} />
             </>
           </TextEditorProvider>
         </ActiveLayerProvider>

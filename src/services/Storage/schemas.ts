@@ -1,5 +1,7 @@
+import { StoreName } from './interfaces';
+
 const createSchema = (db: IDBDatabase) => {
-  db.createObjectStore('canvas-state', { keyPath: 'id', autoIncrement: true });
+  db.createObjectStore(StoreName.CANVAS_STATE, { keyPath: 'id', autoIncrement: true });
 };
 
 export const v1 = {

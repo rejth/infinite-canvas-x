@@ -1,7 +1,8 @@
 import { CanvasEntityType } from '@/entities/interfaces';
 import { TextAlign, TextDecoration } from '@/shared/interfaces';
-import { CanvasStateDB, StoreName } from './interfaces';
-import { CANVAS_STATE_ID, DEFAULT_TOOL, DEFAULT_ZOOM_PERCENTAGE } from '@/shared/constants';
+import { CANVAS_STATE_ID, DEFAULT_ZOOM_PERCENTAGE } from '@/shared/constants';
+
+import { StoreName } from './interfaces';
 
 const layer1 = {
   id: 1,
@@ -268,8 +269,8 @@ const layer5 = {
   ],
 };
 
-const mockData: CanvasStateDB = {
-  _id: CANVAS_STATE_ID,
+const mockData = {
+  id: CANVAS_STATE_ID,
   layers: [layer1, layer2, layer3, layer4, layer5],
   transformMatrix: {
     scaleX: 1,
@@ -280,7 +281,6 @@ const mockData: CanvasStateDB = {
     translationY: 0,
     initialScale: 1,
   },
-  tool: DEFAULT_TOOL,
   zoomPercentage: DEFAULT_ZOOM_PERCENTAGE,
 };
 

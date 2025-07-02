@@ -30,6 +30,10 @@ export class Camera {
     Camera.instance = this;
   }
 
+  static getInstance(): Camera | null {
+    return Camera.instance;
+  }
+
   handleMouseDown(e: MouseEvent) {
     this.isDragging = true;
     this.dragStartPosition = this.renderer.getTransformedPoint(new Point(e.pageX, e.pageY));

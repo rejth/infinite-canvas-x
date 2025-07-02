@@ -15,9 +15,10 @@ import type {
 import { TextAlign, TextDecoration } from '@/shared/interfaces';
 import { COLORS, DEFAULT_CANVAS_SCALE, DEFAULT_FONT_WEIGHT, DEFAULT_SCALE, SMALL_PADDING } from '@/shared/constants';
 
-import { geometry } from '@/services/Geometry';
-
 import { Point } from '@/entities/Point';
+
+import { geometry } from '@/services/Geometry';
+import { ProxyCanvasRenderingContext2D } from '@/services/RenderManager';
 
 export class Renderer {
   private width: number;
@@ -25,7 +26,7 @@ export class Renderer {
   private initialPixelRatio: PixelRatio;
   private pixelRatio: PixelRatio;
 
-  constructor(protected readonly ctx: CanvasRenderingContext2D) {
+  constructor(protected readonly ctx: ProxyCanvasRenderingContext2D) {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.initialPixelRatio = DEFAULT_CANVAS_SCALE;
@@ -34,7 +35,7 @@ export class Renderer {
     this.ctx.scale(this.pixelRatio, this.pixelRatio);
   }
 
-  getContext(): CanvasRenderingContext2D {
+  getContext(): ProxyCanvasRenderingContext2D {
     return this.ctx;
   }
 
@@ -114,7 +115,7 @@ export class Renderer {
   }
 
   /**
-   * Clear the specified rectangle of the canvas asynchronously using requestAnimationFrame.
+   * Clear the specified rectangle of the canvas on the next animation frame (typically 60fps = ~16.67ms later)
    *
    * @param x - The x-coordinate of the top-left corner of the rectangle to clear.
    * @param y - The y-coordinate of the top-left corner of the rectangle to clear.
@@ -122,7 +123,7 @@ export class Renderer {
    * @param height - The height of the rectangle to clear.
    * @param callBack - A function to be called after clearing the rectangle.
    */
-  clearRect({ x, y, width, height }: RectDimension, callBack: () => void) {
+  clearRectOnNextFrame({ x, y, width, height }: RectDimension, callBack: () => void) {
     requestAnimationFrame(() => {
       this.ctx.clearRect(x, y, width, height);
       callBack();
@@ -130,8 +131,9 @@ export class Renderer {
   }
 
   /**
-   * Clear the specified rectangle of the canvas synchronously.
-   * This method is typically slower than the asynchronous version `clearRect` because it blocks the main thread.
+   * Clear the specified rectangle of the canvas immediately when called.
+   * Good for immediate cleanup or one-off operations.
+   *
    * @param {{ x: number, y: number, width: number, height: number }}
    */
   clearRectSync({ x, y, width, height }: RectDimension) {
@@ -347,37 +349,6 @@ export class Renderer {
   }
 
   drawBackground() {
-    const width = 10;
-    const height = 10;
-    const radius = 0.5;
-
-    const { initialPixelRatio, pixelRatio } = this.getCanvasOptions();
-    const transform = this.ctx.getTransform();
-
-    const offscreenCanvas = new OffscreenCanvas(width, height);
-    offscreenCanvas.width = Math.floor(width * pixelRatio);
-    offscreenCanvas.height = Math.floor(height * pixelRatio);
-
-    const ctx = offscreenCanvas.getContext('2d') as OffscreenCanvasRenderingContext2D;
-
-    ctx.scale(pixelRatio, pixelRatio);
-    ctx.beginPath();
-    ctx.fillStyle = COLORS.GRID;
-    ctx.arc(1, 1, radius, 0, 2 * Math.PI);
-    ctx.fill();
-
-    const pattern = this.ctx.createPattern(offscreenCanvas, 'repeat');
-    if (!pattern) return;
-
-    this.ctx.save();
-    this.ctx.setTransform(initialPixelRatio, transform.b, transform.c, initialPixelRatio, transform.e, transform.f);
-    this.ctx.fillStyle = pattern;
-    this.ctx.fillRect(
-      -transform.e / initialPixelRatio,
-      -transform.f / initialPixelRatio,
-      window.innerWidth,
-      window.innerHeight,
-    );
-    this.ctx.restore();
+    this.ctx.drawBackground(this.getTransformedArea());
   }
 }

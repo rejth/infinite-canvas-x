@@ -3,13 +3,17 @@ import { SerializedLayer } from '../LayerSerializer';
 
 export const enum StoreName {
   CANVAS_STATE = 'canvas-state',
+  CANVAS_SETTINGS = 'canvas-settings',
 }
 
-export interface CanvasStateDB {
+export interface LayerDocument extends SerializedLayer {
   _id: string;
-  layers: SerializedLayer[];
-  transformMatrix: TransformationMatrix;
-  tool: string;
+  _rev: string;
+}
+
+export interface CanvasSettingsDocument {
   zoomPercentage: number;
-  _rev?: string;
+  transformMatrix: TransformationMatrix;
+  _id: string;
+  _rev: string;
 }

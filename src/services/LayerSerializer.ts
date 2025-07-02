@@ -1,4 +1,5 @@
 import { LayerId } from '@/shared/interfaces';
+
 import { Layer } from '@/entities/Layer';
 import { CanvasRect, RectDrawOptions } from '@/entities/CanvasRect';
 import { CanvasText, TextDrawOptions } from '@/entities/CanvasText';

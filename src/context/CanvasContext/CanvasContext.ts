@@ -1,12 +1,12 @@
 import { createContext } from 'react';
 
 import { type Camera } from '@/services/Camera';
-import { type RenderManager } from '@/services/RenderManager';
+import { type BaseRenderManager } from '@/services/RenderManager';
 import { type Renderer } from '@/services/Renderer';
 
 export interface CanvasContextInterface {
   renderer: Renderer | null;
-  renderManager: RenderManager | null;
+  renderManager: BaseRenderManager | null;
   camera: Camera | null;
 }
 

@@ -19,7 +19,7 @@ export const Zoom = () => {
       const { isZoomed, nextZoomPercentage } = camera.zoomCanvasWithStep(zoomPercentage, step, edge, activeLayer);
 
       if (isZoomed) {
-        renderManager.reDraw({ forceRender: true });
+        renderManager.reDrawOnNextFrame({ forceRender: true });
         setZoomPercentage(nextZoomPercentage);
       }
     },

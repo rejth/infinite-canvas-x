@@ -1,16 +1,14 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 
-import { CANVAS_STATE_ID } from '@/shared/constants';
-
-import { debounce } from '@/lib/utils';
+import { DEFAULT_ZOOM_PERCENTAGE } from '@/shared/constants';
+import { debounce } from '@/shared/lib';
 
 import { useCanvasContext, useToolbarContext } from '@/context';
 
-import { LayerSerializer } from '@/services/LayerSerializer';
-import { CanvasStateDB } from '@/services/Storage/interfaces';
+import { CanvasSettingsDocument, StoreName } from '@/services/Storage/interfaces';
 
 const AUTO_SAVE_INTERVAL = 5 * 60 * 1000;
-const DEBOUNCE_INTERVAL = 3000;
+const DEBOUNCE_INTERVAL = 2000;
 
 /**
  * Autosave feature
@@ -28,21 +26,19 @@ const DEBOUNCE_INTERVAL = 3000;
  */
 export const useAutosave = () => {
   const [saveIndicator, setSaveIndicator] = useState(false);
-  const lastSavedState = useRef<CanvasStateDB | null>(null);
+  const lastSavedState = useRef<CanvasSettingsDocument | null>(null);
   const interval = useRef<NodeJS.Timeout | null>(null);
 
   const { renderManager } = useCanvasContext();
-  const { tool, zoomPercentage } = useToolbarContext();
+  const { zoomPercentage } = useToolbarContext();
 
   const currentValues = useRef({
     renderManager,
-    tool,
     zoomPercentage,
   });
 
   currentValues.current = {
     renderManager,
-    tool,
     zoomPercentage,
   };
 
@@ -55,17 +51,14 @@ export const useAutosave = () => {
     }
   }, []);
 
-  const hasStateChanged = useCallback((prev: CanvasStateDB | null, current: CanvasStateDB) => {
+  const hasStateChanged = useCallback((prev: CanvasSettingsDocument | null, current: CanvasSettingsDocument) => {
     if (!prev) return true;
 
-    if (prev.tool !== current.tool || prev.zoomPercentage !== current.zoomPercentage) {
+    if (prev.zoomPercentage !== current.zoomPercentage) {
       return true;
     }
 
-    return (
-      JSON.stringify(prev.transformMatrix) !== JSON.stringify(current.transformMatrix) ||
-      JSON.stringify(prev.layers) !== JSON.stringify(current.layers)
-    );
+    return JSON.stringify(prev.transformMatrix) !== JSON.stringify(current.transformMatrix);
   }, []);
 
   const restoreFromBackup = useCallback(() => {
@@ -80,40 +73,40 @@ export const useAutosave = () => {
   }, []);
 
   const getCurrentState = useCallback(() => {
-    const { renderManager, tool, zoomPercentage } = currentValues.current;
-    const layers = renderManager?.getLayers() || [];
+    const { renderManager, zoomPercentage } = currentValues.current;
 
     return {
-      _id: CANVAS_STATE_ID,
-      layers: layers.map((layer) => LayerSerializer.serialize(layer)),
+      _id: StoreName.CANVAS_SETTINGS,
       transformMatrix: renderManager?.getTransformMatrix(),
-      tool,
       zoomPercentage,
     };
   }, []);
 
   const saveCanvasState = useCallback(async () => {
+    const { renderManager } = currentValues.current;
+    const db = renderManager?.getSyncDBInstance()?.database;
+    if (!db) return;
+
     try {
-      const { renderManager } = currentValues.current;
-      const storage = renderManager?.getPouchDBStorage();
-      const localDB = storage?.getLocalDB();
-
-      if (!localDB) return;
-
       const currentState = getCurrentState();
-      if (!currentState) return;
 
-      if (hasStateChanged(lastSavedState.current, currentState as CanvasStateDB)) {
+      if (hasStateChanged(lastSavedState.current, currentState as CanvasSettingsDocument)) {
         setSaveIndicator(true);
 
-        const doc = await localDB.get(currentState._id);
-        (currentState as CanvasStateDB)._rev = doc._rev;
-        await localDB.put(currentState);
+        const doc = await db.get(currentState._id);
+        (currentState as CanvasSettingsDocument)._rev = doc._rev;
+        await db.put(currentState);
 
-        lastSavedState.current = currentState as CanvasStateDB;
+        lastSavedState.current = currentState as CanvasSettingsDocument;
         setSaveIndicator(false);
       }
     } catch {
+      // If canvas settings are not found, create them
+      await db.put({
+        _id: StoreName.CANVAS_SETTINGS,
+        zoomPercentage: DEFAULT_ZOOM_PERCENTAGE,
+        transformMatrix: renderManager?.getTransformMatrix(),
+      });
       setSaveIndicator(false);
     }
   }, [getCurrentState, hasStateChanged]);
@@ -125,7 +118,7 @@ export const useAutosave = () => {
     const currentState = getCurrentState();
     if (!currentState) return;
     debouncedSave();
-  }, [tool, zoomPercentage, transformMatrix, getCurrentState, debouncedSave]);
+  }, [zoomPercentage, transformMatrix, getCurrentState, debouncedSave]);
 
   // Periodic autosave
   useEffect(() => {

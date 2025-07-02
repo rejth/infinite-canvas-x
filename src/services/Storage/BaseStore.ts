@@ -1,4 +1,6 @@
-import { setByPath } from '@/lib/utils';
+import { setByPath } from '@/shared/lib';
+import { filter, map, slice, take } from '@/shared/lib/async-generators';
+
 import { StoreName } from './interfaces';
 
 type TransactionOperation<T> = (stores: { objectStore: IDBObjectStore }) => Promise<T>;
@@ -91,65 +93,6 @@ export abstract class BaseStore {
     } catch (error) {
       transaction.abort();
       throw error;
-    }
-  }
-
-  protected async *map<T, R>(iterable: AsyncIterable<T>, mappers: Array<(value: T) => R>): AsyncGenerator<R> {
-    for await (const value of iterable) {
-      const mapperIterator = mappers[Symbol.iterator]();
-      let mapper = mapperIterator.next();
-
-      while (!mapper.done) {
-        yield mapper.value(value);
-        mapper = mapperIterator.next();
-      }
-    }
-  }
-
-  protected async *filter<T>(iterable: AsyncIterable<T>, onFilter: (value: T) => boolean): AsyncGenerator<T> {
-    const iterator = iterable[Symbol.asyncIterator]();
-
-    while (true) {
-      const { done, value } = await iterator.next();
-      if (done) return;
-      if (onFilter(value)) yield value;
-    }
-  }
-
-  protected async *take<T>(iterable: AsyncIterable<T>, limit: number): AsyncGenerator<T> {
-    const iterator = iterable[Symbol.asyncIterator]();
-    let cursor = 0;
-
-    while (limit !== cursor++) {
-      const { value } = await iterator.next();
-      yield value;
-    }
-  }
-
-  protected async *slice<T>(
-    iterable: AsyncIterable<T>,
-    start: number,
-    stop: number,
-    step: number = 1,
-  ): AsyncGenerator<T> {
-    const iterator = iterable[Symbol.asyncIterator]();
-    let index = 0;
-
-    while (index < start) {
-      const { done } = await iterator.next();
-      if (done) return;
-      index++;
-    }
-
-    while (index < stop) {
-      const { done, value } = await iterator.next();
-      if (done) return;
-
-      if ((index - start) % step === 0) {
-        yield value;
-      }
-
-      index++;
     }
   }
 
@@ -258,23 +201,23 @@ export abstract class BaseStore {
   }
 
   mapAll<T, R>(mappers: Array<(value: T) => R>): AsyncGenerator<R> {
-    return this.map<T, R>(this.createReadCursorIterator<T>(), mappers);
+    return map<T, R>(this.createReadCursorIterator<T>(), mappers);
   }
 
   findAllBy<T>(predicate: (value: T) => boolean): AsyncGenerator<T> {
-    return this.filter(this.createReadCursorIterator<T>(), predicate);
+    return filter(this.createReadCursorIterator<T>(), predicate);
   }
 
   takeByLimit<T>(limit: number): AsyncGenerator<T> {
-    return this.take(this.createReadCursorIterator<T>(), limit);
+    return take(this.createReadCursorIterator<T>(), limit);
   }
 
   reduce<T, R>(predicate: (value: T) => boolean, mappers: Array<(value: T) => R>): AsyncGenerator<R> {
-    return this.map<T, R>(this.filter(this.createReadCursorIterator<T>(), predicate), mappers);
+    return map<T, R>(filter(this.createReadCursorIterator<T>(), predicate), mappers);
   }
 
   sliceBy<T>(start: number, stop: number, step: number = 1): AsyncGenerator<T> {
-    return this.slice(this.createReadCursorIterator<T>(), start, stop, step);
+    return slice(this.createReadCursorIterator<T>(), start, stop, step);
   }
 
   update<T>(id: IDBValidKey, newValue: Partial<T>) {

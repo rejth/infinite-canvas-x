@@ -1,36 +1,33 @@
 import PouchDB from 'pouchdb';
 
 export class PouchDBService {
-  private static instance: PouchDBService | null = null;
-
   private localDB: PouchDB.Database | null = null;
   private remoteDB: PouchDB.Database | null = null;
   private sync: PouchDB.Replication.Sync<object> | null = null;
 
   private readonly isDev = import.meta.env.DEV;
-  private readonly dbName = 'canvas-db';
   private readonly localUrl = 'http://localhost:5984'; // go to http://localhost:5984/_utils/ for CouchDB UI
-  private readonly remoteUrl = 'https://cad87b3c-1469-48af-8e0b-bda83cb4afce-bluemix.cloudantnosqldb.appdomain.cloud/';
+  private readonly remoteUrl = 'https://my.cloudant.com/';
   private readonly remoteDBUrl: string;
 
-  private constructor() {
-    this.remoteDBUrl = this.isDev ? `${this.localUrl}/${this.dbName}` : `${this.remoteUrl}/${this.dbName}`;
+  private constructor(dbName: string) {
+    this.remoteDBUrl = this.isDev ? `${this.localUrl}/${dbName}` : `${this.remoteUrl}/${dbName}`;
+    this.startSync = this.startSync.bind(this);
+    this.stopSync = this.stopSync.bind(this);
   }
 
-  static async create(): Promise<PouchDBService> {
-    if (PouchDBService.instance) {
-      return PouchDBService.instance;
-    }
+  get database(): PouchDB.Database | null {
+    return this.localDB;
+  }
 
-    const instance = new PouchDBService();
-    await instance.initialize();
-    PouchDBService.instance = instance;
-
+  static async create(dbName: string): Promise<PouchDBService> {
+    const instance = new PouchDBService(dbName);
+    await instance.initialize(dbName);
     return instance;
   }
 
-  private async initialize(): Promise<void> {
-    this.localDB = new PouchDB(this.dbName);
+  private async initialize(dbName: string): Promise<void> {
+    this.localDB = new PouchDB(dbName);
     this.remoteDB = new PouchDB(this.remoteDBUrl);
 
     this.setupNetworkListeners();
@@ -41,8 +38,14 @@ export class PouchDBService {
   }
 
   private setupNetworkListeners() {
-    window.addEventListener('online', () => this.startSync());
-    window.addEventListener('offline', () => this.stopSync());
+    this.removeNetworkListeners();
+    window.addEventListener('online', this.startSync);
+    window.addEventListener('offline', this.stopSync);
+  }
+
+  private removeNetworkListeners() {
+    window.removeEventListener('online', this.startSync);
+    window.removeEventListener('offline', this.stopSync);
   }
 
   private startSync() {
@@ -73,21 +76,12 @@ export class PouchDBService {
     }
   }
 
-  getLocalDB(): PouchDB.Database | null {
-    return this.localDB;
-  }
-
-  getRemoteDB(): PouchDB.Database | null {
-    return this.remoteDB;
-  }
-
   async destroy(): Promise<void> {
     this.stopSync();
+    this.removeNetworkListeners();
 
     if (this.localDB) {
       await this.localDB.close();
     }
-
-    PouchDBService.instance = null;
   }
 }

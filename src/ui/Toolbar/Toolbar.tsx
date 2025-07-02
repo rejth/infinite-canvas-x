@@ -63,12 +63,13 @@ const tools: ToolItem[] = [
 export const Toolbar = () => {
   const { renderManager } = useCanvasContext();
   const { setIsLayerEditable, resetTextEditor } = useTextEditorContext();
-  const { activeLayer, setActiveLayer } = useActiveLayerContext();
+  const { activeLayer, setActiveLayer, setLastActiveLayer } = useActiveLayerContext();
   const { tool, setTool, setCursor } = useToolbarContext();
 
   const resetActiveLayer = () => {
     setIsLayerEditable(false);
     resetTextEditor();
+    setLastActiveLayer(activeLayer);
     setActiveLayer(null);
     activeLayer?.setActive(false);
   };
@@ -81,7 +82,7 @@ export const Toolbar = () => {
       resetActiveLayer();
     } else if (activeLayer) {
       resetActiveLayer();
-      renderManager?.reDraw();
+      renderManager?.reDrawOnNextFrame();
     }
 
     if (tool === Tools.HAND) {

@@ -31,7 +31,7 @@ export function useCanvasOnWheel() {
       const isMoved = camera.moveCanvas(e.nativeEvent);
 
       if (isMoved) {
-        renderManager.reDraw();
+        renderManager.reDrawOnNextFrame();
       }
     }
 

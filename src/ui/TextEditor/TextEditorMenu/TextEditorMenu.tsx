@@ -50,7 +50,7 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
     rect.setOptions({ color });
     setBackgroundColor(color);
 
-    renderManager?.reDraw({
+    renderManager?.reDrawOnNextFrame({
       exceptLayer: activeLayer,
       callBack: () => {
         renderManager?.drawLayer(activeLayer, { exceptType: CanvasEntityType.TEXT });

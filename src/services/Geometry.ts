@@ -25,7 +25,12 @@ export class Geometry {
     if (!path.length) return null;
     const from = path[0];
     const to = path[path.length - 1];
-    return { x0: from.x, y0: from.y, x1: to.x, y1: to.y };
+    return {
+      x0: from.x,
+      y0: from.y,
+      x1: to.x,
+      y1: to.y,
+    };
   }
 
   getRectDimensionFromPath(path: Point[]): RectDimension | null {
@@ -47,6 +52,15 @@ export class Geometry {
       y: Math.min(y0, y1),
       width: Math.abs(x0 - x1),
       height: Math.abs(y0 - y1),
+    };
+  }
+
+  getRectBoundsFromDimension(dimension: RectDimension): RectBounds {
+    return {
+      x0: dimension.x,
+      y0: dimension.y,
+      x1: dimension.x + dimension.width,
+      y1: dimension.y + dimension.height,
     };
   }
 
