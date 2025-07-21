@@ -18,7 +18,7 @@ import { COLORS, DEFAULT_CANVAS_SCALE, DEFAULT_FONT_WEIGHT, DEFAULT_SCALE, SMALL
 import { Point } from '@/entities/Point';
 
 import { geometry } from '@/services/Geometry';
-import { ProxyCanvasRenderingContext2D } from '@/services/RenderManager';
+import { ProxyCanvasRenderingContext2D, SPATIAL_TILE_SIZE } from '@/services/RenderManager';
 
 export class Renderer {
   private width: number;
@@ -101,6 +101,18 @@ export class Renderer {
       y: transformMatrix.translationY > 0 ? -transformMatrix.translationY * inverseScale : 0,
       width: window.innerWidth * inverseScale + Math.abs(transformMatrix.translationX) * inverseScale,
       height: window.innerHeight * inverseScale + Math.abs(transformMatrix.translationY) * inverseScale,
+    };
+  }
+
+  getTransformedViewport(): RectDimension {
+    const transformMatrix = this.getTransformMatrix();
+    const scale = transformMatrix.scaleX / transformMatrix.initialScale;
+
+    return {
+      x: -transformMatrix.translationX / scale,
+      y: -transformMatrix.translationY / scale,
+      width: window.innerWidth / scale,
+      height: window.innerHeight / scale,
     };
   }
 
@@ -350,5 +362,57 @@ export class Renderer {
 
   drawBackground() {
     this.ctx.drawBackground(this.getTransformedArea());
+  }
+
+  drawTileGrid(tileSize: number = SPATIAL_TILE_SIZE, viewport: RectDimension) {
+    this.ctx.save();
+
+    this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.3)';
+    this.ctx.lineWidth = 2;
+
+    // Calculate tile boundaries that intersect with viewport
+    const startTileX = Math.floor(viewport.x / tileSize);
+    const startTileY = Math.floor(viewport.y / tileSize);
+    const endTileX = Math.floor((viewport.x + viewport.width) / tileSize);
+    const endTileY = Math.floor((viewport.y + viewport.height) / tileSize);
+
+    // Draw vertical lines
+    for (let x = startTileX; x <= endTileX + 1; x++) {
+      const lineX = x * tileSize;
+      this.ctx.beginPath();
+      this.ctx.moveTo(lineX, viewport.y);
+      this.ctx.lineTo(lineX, viewport.y + viewport.height);
+      this.ctx.stroke();
+    }
+
+    // Draw horizontal lines
+    for (let y = startTileY; y <= endTileY + 1; y++) {
+      const lineY = y * tileSize;
+      this.ctx.beginPath();
+      this.ctx.moveTo(viewport.x, lineY);
+      this.ctx.lineTo(viewport.x + viewport.width, lineY);
+      this.ctx.stroke();
+    }
+
+    this.ctx.restore();
+  }
+
+  drawDirtyTiles(dirtyTileKeys: Set<string>, tileSize: number = SPATIAL_TILE_SIZE) {
+    this.ctx.save();
+
+    this.ctx.fillStyle = 'rgba(255, 255, 0, 0.2)';
+    this.ctx.strokeStyle = 'rgba(255, 255, 0, 0.8)';
+    this.ctx.lineWidth = 3;
+
+    for (const tileKey of dirtyTileKeys) {
+      const [tileX, tileY] = tileKey.split(',').map(Number);
+      const x = tileX * tileSize;
+      const y = tileY * tileSize;
+
+      this.ctx.fillRect(x, y, tileSize, tileSize);
+      this.ctx.strokeRect(x, y, tileSize, tileSize);
+    }
+
+    this.ctx.restore();
   }
 }

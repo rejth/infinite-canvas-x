@@ -15,6 +15,7 @@ export class RenderManagerVirtualized extends BaseRenderManager {
   private spatialIndex = new SpatialTileIndex();
   private dirtyTiles = new Set<TileKey>();
   private static isInitializing: boolean = false;
+  private debugTiles = false;
 
   private constructor(protected readonly renderer: Renderer) {
     super(renderer);
@@ -97,8 +98,8 @@ export class RenderManagerVirtualized extends BaseRenderManager {
 
     const { x, y } = layer.getOptions();
 
-    this.spatialIndex.move(layer, x + movementX, y + movementY);
     layer.move(movementX, movementY);
+    this.spatialIndex.move(layer, x + movementX, y + movementY);
 
     this.markLayerTilesDirty(layer);
     this.redrawDirtyTiles();
@@ -107,7 +108,9 @@ export class RenderManagerVirtualized extends BaseRenderManager {
   resizeLayer(layer: LayerInterface, movementX: number, movementY: number, resizeDirection: string) {
     this.markLayerTilesDirty(layer);
 
+    this.spatialIndex.remove(layer);
     layer.resize(movementX, movementY, resizeDirection);
+    this.spatialIndex.insert(layer);
 
     this.markLayerTilesDirty(layer);
     this.redrawDirtyTiles();
@@ -176,7 +179,9 @@ export class RenderManagerVirtualized extends BaseRenderManager {
   }
 
   private drawTileRegion(tileBounds: RectDimension) {
-    const layersInTile = this.spatialIndex.getLayersInBounds(tileBounds);
+    const layersInTile = this.spatialIndex.getLayersByTileBounds(tileBounds, this.layerRegistry);
+
+    this.debugTileMismatches(tileBounds);
 
     for (const layerId of layersInTile) {
       const layer = this.layerRegistry.get(layerId);
@@ -185,6 +190,8 @@ export class RenderManagerVirtualized extends BaseRenderManager {
         this.drawLayer(layer);
       }
     }
+
+    this.drawDebugTiles();
   }
 
   private redrawDirtyTiles() {
@@ -214,5 +221,39 @@ export class RenderManagerVirtualized extends BaseRenderManager {
 
       this.drawLayer(layer, redrawOptions);
     }
+
+    this.drawDebugTiles();
+  }
+
+  private debugTileMismatches(tileBounds: RectDimension) {
+    if (!this.debugTiles) return;
+
+    const tileKey = this.spatialIndex.getTileKey(tileBounds.x, tileBounds.y);
+    const layersInTile = this.spatialIndex.getLayersByTileBounds(tileBounds, this.layerRegistry);
+
+    console.log(`🧱 Drawing tile ${tileKey} - contains layers:`, layersInTile);
+
+    // Check for mismatches - layers that shouldn't be in this tile
+    for (const layerId of layersInTile) {
+      const layer = this.layerRegistry.get(layerId);
+      if (layer) {
+        const options = layer.getOptions();
+        const actualTileKey = this.spatialIndex.getTileKey(options.x, options.y);
+        if (actualTileKey !== tileKey) {
+          console.log(
+            `🚨 MISMATCH: Layer ${layerId} at (${options.x},${options.y}) should be in tile ${actualTileKey}, but is being drawn in tile ${tileKey}`,
+          );
+        }
+      }
+    }
+  }
+
+  private drawDebugTiles() {
+    if (!this.debugTiles) return;
+
+    const viewport = this.renderer.getTransformedArea();
+    const tileSize = this.spatialIndex.getTileSize();
+    this.renderer.drawTileGrid(tileSize, viewport);
+    this.renderer.drawDirtyTiles(this.dirtyTiles, tileSize);
   }
 }

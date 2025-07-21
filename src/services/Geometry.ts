@@ -101,6 +101,15 @@ export class Geometry {
     return !(rect1.maxX < rect2.minX || rect1.minX > rect2.maxX || rect1.maxY < rect2.minY || rect1.minY > rect2.maxY);
   }
 
+  boundsIntersect(rectA: RectDimension, rectB: RectDimension): boolean {
+    return !(
+      rectA.x + rectA.width <= rectB.x || // rect A is to the left of rect B
+      rectB.x + rectB.width <= rectA.x || // rect B is to the left of rect A
+      rectA.y + rectA.height <= rectB.y || // rect A is above rect B
+      rectB.y + rectB.height <= rectA.y // rect B is above rect A
+    );
+  }
+
   getDistanceBetweenPoints(pointA: Point, pointB: Point) {
     return Math.hypot(pointB.x - pointA.x, pointB.y - pointA.y);
   }

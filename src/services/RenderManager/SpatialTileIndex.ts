@@ -4,19 +4,15 @@ import { LayerId, RectDimension } from '@/shared/interfaces';
 import { geometry } from '@/services/Geometry';
 
 export type TileKey = string;
+export const SPATIAL_TILE_SIZE = 2048;
 
-/**
- * Insert	O(1) - Adding new stickers
- * Move	O(1)	Dragging objects
- * Query O(1)	Finding objects in a given area
- */
 export class SpatialTileIndex {
   private static instance: SpatialTileIndex | null = null;
 
   private readonly tiles = new Map<TileKey, Set<LayerId>>();
-  private readonly layerPositions = new Map<LayerId, TileKey>(); // Track which tile each layer is in
+  private readonly layerPositions = new Map<LayerId, TileKey[]>(); // Track which tile each layer is in
 
-  constructor(private readonly TILE_SIZE: number = 2048) {
+  constructor(private readonly TILE_SIZE: number = SPATIAL_TILE_SIZE) {
     if (SpatialTileIndex.instance) {
       return SpatialTileIndex.instance;
     }
@@ -26,6 +22,20 @@ export class SpatialTileIndex {
 
   getTiles() {
     return this.tiles;
+  }
+
+  getTileSize() {
+    return this.TILE_SIZE;
+  }
+
+  getLayerBounds(layer: LayerInterface): RectDimension {
+    const options = layer.getOptions();
+    return {
+      x: options.x,
+      y: options.y,
+      width: options.width,
+      height: options.height,
+    };
   }
 
   static getInstance(): SpatialTileIndex | null {
@@ -40,6 +50,28 @@ export class SpatialTileIndex {
 
   getLayersInTile(tileKey: TileKey): Set<LayerId> | undefined {
     return this.tiles.get(tileKey);
+  }
+
+  getLayersByTileBounds(tileBounds: RectDimension, layerRegistry: Map<LayerId, LayerInterface>): LayerId[] {
+    const tileKey = this.getTileKey(tileBounds.x, tileBounds.y);
+    const tile = this.tiles.get(tileKey);
+    if (!tile) return [];
+
+    const result: LayerId[] = [];
+
+    for (const layerId of tile) {
+      const layer = layerRegistry.get(layerId);
+
+      if (layer) {
+        const layerBounds = this.getLayerBounds(layer);
+
+        if (geometry.boundsIntersect(layerBounds, tileBounds)) {
+          result.push(layerId);
+        }
+      }
+    }
+
+    return result;
   }
 
   getTileKeys(bounds: RectDimension): TileKey[] {
@@ -82,28 +114,28 @@ export class SpatialTileIndex {
 
   insert(layer: LayerInterface) {
     const layerId = layer.getId()!;
-    const options = layer.getOptions();
-    const tileKey = this.getTileKey(options.x, options.y);
+    const layerBounds = this.getLayerBounds(layer);
 
-    if (!this.tiles.has(tileKey)) {
-      this.tiles.set(tileKey, new Set());
+    const affectedTileKeys = this.getTileKeys(layerBounds);
+
+    for (const tileKey of affectedTileKeys) {
+      if (!this.tiles.has(tileKey)) {
+        this.tiles.set(tileKey, new Set());
+      }
+      this.tiles.get(tileKey)!.add(layerId);
     }
 
-    this.tiles.get(tileKey)!.add(layerId);
-    this.layerPositions.set(layerId, tileKey);
+    this.layerPositions.set(layerId, affectedTileKeys);
   }
 
   remove(layer: LayerInterface) {
     const layerId = layer.getId()!;
-    const tileKey = this.layerPositions.get(layerId);
+    const tileKeys = this.layerPositions.get(layerId);
 
-    if (!tileKey) return;
+    if (!tileKeys) return;
 
-    const tile = this.tiles.get(tileKey);
-    tile?.delete(layerId);
-
-    if (tile?.size === 0) {
-      this.tiles.delete(tileKey);
+    for (const tileKey of tileKeys) {
+      this.tiles.get(tileKey)?.delete(layerId);
     }
 
     this.layerPositions.delete(layerId);
@@ -111,19 +143,29 @@ export class SpatialTileIndex {
 
   move(layer: LayerInterface, newX: number, newY: number) {
     const layerId = layer.getId()!;
-    const oldTileKey = this.layerPositions.get(layerId);
-    const newTileKey = this.getTileKey(newX, newY);
+    const options = layer.getOptions();
 
-    if (oldTileKey && oldTileKey !== newTileKey) {
-      this.tiles.get(oldTileKey)?.delete(layerId);
+    const newBounds = {
+      x: newX,
+      y: newY,
+      width: options.width,
+      height: options.height,
+    };
 
-      if (!this.tiles.has(newTileKey)) {
-        this.tiles.set(newTileKey, new Set());
-      }
-
-      this.tiles.get(newTileKey)!.add(layerId);
-      this.layerPositions.set(layerId, newTileKey);
+    const oldTileKeys = this.layerPositions.get(layerId) || [];
+    for (const tileKey of oldTileKeys) {
+      this.tiles.get(tileKey)?.delete(layerId);
     }
+
+    const newTileKeys = this.getTileKeys(newBounds);
+    for (const tileKey of newTileKeys) {
+      if (!this.tiles.has(tileKey)) {
+        this.tiles.set(tileKey, new Set());
+      }
+      this.tiles.get(tileKey)!.add(layerId);
+    }
+
+    this.layerPositions.set(layerId, newTileKeys);
   }
 
   getLayersInBounds(bounds: RectDimension): LayerId[] {
@@ -146,5 +188,21 @@ export class SpatialTileIndex {
     const tileBoundsRect = geometry.getRectBoundsFromDimension(tileBounds);
 
     return geometry.isOverlapping(layerBounds, tileBoundsRect);
+  }
+
+  debugDumpState() {
+    console.log('🗂️  SpatialTileIndex State:');
+
+    console.log('  Tiles:');
+    for (const [tileKey, layerSet] of this.tiles) {
+      if (layerSet.size > 0) {
+        console.log(`    ${tileKey}: [${Array.from(layerSet).join(', ')}]`);
+      }
+    }
+
+    console.log('  Layer positions:');
+    for (const [layerId, tileKeys] of this.layerPositions) {
+      console.log(`    Layer ${layerId}: [${tileKeys.join(', ')}]`);
+    }
   }
 }
