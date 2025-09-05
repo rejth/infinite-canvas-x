@@ -1,54 +1,43 @@
-# React + TypeScript + Vite
+# 🎨 Mini Rendering Engine
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> I'm very interested in the rendering technologies of graphic editors, design tools, geo maps, and virtual whiteboards. This is my humble attempt to understand and recreate the core ideas behind tldraw, excalidraw, kittl, and other tools that use technologies like Canvas2D/SVG for rendering 2D graphics in browser.
 
-Currently, two official plugins are available:
+Many editors and design tools use low-level rendering technologies for 2D graphics with GPU acceleration to achieve better performance and experience.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+I plan to rewrite the rendering part of the canvas with C++ or Rust in the future and turn this project into a WebGL/WebGPU + WebAssembly rendering engine. However, the current project completion is still relatively low, and it's mainly a playground where I try different approaches and technologies:
 
-## Expanding the ESLint configuration
+### ✨ **Features**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🎨&nbsp;Infinite, canvas-based whiteboard.
+- 🔍&nbsp;Zoom and panning support.
+- ⚒️&nbsp;Movable and resizable stickers with in-place text editing and formatting.
+- 💾&nbsp;Local-first support (autosaves to the browser) - in progress.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
+### 🛠️ **Engineering**
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **🎨&nbsp;Rendering System**: Tile-based rendering. Only re-renders dirty regions to maximize performance.
+- **🔍&nbsp;Spatial Indexing**: `O(log n)` lookup times for object to maximize pickup efficiency.
+- **💾&nbsp;IndexedDB Storage**: Local browser storage for canvas state persistence.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+### 🚀 **Next steps**
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
+- Using Bezier curves to render and shape text.
+
+## 🚦 **Getting Started**
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Run linting
+pnpm lint
+
+# Format code
+pnpm format
 ```
