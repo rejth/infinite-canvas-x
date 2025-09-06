@@ -11,7 +11,7 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 - 🎨&nbsp;Infinite, canvas-based whiteboard.
 - 🔍&nbsp;Zoom and panning support.
 - ⚒️&nbsp;Movable and resizable stickers with in-place text editing and formatting.
-- ☑️&nbsp;Copy-pase support.
+- 📋&nbsp;Copy-pase support.
 - 💾&nbsp;Local-first support (autosaves to the browser) - in progress.
 
 ### 🛠️ **Engineering**
