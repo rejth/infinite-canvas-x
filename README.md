@@ -10,47 +10,46 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 
 - 🎨&nbsp;Infinite, canvas-based whiteboard.
 - 🔍&nbsp;Zoom and panning support.
-- 📋&nbsp;Copy-paste support.
+- 📋&nbsp;Copy-paste support + keyboard shortcuts (Esc, Backspace).
 - ⚒️&nbsp;Movable and resizable stickers with in-place text editing and formatting.
-- 💾&nbsp;Local-first support (autosaves to the browser) with online synchronization - in progress.
+- 💾&nbsp;Local-first support (autosaves to the browser) with online synchronization.
 
 ## 🛠️ **Engineering**
 
 - **🎨&nbsp;Rendering System**: Tile-based rendering. Only re-renders dirty regions to maximize performance.
-- **🔍&nbsp;Spatial Indexing**: `O(log n)` lookup times for object to maximize pickup efficiency.
+- **🔍&nbsp;Spatial Indexing**: `O(log n)` lookup times for canvas object to maximize pickup efficiency.
 - **💾&nbsp;State persistence** with IndexedDB integration and online synchronization via PouchDB.
 
-### Core Rendering System
-- **Entity-based architecture** with base class hierarchy
-- **Layer management** with z-ordering and active states  
-
 ### Graphics Primitives
-- ✨ **Shapes**: Rectangles, rounded rectangles, circles
-- 🖼️ **Image rendering** with scaling and transformation support
-- 📝 **Text rednering** with alignment, decorations and snapshot caching
-- 🎯 **Selection handles** with interactive corner markers
+
+- ✨ **Shapes**: Rectangles, rounded rectangles, circles, curves.
+- 🖼️ **Image rendering** with scaling and transformation support.
+- 📝 **Text rednering** with alignment, decorations, font styles and snapshot caching.
+- 📝 **Text transformation** with Bézier curves.
+- 🎯 **Selection handles** with interactive corner markers.
 
 ### Interaction & Navigation
-- 🎮 **Camera system** with pan, zoom, and smooth navigation
-- 🖱️ **Mouse/touch input** with proper coordinate transformation
-- 🎯 **Layer picking** and selection based on screen coordinates
-- ⌨️ **Keyboard shortcuts** for enhanced productivity
+
+- 🎮 **Camera system** with pan, zoom, and smooth navigation.
+- 🖱️ **Mouse/touch input** with proper coordinate transformation.
+- 🎯 **Layer picking** and selection based on screen coordinates.
+- ⌨️ **Keyboard shortcuts** for enhanced productivity.
 
 ### Data Management
-- 💾 **Scene persistence** with browser storage (IndexedDB) integration
-- 🔄 **Real-time online synchronization** via PouchDB
-- 📦 **Layer serialization** for save/load functionality
-- 🔄 **State restoration** on application reload
+
+- 💾 **Scene persistence** with IndexedDB.
+- 🔄 **Real-time online synchronization** via PouchDB.
+- 📦 **Layer serialization** for save/load functionality.
+- 🔄 **State restoration** on application reload.
 
 ### Performance Optimizations
-- 🗺️ **Tile-based indexing** divides canvas into 2048×2048 pixel tiles
-- 🎭 **Dirty tile tracking** for minimal redraws and efficient hit testing
-- 💾 **Text snapshot caching** to avoid re-rendering unchanged content
-- 👁️ **Viewport culling** - only render visible objects
+
+- 🗺️ **Tile-based indexing** divides canvas into 2048×2048 pixel tiles.
+- 🎭 **Dirty tile tracking** for minimal redraws and efficient hit testing.
+- 💾 **Text snapshot caching** to avoid re-rendering unchanged content.
+- 👁️ **Viewport culling** - only render visible objects.
 
 ### 🚀 **Next steps**
-
-- Using Bezier curves to render and shape text
 
 ## 🚦 **Getting Started**
 
