@@ -130,7 +130,7 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
     this.mbr = this.computeMBR();
   };
 
-  getControlPointAtPosition = (x: number, y: number, threshold: number = 25): number | null => {
+  getControlPointAtPosition = (x: number, y: number, threshold: number = 50): number | null => {
     for (let i = 0; i < this.allControlPoints.length; i++) {
       const controlPoint = this.allControlPoints[i];
       const distance = Math.sqrt(Math.pow(x - controlPoint.x, 2) + Math.pow(y - controlPoint.y, 2));

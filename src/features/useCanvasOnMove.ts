@@ -1,10 +1,7 @@
 import { Tools } from '@/shared/interfaces';
 import { DEFAULT_CURSOR } from '@/shared/constants';
 
-import { useActiveLayerContext } from '@/context';
-import { useCanvasContext } from '@/context';
-import { useTextEditorContext } from '@/context';
-import { useToolbarContext } from '@/context';
+import { useActiveLayerContext, useCanvasContext, useTextEditorContext, useToolbarContext } from '@/context';
 
 import { CanvasEntityType } from '@/entities/interfaces';
 import { isCanvasSelection, isCanvasSpline } from '@/entities/lib';
