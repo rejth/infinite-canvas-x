@@ -24,6 +24,10 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
   controlPointToSplineIndex: number[] = [];
   mbr: MBR;
 
+  // Add caching properties for control point dragging
+  private selectedControlPointIndex: number | null = null;
+  private isDraggingControlPoint = false;
+
   constructor(options: SplineDrawOptions) {
     super(options);
     this.setType(CanvasEntityType.SPLINE);
@@ -130,12 +134,55 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
     this.mbr = this.computeMBR();
   };
 
+  // Method to start control point drag - call this on mousedown
+  startControlPointDrag = (x: number, y: number, threshold: number = 50): number | null => {
+    // If already dragging, return cached index
+    if (this.isDraggingControlPoint && this.selectedControlPointIndex !== null) {
+      return this.selectedControlPointIndex;
+    }
+
+    // Find control point and cache it
+    this.selectedControlPointIndex = this.getControlPointAtPosition(x, y, threshold);
+    if (this.selectedControlPointIndex !== null) {
+      this.isDraggingControlPoint = true;
+    }
+
+    return this.selectedControlPointIndex;
+  };
+
+  // Method to continue control point drag - call this on mousemove
+  continueControlPointDrag = (cp: Point): boolean => {
+    if (this.isDraggingControlPoint && this.selectedControlPointIndex !== null) {
+      this.dragControlPoint(cp, this.selectedControlPointIndex);
+      return true;
+    }
+
+    return false;
+  };
+
+  stopControlPointDrag = () => {
+    this.isDraggingControlPoint = false;
+    this.selectedControlPointIndex = null;
+  };
+
+  getCachedControlPointIndex = (): number | null => {
+    return this.isDraggingControlPoint ? this.selectedControlPointIndex : null;
+  };
+
+  getIsDraggingControlPoint = (): boolean => {
+    return this.isDraggingControlPoint;
+  };
+
   getControlPointAtPosition = (x: number, y: number, threshold: number = 50): number | null => {
+    const thresholdSquared = threshold * threshold;
+
     for (let i = 0; i < this.allControlPoints.length; i++) {
       const controlPoint = this.allControlPoints[i];
-      const distance = Math.sqrt(Math.pow(x - controlPoint.x, 2) + Math.pow(y - controlPoint.y, 2));
+      const dx = x - controlPoint.x;
+      const dy = y - controlPoint.y;
+      const distanceSquared = dx * dx + dy * dy;
 
-      if (distance <= threshold) {
+      if (distanceSquared <= thresholdSquared) {
         return i;
       }
     }

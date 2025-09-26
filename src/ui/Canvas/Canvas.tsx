@@ -11,6 +11,7 @@ import { useCanvasOnClick } from '@/features/useCanvasOnClick';
 import { useCanvasOnMove } from '@/features/useCanvasOnMove';
 import { useCanvasOnWheel } from '@/features/useCanvasOnWheel';
 import { useCanvasOnDoubleClick } from '@/features/useCanvasOnDoubleClick';
+import { useCacheControlPoints } from '@/features/useCacheControlPoints';
 
 // import { useRestoreCanvasState } from './useRestoreCanvasState';
 // import { useAutosave } from './useAutosave';
@@ -31,6 +32,7 @@ export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: Props) => {
   const handleWheel = useCanvasOnWheel();
   const handleMove = useCanvasOnMove();
   const handleDoubleClick = useCanvasOnDoubleClick();
+  const { cacheControlPoint, stopCacheControlPoint } = useCacheControlPoints();
   // const restoreCanvasState = useRestoreCanvasState();
   // const syncLayerChanges = useSyncLayer();
 
@@ -39,11 +41,14 @@ export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: Props) => {
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     camera?.handleMouseDown(e.nativeEvent);
+    cacheControlPoint(e);
     handleClick(e);
   };
 
   const handleMouseUp = async () => {
     camera?.handleMouseUp();
+    stopCacheControlPoint();
+
     // await syncLayerChanges();
   };
 

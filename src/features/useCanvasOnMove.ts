@@ -54,15 +54,14 @@ export function useCanvasOnMove() {
           setCursor('crosshair');
 
           const { x, y } = camera.handleClick(e.nativeEvent);
-          const movementX = x + e.movementX;
-          const movementY = y + e.movementY;
-          const controlPointIndex = spline.getControlPointAtPosition(movementX, movementY);
+          const wasDragged = spline.continueControlPointDrag({
+            x: x + e.movementX,
+            y: y + e.movementY,
+          });
 
-          if (controlPointIndex !== null) {
-            spline.dragControlPoint({ x: movementX, y: movementY }, controlPointIndex);
+          if (wasDragged) {
+            renderManager.setLayerSize(activeLayer, spline.mbr);
           }
-
-          renderManager.setLayerSize(activeLayer, spline.mbr);
         } else {
           renderManager.moveLayer(activeLayer, e.movementX, e.movementY);
         }
