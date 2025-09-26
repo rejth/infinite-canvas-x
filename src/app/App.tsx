@@ -8,8 +8,8 @@ import { TextEditorProvider } from '@/context/TextEditorContext/TextEditorContex
 import { ToolbarProvider } from '@/context/ToolbarContext/ToolbarContextProvider';
 
 import { Renderer } from '@/services/Renderer';
-import { type BaseRenderManager, RenderManager, createProxyCanvas } from '@/services/RenderManager';
 import { Camera } from '@/services/Camera';
+import { type BaseRenderManager, RenderManager, createProxyCanvas } from '@/services/RenderManager';
 
 import { Zoom } from '@/ui/Toolbar/Zoom';
 import { Toolbar } from '@/ui/Toolbar/Toolbar';

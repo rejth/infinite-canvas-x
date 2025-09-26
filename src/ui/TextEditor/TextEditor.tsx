@@ -3,9 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { DEFAULT_SCALE, SMALL_PADDING, DEFAULT_FONT_WEIGHT, DEFAULT_RECT_SIZE } from '@/shared/constants';
 import { CustomEvents, DoubleClickCustomEvent, FontStyle, TextDecoration } from '@/shared/interfaces';
 
-import { useCanvasContext } from '@/context';
-import { useTextEditorContext } from '@/context';
-import { useActiveLayerContext } from '@/context';
+import { useCanvasContext, useActiveLayerContext, useTextEditorContext } from '@/context';
 
 import { isCanvasRect, isCanvasText } from '@/entities/lib';
 import { CanvasEntityType } from '@/entities/interfaces';

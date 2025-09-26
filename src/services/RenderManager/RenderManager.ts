@@ -1,10 +1,11 @@
-import { LayerInterface } from '@/entities/interfaces';
+import { CanvasEntityType, LayerInterface } from '@/entities/interfaces';
 import { Point } from '@/entities/Point';
 
+import { MBR } from '@/services/Geometry';
 import { type Renderer } from '@/services/Renderer';
-import { removeLayerSync } from '@/services/lib';
 
 import { BaseRenderManager, RedrawOptions } from './BaseRenderManager';
+import { removeLayerSync } from './lib';
 
 export class RenderManager extends BaseRenderManager {
   private static instance: RenderManager | null = null;
@@ -75,6 +76,20 @@ export class RenderManager extends BaseRenderManager {
     this.reDrawMainCanvasOnNextFrame();
 
     return layer;
+  }
+
+  setLayerSize(layer: LayerInterface, bbox: MBR) {
+    const size = bbox.size();
+    const selection = layer.getChildByType(CanvasEntityType.SELECTION);
+
+    if (selection) {
+      selection.setXY(bbox.min.x, bbox.min.y);
+      selection.setWidthHeight(size.x, size.y);
+    }
+
+    layer.setXY(bbox.min.x, bbox.min.y);
+    layer.setWidthHeight(size.x, size.y);
+    this.reDrawMainCanvasOnNextFrame();
   }
 
   moveLayer(layer: LayerInterface, movementX: number, movementY: number) {

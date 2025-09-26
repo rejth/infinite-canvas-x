@@ -2,9 +2,7 @@ import { useState } from 'react';
 
 import { CustomEvents } from '@/shared/interfaces';
 
-import { useTextEditorContext } from '@/context';
-import { useCanvasContext } from '@/context';
-import { useToolbarContext } from '@/context';
+import { useCanvasContext, useTextEditorContext, useToolbarContext } from '@/context';
 
 export function useCanvasOnWheel() {
   const { renderManager, camera } = useCanvasContext();

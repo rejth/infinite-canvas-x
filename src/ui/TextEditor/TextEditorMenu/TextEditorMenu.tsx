@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { AlignCenter, AlignLeft, AlignRight, AArrowDown, AArrowUp, Bold, Italic, Underline } from 'lucide-react';
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  AArrowDown,
+  AArrowUp,
+  Bold,
+  Italic,
+  Underline,
+  Spline,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Menubar } from '@/components/ui/menubar';
@@ -10,13 +20,11 @@ import { Separator } from '@/components/ui/separator';
 import { COLORS, DEFAULT_SCALE } from '@/shared/constants';
 import { FontStyle, TextAlign, TextDecoration } from '@/shared/interfaces';
 
-import { useTextEditorContext } from '@/context';
-import { useActiveLayerContext } from '@/context';
-import { useCanvasContext } from '@/context';
+import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/context';
 
 import { Point } from '@/entities/Point';
 import { CanvasEntityType } from '@/entities/interfaces';
-import { isCanvasRect } from '@/entities/lib';
+import { isCanvasRect, isCanvasText } from '@/entities/lib';
 
 import { ColorTile } from '../ColorTile/ColorTile';
 import styles from './TextEditorMenu.module.css';
@@ -30,7 +38,7 @@ interface TextEditorMenuProps {
 export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: TextEditorMenuProps) => {
   const { renderer, renderManager } = useCanvasContext();
   const { activeLayer } = useActiveLayerContext();
-  const { textAlign, fontSize, bold, italic, underline, ...actions } = useTextEditorContext();
+  const { text, textAlign, fontSize, bold, italic, underline, ...actions } = useTextEditorContext();
   const { setTextAlign, setFontSize, setBold, setItalic, setUnderline } = actions;
 
   const [backgroundColor, setBackgroundColor] = useState(() => {
@@ -56,6 +64,15 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
         renderManager?.drawLayer(activeLayer, { exceptType: CanvasEntityType.TEXT });
       },
     });
+  };
+
+  const enableSplineMode = () => {
+    if (!activeLayer) return;
+
+    const textChild = activeLayer.getChildByType(CanvasEntityType.TEXT);
+    if (!text || !textChild || !isCanvasText(textChild)) return;
+
+    renderManager?.reDrawOnNextFrame();
   };
 
   const handleFontSizeChange = (value: number) => {
@@ -203,6 +220,21 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
               <Icon className="h-6 w-6" strokeWidth={1.25} />
             </ToggleGroupItem>
           ))}
+        </ToggleGroup>
+
+        <Separator orientation="vertical" />
+
+        <ToggleGroup type="single">
+          <ToggleGroupItem
+            key="curved"
+            value="curved"
+            aria-label="Toggle curved"
+            className="cursor-pointer"
+            disabled={true}
+            onClick={enableSplineMode}
+          >
+            <Spline className="h-6 w-6" strokeWidth={1.25} />
+          </ToggleGroupItem>
         </ToggleGroup>
       </Menubar>
     </div>

@@ -1,9 +1,27 @@
 import { LayerId } from '@/shared/interfaces';
-import { COLORS, DEFAULT_RESIZE_DIRECTION, DEFAULT_SCALE, DEFAULT_SELECTION_LINE_WIDTH } from '@/shared/constants';
+import {
+  COLORS,
+  DEFAULT_RECT_SIZE,
+  DEFAULT_RESIZE_DIRECTION,
+  DEFAULT_SCALE,
+  DEFAULT_SELECTION_LINE_WIDTH,
+} from '@/shared/constants';
 
 import { BaseDrawOptions, BaseCanvasEntityInterface, CanvasEntityType, LayerInterface } from '@/entities/interfaces';
 import { BaseCanvasEntity } from '@/entities/BaseCanvasEntity';
 import { Selection } from '@/entities/Selection';
+
+export interface LayerSettings {
+  id?: LayerId | null;
+  withSelection?: boolean;
+  minDimension?: number;
+}
+
+const DEFAULT_LAYER_SETTINGS: LayerSettings = {
+  id: null,
+  withSelection: true,
+  minDimension: DEFAULT_RECT_SIZE,
+};
 
 export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInterface {
   private id: LayerId | null = null;
@@ -12,20 +30,22 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
 
   private needToRender = true;
 
-  constructor(options: BaseDrawOptions, id: LayerId | null = null) {
-    super(options);
+  constructor(options: BaseDrawOptions, settings = DEFAULT_LAYER_SETTINGS) {
+    super(options, settings.minDimension);
 
-    this.setId(id);
+    this.setId(settings.id ?? null);
     this.setType(CanvasEntityType.LAYER);
 
-    this.children.push(
-      new Selection({
-        ...options,
-        lineWidth: DEFAULT_SELECTION_LINE_WIDTH,
-        scale: DEFAULT_SCALE,
-        color: COLORS.SELECTION,
-      }),
-    );
+    if (settings.withSelection) {
+      this.children.push(
+        new Selection({
+          ...options,
+          lineWidth: DEFAULT_SELECTION_LINE_WIDTH,
+          scale: DEFAULT_SCALE,
+          color: COLORS.SELECTION,
+        }),
+      );
+    }
   }
 
   setActive(state: boolean) {

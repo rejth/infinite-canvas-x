@@ -1,9 +1,7 @@
-import { DEFAULT_RECT_SIZE } from '@/shared/constants';
+import { DEFAULT_FONT, DEFAULT_RECT_SIZE } from '@/shared/constants';
 import { TextDecoration } from '@/shared/interfaces';
 
-import { useTextEditorContext } from '@/context';
-import { useActiveLayerContext } from '@/context';
-import { useCanvasContext } from '@/context';
+import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/context';
 
 import { CanvasEntityType } from '@/entities/interfaces';
 import { CanvasText } from '@/entities/CanvasText';
@@ -16,15 +14,16 @@ export function useCreateText() {
   return function () {
     if (!activeLayer || !renderer) return;
 
-    const sticker = activeLayer.getChildByType(CanvasEntityType.RECT);
-    if (!sticker) return;
+    const rect = activeLayer.getChildByType(CanvasEntityType.RECT);
+    if (!rect) return;
 
-    const [x, y] = sticker.getXY();
-    const scale = sticker.getScale();
+    const [x, y] = rect.getXY();
+    const scale = rect.getScale();
     const { initialPixelRatio } = renderer.getCanvasOptions();
     const textDecoration = underline ? TextDecoration.UNDERLINE : TextDecoration.NONE;
-    let fontStyle = '';
+    const font = DEFAULT_FONT;
 
+    let fontStyle = '';
     if (italic) fontStyle = `${fontStyle} italic`;
     if (bold) fontStyle = `${fontStyle} bold`;
 
@@ -36,6 +35,7 @@ export function useCreateText() {
       text,
       textAlign,
       textDecoration,
+      font,
       fontSize,
       fontStyle,
       scale,

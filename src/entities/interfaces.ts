@@ -6,6 +6,8 @@ export const enum CanvasEntityType {
   BASE = 'BASE',
   LAYER = 'LAYER',
   RECT = 'RECT',
+  CIRCLE = 'CIRCLE',
+  SPLINE = 'SPLINE',
   TEXT = 'TEXT',
   SELECTION = 'SELECTION',
   IMAGE = 'IMAGE',

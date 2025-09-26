@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 
 import { useActiveLayerContext } from '@/context';
 
-import { LayerSerializer } from '@/services/LayerSerializer';
+import { LayerSerializer } from '@/entities/LayerSerializer';
+
 import { LayerDocument } from '@/services/Storage/interfaces';
 import { RenderManager } from '@/services/RenderManager';
 

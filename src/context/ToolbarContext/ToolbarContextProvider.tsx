@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Tool } from '@/shared/interfaces';
 import { DEFAULT_RESIZE_DIRECTION, DEFAULT_CURSOR, DEFAULT_TOOL, DEFAULT_ZOOM_PERCENTAGE } from '@/shared/constants';
+
 import { ToolbarContext } from './ToolbarContext';
 
 type Props = {

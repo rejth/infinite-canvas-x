@@ -1,4 +1,5 @@
 import { Layer } from '@/entities/Layer';
+import { COLORS } from './constants';
 
 export type LayerId = number;
 export type PixelRatio = number;
@@ -72,6 +73,9 @@ export interface CircleDrawOptions {
   y: number;
   radius: number;
   color: string;
+  stroke?: boolean;
+  strokeColor?: string;
+  lineWidth?: number;
 }
 
 export interface QuadraticCurveDrawOptions {
@@ -79,7 +83,7 @@ export interface QuadraticCurveDrawOptions {
   control: Point;
   end: Point;
   color: string;
-  lineWidth: number;
+  lineWidth?: number;
 }
 
 export interface BezierCurveDrawOptions {
@@ -88,7 +92,7 @@ export interface BezierCurveDrawOptions {
   cp2: Point;
   end: Point;
   color: string;
-  lineWidth: number;
+  lineWidth?: number;
 }
 
 export interface ImageDrawOptions {
@@ -99,8 +103,18 @@ export interface ImageDrawOptions {
   height: number;
 }
 
+export interface StrokeLineDrawOptions {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  color: string;
+  lineWidth?: number;
+}
+
 export interface TextDrawOptions {
   text: string;
+  font: string;
   fontSize: number;
   fontStyle: string;
   textAlign: CanvasTextAlign;
@@ -110,6 +124,18 @@ export interface TextDrawOptions {
   width: number;
   height: number;
   scale: number;
+  spread?: number;
+  shift?: number;
+}
+
+export interface SplineDrawOptions {
+  text: string;
+  points: number[][];
+  font: string;
+  lineWidth: number;
+  color: COLORS;
+  shift: number;
+  spread: number;
 }
 
 export interface TransformationMatrix {

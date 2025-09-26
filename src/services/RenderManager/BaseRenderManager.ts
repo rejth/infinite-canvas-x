@@ -2,15 +2,18 @@ import { COLORS, DEFAULT_CORNER } from '@/shared/constants';
 import { LayerId, TransformationMatrix } from '@/shared/interfaces';
 
 import { BaseDrawOptions, CanvasEntityType, LayerInterface } from '@/entities/interfaces';
-import { isCanvasSelection, isCanvasImage, isCanvasText, isCanvasRect } from '@/entities/lib';
 import { CanvasText } from '@/entities/CanvasText';
 import { CanvasRect } from '@/entities/CanvasRect';
 import { Selection } from '@/entities/Selection';
 import { CanvasImage } from '@/entities/CanvasImage';
+import { CanvasCircle } from '@/entities/CanvasCirce';
+import { CanvasSpline } from '@/entities/CanvasSpline';
 import { Point } from '@/entities/Point';
+import * as guards from '@/entities/lib';
 
 import { type Renderer } from '@/services/Renderer';
 import { FpsManager } from '@/services/FpsManager';
+import { MBR } from '@/services/Geometry';
 import { StorageService, PouchDBService } from '@/services/Storage';
 
 export type RedrawOptions = {
@@ -66,6 +69,7 @@ export abstract class BaseRenderManager {
   abstract bulkAdd(layers: LayerInterface[]): void;
   abstract removeLayer(layer: LayerInterface): LayerInterface;
   abstract moveLayer(layer: LayerInterface, movementX: number, movementY: number): void;
+  abstract setLayerSize(layer: LayerInterface, bbox: MBR): void;
   abstract resizeLayer(layer: LayerInterface, movementX: number, movementY: number, resizeDirection: string): void;
   abstract findLayerByCoordinates(point: Point): LayerInterface | null;
   abstract findMultipleLayersByCoordinates(point: Point): LayerInterface[];
@@ -87,14 +91,19 @@ export abstract class BaseRenderManager {
     const children = layer.getChildren<BaseDrawOptions>();
 
     for (const child of children) {
-      if (isCanvasRect(child)) {
+      const isExceptType = child.getType() === redrawOptions?.exceptType;
+      if (guards.isCanvasRect(child)) {
         this.drawRect(child);
-      } else if (isCanvasSelection(child) && layer.isActive()) {
+      } else if (guards.isCanvasSelection(child) && layer.isActive()) {
         this.drawSelection(child);
-      } else if (isCanvasImage(child)) {
-        this.drawImage(child);
-      } else if (isCanvasText(child) && child.getType() !== redrawOptions?.exceptType) {
+      } else if (guards.isCanvasText(child) && !isExceptType) {
         this.drawText(child, Boolean(redrawOptions?.forceRender));
+      } else if (guards.isCanvasSpline(child)) {
+        this.drawTextOnSpline(child);
+      } else if (guards.isCanvasCircle(child)) {
+        this.drawCircle(child);
+      } else if (guards.isCanvasImage(child)) {
+        this.drawImage(child);
       }
     }
   }
@@ -129,6 +138,18 @@ export abstract class BaseRenderManager {
     }
 
     this.renderer.strokeRect(drawOptions);
+  }
+
+  private drawCircle(child: CanvasCircle) {
+    const drawOptions = child.getOptions();
+    this.renderer.fillCircle(drawOptions);
+  }
+
+  private drawTextOnSpline(child: CanvasSpline) {
+    if (child.curves.length === 0) return;
+
+    this.renderer.drawSpline(child.curves, child.allControlPoints, child.handles);
+    this.renderer.drawTextOnSpline(child.curves, child.getOptions());
   }
 
   private drawText(text: CanvasText, forceRender: boolean) {

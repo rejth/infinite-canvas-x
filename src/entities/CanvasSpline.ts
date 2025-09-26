@@ -1,0 +1,153 @@
+import { Point } from '@/shared/interfaces';
+import { COLORS } from '@/shared/constants';
+
+import { BezierCurve, Vector, MBR } from '@/services/Geometry';
+
+import { BaseDrawOptions, CanvasEntityType } from '@/entities/interfaces';
+import { BaseCanvasEntity } from '@/entities/BaseCanvasEntity';
+
+export interface SplineDrawOptions extends BaseDrawOptions {
+  text: string;
+  points: number[][];
+  font: string;
+  lineWidth: number;
+  color: COLORS;
+  shift: number;
+  spread: number;
+}
+
+export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
+  spline: number[][] = [];
+  curves: BezierCurve[] = [];
+  handles: Point[][] = [];
+  allControlPoints: Point[] = [];
+  controlPointToSplineIndex: number[] = [];
+  mbr: MBR;
+
+  constructor(options: SplineDrawOptions) {
+    super(options);
+    this.setType(CanvasEntityType.SPLINE);
+
+    this.spline = options.points;
+    this.mbr = this.computeMBR();
+    this.computeSpline();
+  }
+
+  computeSpline = () => {
+    this.curves.length = 0;
+    this.handles.length = 0;
+    this.allControlPoints.length = 0;
+    this.controlPointToSplineIndex.length = 0;
+
+    // Create control points for all spline points (handles and knots)
+    for (let i = 0; i < this.spline.length; i++) {
+      const [x, y] = this.spline[i];
+      this.allControlPoints.push({ x, y });
+      this.controlPointToSplineIndex.push(i);
+    }
+
+    // Compute curves from spline points
+    for (let i = 0; i < (this.spline.length - 2) / 3; i++) {
+      const points = this.spline.slice(3 * i, 3 * i + 4);
+      const p = points.flat();
+
+      const curve = new BezierCurve(
+        new Vector(p[0], p[1]),
+        new Vector(p[2], p[3]),
+        new Vector(p[4], p[5]),
+        new Vector(p[6], p[7]),
+      );
+
+      const curvePoints = curve.p;
+      const leftHandle = [curvePoints[0], curvePoints[1]];
+      const rightHandle = [curvePoints[2], curvePoints[3]];
+
+      this.curves.push(curve);
+      this.handles.push(leftHandle, rightHandle);
+    }
+  };
+
+  computeMBR = () => {
+    const baseMBR = new MBR(...this.spline.map((point) => new Vector(point[0], point[1])));
+
+    // Add padding for control point radius and safety margin
+    // Using 25px for control point radius + 10px extra safety margin
+    const padding = 35;
+
+    // Expand the MBR by the padding amount
+    baseMBR.min.x -= padding;
+    baseMBR.min.y -= padding;
+    baseMBR.max.x += padding;
+    baseMBR.max.y += padding;
+
+    return baseMBR;
+  };
+
+  dragControlPoint = (cp: Point, cpIndex: number) => {
+    const { x, y } = cp;
+
+    // Map control point index to spline index
+    const splineIndex = this.controlPointToSplineIndex[cpIndex];
+
+    // Calculate the movement delta
+    const oldX = this.spline[splineIndex][0];
+    const oldY = this.spline[splineIndex][1];
+    const deltaX = x - oldX;
+    const deltaY = y - oldY;
+
+    if (splineIndex % 3 === 0) {
+      // We're dragging a knot, so move the handles with it (relative movement)
+      this.spline[splineIndex] = [x, y];
+
+      // Move adjacent handles by the same delta
+      if (splineIndex > 0) {
+        this.spline[splineIndex - 1] = [
+          this.spline[splineIndex - 1][0] + deltaX,
+          this.spline[splineIndex - 1][1] + deltaY,
+        ];
+      }
+      if (splineIndex < this.spline.length - 1) {
+        this.spline[splineIndex + 1] = [
+          this.spline[splineIndex + 1][0] + deltaX,
+          this.spline[splineIndex + 1][1] + deltaY,
+        ];
+      }
+    } else {
+      // We're dragging a handle
+      this.spline[splineIndex] = [x, y];
+
+      // Figure out which handle is its "mirror"
+      const m = splineIndex % 3 === 1 ? splineIndex - 2 : splineIndex + 2;
+      if (m >= 0 && m < this.spline.length) {
+        // Find the knot between them
+        const k = splineIndex % 3 === 1 ? splineIndex - 1 : splineIndex + 1;
+        // Set the mirror handle so that it's symmetric with the one being moved
+        this.spline[m] = this.vAdd(this.spline[k], this.vSub(this.spline[k], this.spline[splineIndex]));
+      }
+    }
+
+    this.computeSpline();
+    this.mbr = this.computeMBR();
+  };
+
+  getControlPointAtPosition = (x: number, y: number, threshold: number = 25): number | null => {
+    for (let i = 0; i < this.allControlPoints.length; i++) {
+      const controlPoint = this.allControlPoints[i];
+      const distance = Math.sqrt(Math.pow(x - controlPoint.x, 2) + Math.pow(y - controlPoint.y, 2));
+
+      if (distance <= threshold) {
+        return i;
+      }
+    }
+
+    return null;
+  };
+
+  private vAdd(a: number[], b: number[]) {
+    return [a[0] + b[0], a[1] + b[1]];
+  }
+
+  private vSub(a: number[], b: number[]) {
+    return [a[0] - b[0], a[1] - b[1]];
+  }
+}

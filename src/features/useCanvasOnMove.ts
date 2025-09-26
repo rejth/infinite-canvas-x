@@ -7,7 +7,7 @@ import { useTextEditorContext } from '@/context';
 import { useToolbarContext } from '@/context';
 
 import { CanvasEntityType } from '@/entities/interfaces';
-import { isCanvasSelection } from '@/entities/lib';
+import { isCanvasSelection, isCanvasSpline } from '@/entities/lib';
 
 export function useCanvasOnMove() {
   const { renderManager, camera } = useCanvasContext();
@@ -50,7 +50,25 @@ export function useCanvasOnMove() {
         }
       } else if (tool === Tools.SELECT) {
         setIsLayerEditable(false);
-        renderManager.moveLayer(activeLayer, e.movementX, e.movementY);
+
+        const spline = activeLayer.getChildByType(CanvasEntityType.SPLINE);
+
+        if (spline && isCanvasSpline(spline)) {
+          setCursor('crosshair');
+
+          const { x, y } = camera.handleClick(e.nativeEvent);
+          const movementX = x + e.movementX;
+          const movementY = y + e.movementY;
+          const controlPointIndex = spline.getControlPointAtPosition(movementX, movementY);
+
+          if (controlPointIndex !== null) {
+            spline.dragControlPoint({ x: movementX, y: movementY }, controlPointIndex);
+          }
+
+          renderManager.setLayerSize(activeLayer, spline.mbr);
+        } else {
+          renderManager.moveLayer(activeLayer, e.movementX, e.movementY);
+        }
       } else if (tool === Tools.RESIZER) {
         setIsLayerEditable(false);
         renderManager.resizeLayer(activeLayer, e.movementX, e.movementY, resizeDirection);

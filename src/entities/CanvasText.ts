@@ -8,18 +8,30 @@ export interface TextDrawOptions extends BaseDrawOptions {
   text: string;
   textAlign: TextAlign;
   textDecoration: TextDecoration;
+  font: string;
   fontSize: number;
   fontStyle: string;
+}
+
+export const enum TextMode {
+  DEFAULT = 'default',
+  CURVED = 'curved',
 }
 
 export class CanvasText extends BaseCanvasEntity<TextDrawOptions> {
   private snapshot: CanvasImageSource | null = null;
   private preparedText: string[] = [];
 
+  mode = TextMode.DEFAULT;
+
   constructor(options: TextDrawOptions) {
     super(options);
     this.setType(CanvasEntityType.TEXT);
     this.prepareText(options.text, options.fontSize, options.fontStyle);
+  }
+
+  setMode(mode: TextMode) {
+    this.mode = mode;
   }
 
   getPreparedText(): string[] {

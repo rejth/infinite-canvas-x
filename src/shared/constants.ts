@@ -15,7 +15,7 @@ export const DEFAULT_CANVAS_SCALE = window.devicePixelRatio ?? 2;
 export const DEFAULT_RECT_SIZE = 200;
 
 export const DEFAULT_TEXT_AREA_WIDTH = 500;
-export const DEFAULT_TEXT_AREA_HEIGHT = 300;
+export const DEFAULT_TEXT_AREA_HEIGHT = 100;
 
 export const DEFAULT_TEXT_BLOCK_WIDTH = 300;
 export const DEFAULT_TEXT_BLOCK_HEIGHT = 60;
@@ -43,8 +43,10 @@ export const enum COLORS {
   STICKER_BLUE = '#70d6ff',
   STICKER_PINK = '#ff70a6',
   SELECTION = '#3a86ff',
+  CURVE = '#3af',
   GRID = '#9ca3af',
   TEXT_AREA = '#f6f2ff',
+  WHITE = '#ffffff',
   FONT = '#000000',
   TRANSPARENT = 'transparent',
 }

@@ -11,14 +11,24 @@ import type {
   StrokeDrawOptions,
   TextDrawOptions,
   TransformationMatrix,
+  StrokeLineDrawOptions,
+  SplineDrawOptions,
 } from '@/shared/interfaces';
 import { TextAlign, TextDecoration } from '@/shared/interfaces';
-import { COLORS, DEFAULT_CANVAS_SCALE, DEFAULT_FONT_WEIGHT, DEFAULT_SCALE, SMALL_PADDING } from '@/shared/constants';
+import {
+  COLORS,
+  DEFAULT_CANVAS_SCALE,
+  DEFAULT_CORNER,
+  DEFAULT_FONT_WEIGHT,
+  DEFAULT_SCALE,
+  SMALL_PADDING,
+} from '@/shared/constants';
 
 import { Point } from '@/entities/Point';
 
-import { geometry } from '@/services/Geometry';
-import { ProxyCanvasRenderingContext2D, SPATIAL_TILE_SIZE } from '@/services/RenderManager';
+import { geometry, BezierCurve, SplineArcLengthMap } from '@/services/Geometry';
+import { ProxyCanvasRenderingContext2D, RenderMode } from '@/services/RenderManager';
+import { SPATIAL_TILE_SIZE } from '@/services/SpatialTileIndex';
 
 export class Renderer {
   private width: number;
@@ -231,18 +241,40 @@ export class Renderer {
   }
 
   fillCircle(options: CircleDrawOptions) {
-    const { x, y, radius, color } = options;
+    if (!this.ctx) return;
+    const { x, y, radius, color, stroke = false, strokeColor = COLORS.SELECTION, lineWidth = 1 } = options;
 
     this.ctx.save();
     this.ctx.beginPath();
     this.ctx.fillStyle = color;
+
+    if (stroke) {
+      this.ctx.strokeStyle = strokeColor;
+      this.ctx.lineWidth = lineWidth;
+      this.ctx.stroke();
+    }
+
     this.ctx.arc(x, y, radius, 0, Math.PI * 2);
     this.ctx.fill();
     this.ctx.restore();
   }
 
+  strokeLine(options: StrokeLineDrawOptions) {
+    if (!this.ctx) return;
+
+    const { x1, y1, x2, y2, color, lineWidth = 2 } = options;
+
+    this.ctx.lineWidth = lineWidth;
+    this.ctx.strokeStyle = color;
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(x1, y1);
+    this.ctx.lineTo(x2, y2);
+    this.ctx.stroke();
+  }
+
   strokeQuadraticCurve(options: QuadraticCurveDrawOptions) {
-    const { start, control, end, color, lineWidth } = options;
+    const { start, control, end, color = COLORS.CURVE, lineWidth = 2 } = options;
 
     this.ctx.beginPath();
     this.ctx.moveTo(start.x, start.y);
@@ -254,7 +286,7 @@ export class Renderer {
   }
 
   strokeBezierCurve(options: BezierCurveDrawOptions) {
-    const { start, cp1, cp2, end, color, lineWidth } = options;
+    const { start, cp1, cp2, end, color, lineWidth = 2 } = options;
 
     this.ctx.beginPath();
     this.ctx.moveTo(start.x, start.y);
@@ -358,6 +390,75 @@ export class Renderer {
     this.ctx.drawImage(offscreenCanvas, x, y, width, height);
 
     return offscreenCanvas;
+  }
+
+  drawSpline(curves: BezierCurve[], controlPoints: Point[], handles: Point[][]) {
+    for (const curve of curves) {
+      this.strokeBezierCurve({
+        start: curve.p[0],
+        cp1: curve.p[1],
+        cp2: curve.p[2],
+        end: curve.p[3],
+        color: COLORS.CURVE,
+        lineWidth: 2,
+      });
+    }
+    for (const controlPoint of controlPoints) {
+      this.fillCircle({
+        x: controlPoint.x,
+        y: controlPoint.y,
+        radius: DEFAULT_CORNER,
+        color: COLORS.SELECTION,
+        lineWidth: 1,
+      });
+    }
+    for (const handle of handles) {
+      this.strokeLine({
+        x1: handle[0].x,
+        y1: handle[0].y,
+        x2: handle[1].x,
+        y2: handle[1].y,
+        color: COLORS.CURVE,
+        lineWidth: 1,
+      });
+    }
+  }
+
+  drawTextOnSpline(spline: BezierCurve[], options: SplineDrawOptions) {
+    if (spline.length === 0) return;
+
+    const { text, shift, spread } = options;
+
+    this.ctx.font = `bold 70px monospace`;
+
+    const map = new SplineArcLengthMap(spline);
+    const textLength = this.ctx.measureText(text).width;
+    const delta = (map.len(1) - map.len(0)) * shift - (textLength * spread) / 2;
+    const t = [map.t(delta)];
+
+    this.ctx.setRenderMode(RenderMode.TEXT);
+
+    let lastWidth = 0;
+    for (let i = 1; i <= text.length; i++) {
+      const wordWidth = this.ctx.measureText(text.substring(0, i)).width * spread;
+      t[i] = map.t(wordWidth + delta);
+
+      const baset = (t[i] + t[i - 1]) / 2;
+      const { point: pos, tangent: tan } = map.getPointAtNormalizedPosition(baset);
+
+      // Adjust position by half the character width along the tangent
+      const adjustedPosition = pos.sub(tan.scale((wordWidth - lastWidth) / 2));
+
+      this.ctx.save();
+      this.ctx.translate(adjustedPosition.x, adjustedPosition.y);
+      this.ctx.rotate(Math.atan2(tan.y, tan.x));
+      this.ctx.fillText(text[i - 1], 0, 0);
+      this.ctx.restore();
+
+      lastWidth = wordWidth;
+    }
+
+    this.ctx.setRenderMode(RenderMode.MAIN);
   }
 
   drawBackground() {

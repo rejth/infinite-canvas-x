@@ -1,16 +1,17 @@
-import { LayerInterface } from '@/entities/interfaces';
+import { CanvasEntityType, LayerInterface } from '@/entities/interfaces';
 import { RectDimension } from '@/shared/interfaces';
 
 import { Point } from '@/entities/Point';
 
+import { MBR } from '@/services/Geometry';
 import { type Renderer } from '@/services/Renderer';
-import { removeLayerSync } from '@/services/lib';
+import { SpatialTileIndex, TileKey } from '@/services/SpatialTileIndex';
 
 import { BaseRenderManager, RedrawOptions } from './BaseRenderManager';
-import { SpatialTileIndex, TileKey } from './SpatialTileIndex';
+import { removeLayerSync } from './lib';
 
-export class RenderManagerVirtualized extends BaseRenderManager {
-  private static instance: RenderManagerVirtualized | null = null;
+export class TileBasedRenderManager extends BaseRenderManager {
+  private static instance: TileBasedRenderManager | null = null;
 
   private spatialIndex = new SpatialTileIndex();
   private dirtyTiles = new Set<TileKey>();
@@ -22,31 +23,31 @@ export class RenderManagerVirtualized extends BaseRenderManager {
   }
 
   static async create(renderer: Renderer, enableFpsManager = false) {
-    if (RenderManagerVirtualized.instance) {
-      return RenderManagerVirtualized.instance;
+    if (TileBasedRenderManager.instance) {
+      return TileBasedRenderManager.instance;
     }
 
-    if (RenderManagerVirtualized.isInitializing) {
-      while (RenderManagerVirtualized.isInitializing) {
+    if (TileBasedRenderManager.isInitializing) {
+      while (TileBasedRenderManager.isInitializing) {
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
-      return RenderManagerVirtualized.instance!;
+      return TileBasedRenderManager.instance!;
     }
 
-    RenderManagerVirtualized.isInitializing = true;
+    TileBasedRenderManager.isInitializing = true;
 
     try {
-      const instance = new RenderManagerVirtualized(renderer);
+      const instance = new TileBasedRenderManager(renderer);
       await instance.initialize(enableFpsManager);
-      RenderManagerVirtualized.instance = instance;
+      TileBasedRenderManager.instance = instance;
       return instance;
     } finally {
-      RenderManagerVirtualized.isInitializing = false;
+      TileBasedRenderManager.isInitializing = false;
     }
   }
 
-  static getInstance(): RenderManagerVirtualized | null {
-    return RenderManagerVirtualized.instance;
+  static getInstance(): TileBasedRenderManager | null {
+    return TileBasedRenderManager.instance;
   }
 
   addLayer(layer: LayerInterface): LayerInterface {
@@ -91,6 +92,26 @@ export class RenderManagerVirtualized extends BaseRenderManager {
     this.redrawDirtyTiles();
 
     return layer;
+  }
+
+  setLayerSize(layer: LayerInterface, bbox: MBR) {
+    const size = bbox.size();
+    const selection = layer.getChildByType(CanvasEntityType.SELECTION);
+
+    if (selection) {
+      selection.setXY(bbox.min.x, bbox.min.y);
+      selection.setWidthHeight(size.x, size.y);
+    }
+
+    this.markLayerTilesDirty(layer);
+
+    this.spatialIndex.remove(layer);
+    layer.setXY(bbox.min.x, bbox.min.y);
+    layer.setWidthHeight(size.x, size.y);
+    this.spatialIndex.insert(layer);
+
+    this.markLayerTilesDirty(layer);
+    this.redrawDirtyTiles();
   }
 
   moveLayer(layer: LayerInterface, movementX: number, movementY: number) {

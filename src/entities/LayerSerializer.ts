@@ -69,7 +69,7 @@ export class LayerSerializer {
   }
 
   private static deserializeLayer(serializedLayer: SerializedLayer): LayerInterface {
-    const layer = new Layer(serializedLayer.options, serializedLayer.id);
+    const layer = new Layer(serializedLayer.options, { id: serializedLayer.id });
 
     for (const child of serializedLayer.children) {
       if (isSerializedEntityRect(child)) {

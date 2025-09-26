@@ -27,6 +27,14 @@ const tools: ToolItem[] = [
     disabled: false,
   },
   {
+    id: 'text',
+    label: 'Text',
+    type: Tools.TEXT,
+    icon: 'text',
+    hoverText: 'Drag to add a new text element',
+    disabled: false,
+  },
+  {
     id: 'pan',
     label: 'Pan',
     type: Tools.HAND,
@@ -41,14 +49,6 @@ const tools: ToolItem[] = [
     icon: 'select',
     hoverText: 'Selection',
     disabled: false,
-  },
-  {
-    id: 'connect',
-    label: 'Connect',
-    type: Tools.CONNECT,
-    icon: 'connect',
-    hoverText: 'Connect tool',
-    disabled: true,
   },
   {
     id: 'trash',

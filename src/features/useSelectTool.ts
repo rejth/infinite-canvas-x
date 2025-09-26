@@ -1,6 +1,4 @@
-import { useActiveLayerContext } from '@/context';
-import { useCanvasContext } from '@/context';
-import { useTextEditorContext } from '@/context';
+import { useActiveLayerContext, useCanvasContext, useTextEditorContext } from '@/context';
 
 import { Point } from '@/entities/Point';
 
