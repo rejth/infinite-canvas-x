@@ -23,7 +23,6 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 ### Graphics Primitives
 
 - ✨ **Shapes**: Rectangles, rounded rectangles, circles, curves.
-- 🖼️ **Image rendering** with scaling and transformation support.
 - 📝 **Text rednering** with alignment, decorations, font styles and snapshot caching.
 - 📝 **Text transformation** with Bézier curves.
 - 🎯 **Selection handles** with interactive corner markers.
