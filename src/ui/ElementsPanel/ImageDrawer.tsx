@@ -73,15 +73,12 @@ export function ImageDrawer({ open, onOpenChange }: ImageDrawerProps) {
   const { setImage } = useImageEditorContext();
 
   useDidMountEffect(() => {
-    const apiKey = import.meta.env.VITE_UNSPLASH_API_KEY;
-
-    if (!apiKey) return;
-
-    fetch(`https://api.unsplash.com/photos/?client_id=${apiKey}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setPhotos(data);
-      });
+    fetch('/api/photos')
+      .then((response) => {
+        if (!response.ok) return [];
+        return response.json();
+      })
+      .then(setPhotos);
   });
 
   const handleAddImage = async (photo: Photo) => {
