@@ -12,7 +12,7 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 - 🔍&nbsp;Zoom and panning support.
 - 📋&nbsp;Copy-paste support.
 - 🌃&nbsp;Photo editor with filters and effects.
-- 📝&nbsp;Text transformations with highly interactive curves to create aesthetically pleasing shapes with less effort.
+- 📝&nbsp;Text transformations with highly interactive curves to create aesthetically pleasing shapes.
 - ⚒️&nbsp;Movable and resizable stickers with in-place text editing and formatting.
 - 💾&nbsp;Local-first support (autosaves to the browser) with online synchronization.
 
@@ -29,7 +29,7 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 - ✨ **Shapes**: Rectangles, rounded rectangles, circles, curves.
 - 🖼️ **Image rendering** with filters and effects.
 - 🔤 **Text rendering** with alignment, decorations, font styles, and snapshot caching.
-- 📝 **Text transformations** with highly interactive curves to create aesthetically pleasing shapes with less effort.
+- 📝 **Text transformations** with highly interactive curves to create aesthetically pleasing shapes.
 - 🎯 **Selection handles** with interactive corner markers.
 
 ### Interaction & Navigation
