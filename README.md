@@ -18,7 +18,7 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 
 ## 🛠️ **Engineering**
 
-- **🎨&nbsp;Rendering System**: Tile-based rendering for minimal redraws. Only re-renders dirty regions to maximize performance.
+- **🎨&nbsp;Rendering System**: Tile-based rendering. Only re-renders dirty regions to maximize performance.
 - **🔍&nbsp;Spatial Indexing**: `O(log n)` lookup times for canvas objects to maximize pickup efficiency.
 - **⚒️&nbsp;On-demand game loop** for minimal CPU consumption.
 - **📝&nbsp;Text and image snapshot caching** to avoid heavy re-rendering of unchanged content.
@@ -28,8 +28,8 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 
 - ✨ **Shapes**: Rectangles, rounded rectangles, circles, curves.
 - 🖼️ **Image rendering** with filters and effects.
-- 📝 **Text rendering** with alignment, decorations, font styles, and snapshot caching.
-- 📝 **Text transformations** with smooth and highly interactive curves to create aesthetically pleasing shapes with less effort.
+- 🔤 **Text rendering** with alignment, decorations, font styles, and snapshot caching.
+- 📝 **Text transformations** with highly interactive curves to create aesthetically pleasing shapes with less effort.
 - 🎯 **Selection handles** with interactive corner markers.
 
 ### Interaction & Navigation
