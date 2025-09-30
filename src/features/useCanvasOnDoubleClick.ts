@@ -1,9 +1,9 @@
 import { CustomEvents } from '@/shared/interfaces';
 
-import { useActiveLayerContext, useCanvasContext, useTextEditorContext } from '@/context';
-
 import { CanvasEntityType } from '@/entities/interfaces';
 import { Layer } from '@/entities/Layer';
+
+import { useActiveLayerContext, useCanvasContext, useTextEditorContext } from '@/context';
 
 export const useCanvasOnDoubleClick = () => {
   const { camera, renderManager } = useCanvasContext();

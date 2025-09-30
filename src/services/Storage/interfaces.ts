@@ -1,5 +1,6 @@
 import { TransformationMatrix } from '@/shared/interfaces';
-import { SerializedLayer } from '../../entities/LayerSerializer';
+
+import { SerializedLayer } from '@/entities/LayerSerializer';
 
 export const enum StoreName {
   CANVAS_STATE = 'canvas-state',

@@ -1,10 +1,10 @@
 import { DEFAULT_FONT, DEFAULT_RECT_SIZE } from '@/shared/constants';
 import { TextDecoration } from '@/shared/interfaces';
 
-import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/context';
-
 import { CanvasEntityType } from '@/entities/interfaces';
 import { CanvasText } from '@/entities/CanvasText';
+
+import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/context';
 
 export function useCreateText() {
   const { renderer } = useCanvasContext();

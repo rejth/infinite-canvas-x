@@ -62,6 +62,14 @@ export abstract class BaseCanvasEntity<T extends BaseDrawOptions> implements Bas
     this.options.scale = scale;
   }
 
+  getOpacity(): number {
+    return this.options.opacity ?? 1;
+  }
+
+  setOpacity(opacity: number) {
+    this.options.opacity = opacity;
+  }
+
   calculateScale(width: number, height: number): PixelRatio {
     const { initialWidth = width, initialHeight = height } = this.options;
     const newValue = Math.min(width, height);

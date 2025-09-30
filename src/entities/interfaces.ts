@@ -24,6 +24,7 @@ export interface BaseDrawOptions {
   canvasScale?: number;
   text?: string;
   image?: CanvasImageSource;
+  opacity?: number;
 }
 
 export interface BaseCanvasEntityInterface<T extends BaseDrawOptions = BaseDrawOptions> {
@@ -39,6 +40,9 @@ export interface BaseCanvasEntityInterface<T extends BaseDrawOptions = BaseDrawO
   getScale(): PixelRatio;
   setScale(scale: PixelRatio): void;
   calculateScale(width: number, height: number): PixelRatio;
+
+  getOpacity(): number;
+  setOpacity(opacity: number): void;
 
   getMinDimension(): number;
   getWidthHeight(): number[];

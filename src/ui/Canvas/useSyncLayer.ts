@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 
-import { useActiveLayerContext } from '@/context';
-
 import { LayerSerializer } from '@/entities/LayerSerializer';
 
 import { LayerDocument } from '@/services/Storage/interfaces';
 import { RenderManager } from '@/services/RenderManager';
+
+import { useActiveLayerContext } from '@/context';
 
 export const useSyncLayer = () => {
   const { activeLayer, lastActiveLayer } = useActiveLayerContext();

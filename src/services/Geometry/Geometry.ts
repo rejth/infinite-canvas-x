@@ -1,4 +1,5 @@
 import type { RectBounds, RectDimension, RectPosition, RectCorners, BBox } from '@/shared/interfaces';
+
 import { Point } from '@/entities/Point';
 
 export class Geometry {

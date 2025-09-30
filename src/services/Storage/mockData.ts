@@ -1,6 +1,7 @@
-import { CanvasEntityType } from '@/entities/interfaces';
 import { TextAlign, TextDecoration } from '@/shared/interfaces';
 import { CANVAS_STATE_ID, DEFAULT_ZOOM_PERCENTAGE } from '@/shared/constants';
+
+import { CanvasEntityType } from '@/entities/interfaces';
 
 import { StoreName } from './interfaces';
 

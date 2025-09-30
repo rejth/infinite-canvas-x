@@ -89,13 +89,16 @@ export abstract class BaseRenderManager {
 
   drawLayer(layer: LayerInterface, redrawOptions?: RedrawOptions) {
     const children = layer.getChildren<BaseDrawOptions>();
+    const opacity = layer.getOpacity();
+    const ctx = this.renderer.getContext();
+
+    ctx.save();
+    ctx.globalAlpha = opacity;
 
     for (const child of children) {
       const isExceptType = child.getType() === redrawOptions?.exceptType;
       if (guards.isCanvasRect(child)) {
         this.drawRect(child);
-      } else if (guards.isCanvasSelection(child) && layer.isActive()) {
-        this.drawSelection(child);
       } else if (guards.isCanvasText(child) && !isExceptType) {
         this.drawText(child, Boolean(redrawOptions?.forceRender));
       } else if (guards.isCanvasSpline(child)) {
@@ -103,7 +106,17 @@ export abstract class BaseRenderManager {
       } else if (guards.isCanvasCircle(child)) {
         this.drawCircle(child);
       } else if (guards.isCanvasImage(child)) {
-        this.drawImage(child);
+        this.drawImage(child, Boolean(redrawOptions?.forceRender));
+      }
+    }
+
+    ctx.restore();
+
+    if (layer.isActive()) {
+      for (const child of children) {
+        if (guards.isCanvasSelection(child)) {
+          this.drawSelection(child);
+        }
       }
     }
   }
@@ -118,11 +131,6 @@ export abstract class BaseRenderManager {
   private drawRect(child: CanvasRect) {
     const drawOptions = child.getOptions();
     this.renderer.fillRect(drawOptions);
-  }
-
-  private drawImage(child: CanvasImage) {
-    const drawOptions = child.getOptions();
-    this.renderer.drawImage(drawOptions);
   }
 
   private drawSelection(child: Selection) {
@@ -161,6 +169,19 @@ export abstract class BaseRenderManager {
     } else {
       const snapshot = this.renderer.renderTextSnapshot(text.getPreparedText(), drawOptions);
       text.setSnapshot(snapshot);
+    }
+  }
+
+  private drawImage(child: CanvasImage, forceRender: boolean) {
+    const currentSnapshot = child.snapshot;
+    const drawOptions = child.getOptions();
+
+    if (currentSnapshot && !forceRender) {
+      this.renderer.drawImage({ ...drawOptions, image: currentSnapshot });
+    } else {
+      const snapshot = this.renderer.renderImage(drawOptions);
+      child.snapshot = snapshot;
+      this.renderer.drawImage({ ...drawOptions, image: snapshot });
     }
   }
 }

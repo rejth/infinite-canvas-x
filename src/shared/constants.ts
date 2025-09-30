@@ -23,6 +23,8 @@ export const DEFAULT_TEXT_BLOCK_HEIGHT = 60;
 export const DEFAULT_SELECTION_LINE_WIDTH = 2;
 export const DEFAULT_CORNER = 5;
 
+export const DEFAULT_IMAGE_MAX_SIZE = 400;
+
 export const DEFAULT_TOOL = Tools.SELECT;
 export const DEFAULT_CURSOR = 'default';
 
@@ -32,6 +34,8 @@ export const DEFAULT_ZOOM_PERCENTAGE = 45;
 export const ZOOM_STEP = 10;
 export const ZOOM_MIN = 15;
 export const ZOOM_MAX = 195;
+
+export const DEFAULT_OPACITY = 100;
 
 export const enum COLORS {
   STICKER_YELLOW = '#ffd670',

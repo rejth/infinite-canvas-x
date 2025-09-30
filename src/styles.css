@@ -53,6 +53,13 @@ body {
   overscroll-behavior-y: none;
 }
 
+/* Add this temporarily for debugging */
+html,
+body {
+  overflow-x: hidden !important;
+  width: 100vw !important;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

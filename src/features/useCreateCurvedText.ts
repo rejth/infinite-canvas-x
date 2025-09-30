@@ -1,13 +1,13 @@
 import { COLORS, DEFAULT_FONT, DEFAULT_SCALE, SMALL_PADDING } from '@/shared/constants';
 import { Tools } from '@/shared/interfaces';
 
-import { useCanvasContext, useActiveLayerContext, useToolbarContext } from '@/context';
-
-import { Vector, MBR } from '@/services/Geometry';
-
 import { Layer } from '@/entities/Layer';
 import { Point } from '@/entities/Point';
 import { CanvasSpline } from '@/entities/CanvasSpline';
+
+import { Vector, MBR } from '@/services/Geometry';
+
+import { useCanvasContext, useActiveLayerContext, useToolbarContext } from '@/context';
 
 const points = [
   [325, 376],

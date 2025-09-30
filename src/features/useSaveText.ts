@@ -1,10 +1,10 @@
 import { TextDecoration } from '@/shared/interfaces';
 
-import { useTextEditorContext } from '@/context';
-import { useActiveLayerContext } from '@/context';
-
 import { CanvasEntityType } from '@/entities/interfaces';
 import { isCanvasText } from '@/entities/lib';
+
+import { useTextEditorContext } from '@/context';
+import { useActiveLayerContext } from '@/context';
 
 import { useCreateText } from '@/features/useCreateText';
 

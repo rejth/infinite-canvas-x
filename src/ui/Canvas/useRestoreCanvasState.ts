@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 
-import { map, take } from '@/shared/lib/sync-generators';
-
-import { useCanvasContext, useToolbarContext } from '@/context';
-
 import { LayerInterface } from '@/entities/interfaces';
 import { LayerSerializer } from '@/entities/LayerSerializer';
 
 import { CanvasSettingsDocument, LayerDocument } from '@/services/Storage/interfaces';
+
+import { map, take } from '@/shared/lib/sync-generators';
+
+import { useCanvasContext, useToolbarContext } from '@/context';
 
 export const useRestoreCanvasState = () => {
   const { renderManager } = useCanvasContext();

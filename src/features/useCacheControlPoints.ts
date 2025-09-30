@@ -1,9 +1,9 @@
 import { Tools } from '@/shared/interfaces';
 
-import { useActiveLayerContext, useCanvasContext, useToolbarContext } from '@/context';
-
 import { CanvasEntityType } from '@/entities/interfaces';
 import { isCanvasSpline } from '@/entities/lib';
+
+import { useActiveLayerContext, useCanvasContext, useToolbarContext } from '@/context';
 
 export const useCacheControlPoints = () => {
   const { camera } = useCanvasContext();

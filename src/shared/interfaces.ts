@@ -101,6 +101,15 @@ export interface ImageDrawOptions {
   y: number;
   width: number;
   height: number;
+  scale: number;
+  brightness?: number;
+  contrast?: number;
+  saturation?: number;
+  vibrance?: number;
+  hue?: number;
+  blur?: number;
+  noise?: number;
+  pixelate?: number;
 }
 
 export interface StrokeLineDrawOptions {
@@ -157,6 +166,7 @@ export const enum Tools {
   CONNECT = 'CONNECT',
   DELETE = 'DELETE',
   RESIZER = 'RESIZER',
+  IMAGE = 'IMAGE',
 }
 
 export const enum ShapeType {

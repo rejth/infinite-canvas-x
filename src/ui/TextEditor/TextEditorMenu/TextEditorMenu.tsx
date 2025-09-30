@@ -11,6 +11,10 @@ import {
   Spline,
 } from 'lucide-react';
 
+import { Point } from '@/entities/Point';
+import { CanvasEntityType } from '@/entities/interfaces';
+import { isCanvasRect, isCanvasText } from '@/entities/lib';
+
 import { Button } from '@/components/ui/button';
 import { Menubar } from '@/components/ui/menubar';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from '@/components/ui/dropdown-menu';
@@ -22,11 +26,8 @@ import { FontStyle, TextAlign, TextDecoration } from '@/shared/interfaces';
 
 import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/context';
 
-import { Point } from '@/entities/Point';
-import { CanvasEntityType } from '@/entities/interfaces';
-import { isCanvasRect, isCanvasText } from '@/entities/lib';
-
 import { ColorTile } from '../ColorTile/ColorTile';
+
 import styles from './TextEditorMenu.module.css';
 
 interface TextEditorMenuProps {

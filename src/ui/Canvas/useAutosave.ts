@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 
+import { CanvasSettingsDocument, StoreName } from '@/services/Storage/interfaces';
+
 import { DEFAULT_ZOOM_PERCENTAGE } from '@/shared/constants';
 import { debounce } from '@/shared/lib';
 
 import { useCanvasContext, useToolbarContext } from '@/context';
-
-import { CanvasSettingsDocument, StoreName } from '@/services/Storage/interfaces';
 
 const AUTO_SAVE_INTERVAL = 5 * 60 * 1000;
 const DEBOUNCE_INTERVAL = 2000;
@@ -15,14 +15,12 @@ const DEBOUNCE_INTERVAL = 2000;
  *
  * - Debounced autosave after changes
  * - Periodic full backup (less frequent)
- * - Save before user leaves
  *
  * Potential future enhancements:
  * - Compression: Database request may be too large for large canvases, so we could benefit from state compression
  * - Differential saves: Track and save only changed layers
  * - Save history: Keep multiple save states for recovery
  * - Network status: Pause saves when offline
- * - Handle the problem with beforeunload and localStorage (localStorage is impossible with large canvases)
  */
 export const useAutosave = () => {
   const [saveIndicator, setSaveIndicator] = useState(false);
@@ -59,17 +57,6 @@ export const useAutosave = () => {
     }
 
     return JSON.stringify(prev.transformMatrix) !== JSON.stringify(current.transformMatrix);
-  }, []);
-
-  const restoreFromBackup = useCallback(() => {
-    const backup = localStorage.getItem('canvas_backup');
-
-    if (backup) {
-      localStorage.removeItem('canvas_backup');
-      return JSON.parse(backup);
-    }
-
-    return null;
   }, []);
 
   const getCurrentState = useCallback(() => {
@@ -127,38 +114,9 @@ export const useAutosave = () => {
     return () => stopInterval();
   }, [saveCanvasState, stopInterval]);
 
-  // Save before user leaves
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      const currentState = getCurrentState();
-      if (currentState) {
-        try {
-          localStorage.setItem('canvas_backup', JSON.stringify(currentState));
-        } catch (e) {
-          console.warn('Failed to save backup to localStorage', e);
-        }
-      }
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        saveCanvasState();
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [saveCanvasState, getCurrentState]);
-
   return {
     saveIndicator,
     saveCanvasState,
-    restoreFromBackup,
     getCurrentState,
   };
 };

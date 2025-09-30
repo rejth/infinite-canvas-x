@@ -1,20 +1,24 @@
 import { useCallback, useRef, useState } from 'react';
 
 import { Icons } from '@/shared/ui/icons';
-
-import { CanvasContextProvider } from '@/context/CanvasContext/CanvasContextProvider';
-import { ActiveLayerProvider } from '@/context/ActiveLayerContext/ActiveLayerContextProvider';
-import { TextEditorProvider } from '@/context/TextEditorContext/TextEditorContextProvider';
-import { ToolbarProvider } from '@/context/ToolbarContext/ToolbarContextProvider';
+import { useDidMountEffect } from '@/shared/hooks/useDidMountEffect';
 
 import { Renderer } from '@/services/Renderer';
 import { Camera } from '@/services/Camera';
 import { type BaseRenderManager, RenderManager, createProxyCanvas } from '@/services/RenderManager';
 
-import { Zoom } from '@/ui/Toolbar/Zoom';
+import { CanvasContextProvider } from '@/context/CanvasContext/CanvasContextProvider';
+import { ActiveLayerProvider } from '@/context/ActiveLayerContext/ActiveLayerContextProvider';
+import { TextEditorProvider } from '@/context/TextEditorContext/TextEditorContextProvider';
+import { ToolbarProvider } from '@/context/ToolbarContext/ToolbarContextProvider';
+import { ImageEditorProvider } from '@/context/ImageEditorContext/ImageEditorContextProvider';
+
+import { Canvas } from '@/ui/Canvas/Canvas';
 import { Toolbar } from '@/ui/Toolbar/Toolbar';
 import { TextEditor } from '@/ui/TextEditor/TextEditor';
-import { Canvas } from '@/ui/Canvas/Canvas';
+import { PropertiesSidebar } from '@/ui/PropertiesSidebar/PropertiesSidebar';
+import { ElementsPanel } from '@/ui/ElementsPanel/ElementsPanel';
+import { BottomControls } from '@/ui/Toolbar/BottomControls';
 
 import './App.module.css';
 
@@ -31,8 +35,7 @@ function App() {
   const initializeCanvas = useCallback(async () => {
     const canvas = canvasRef.current;
     const backgroundCanvas = backgroundCanvasRef.current;
-
-    if (!canvas || !backgroundCanvas || renderManagerRef.current) return;
+    if (!canvas || !backgroundCanvas) return;
 
     const context = createProxyCanvas(canvas, backgroundCanvas);
 
@@ -46,31 +49,22 @@ function App() {
     setBackgroundCanvas(backgroundCanvas);
   }, []);
 
-  const setCanvasRef = useCallback(
-    (canvas: HTMLCanvasElement) => {
-      canvasRef.current = canvas;
-      // Only initialize if both canvases are now available
-      if (backgroundCanvasRef.current) {
-        initializeCanvas();
-      }
-    },
-    [initializeCanvas],
-  );
+  const setCanvasRef = useCallback((canvas: HTMLCanvasElement) => {
+    canvasRef.current = canvas;
+  }, []);
 
-  const setBackgroundCanvasRef = useCallback(
-    (backgroundCanvas: HTMLCanvasElement) => {
-      backgroundCanvasRef.current = backgroundCanvas;
-      // Only initialize if both canvases are now available
-      if (canvasRef.current) {
-        initializeCanvas();
-      }
-    },
-    [initializeCanvas],
-  );
+  const setBackgroundCanvasRef = useCallback((canvas: HTMLCanvasElement) => {
+    backgroundCanvasRef.current = canvas;
+  }, []);
+
+  useDidMountEffect(() => {
+    if (canvasRef.current && backgroundCanvasRef.current) {
+      initializeCanvas();
+    }
+  });
 
   return (
     <ToolbarProvider>
-      <Icons />
       <CanvasContextProvider
         value={{
           renderer: rendererRef.current,
@@ -80,12 +74,17 @@ function App() {
       >
         <ActiveLayerProvider>
           <TextEditorProvider>
-            <>
-              <Toolbar />
-              <Zoom />
-              <TextEditor />
-              <Canvas setCanvasRef={setCanvasRef} setBackgroundCanvasRef={setBackgroundCanvasRef} />
-            </>
+            <ImageEditorProvider>
+              <>
+                <Icons />
+                <Toolbar />
+                <ElementsPanel />
+                <PropertiesSidebar />
+                <BottomControls />
+                <TextEditor />
+                <Canvas setCanvasRef={setCanvasRef} setBackgroundCanvasRef={setBackgroundCanvasRef} />
+              </>
+            </ImageEditorProvider>
           </TextEditorProvider>
         </ActiveLayerProvider>
       </CanvasContextProvider>

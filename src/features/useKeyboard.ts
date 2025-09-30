@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/context';
-
 import { LayerInterface } from '@/entities/interfaces';
 import { LayerSerializer } from '@/entities/LayerSerializer';
+
+import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/context';
 
 export function useKeyboard() {
   const { renderManager } = useCanvasContext();

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { CustomEvents } from '@/shared/interfaces';
 import { useDidMountEffect } from '@/shared/hooks/useDidMountEffect';
@@ -25,6 +25,8 @@ type Props = {
 };
 
 export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: Props) => {
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+
   const { renderManager, camera } = useCanvasContext();
   const { cursor } = useToolbarContext();
 
@@ -68,11 +70,19 @@ export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: Props) => {
   }, [handleZoomStopped]);
 
   useDidMountEffect(() => {
-    window.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+    const container = canvasContainerRef.current;
+
+    if (container) {
+      const handleWheelPreventDefault = (e: WheelEvent) => e.preventDefault();
+      container.addEventListener('wheel', handleWheelPreventDefault, { passive: false });
+      return () => {
+        container.removeEventListener('wheel', handleWheelPreventDefault);
+      };
+    }
   });
 
   return (
-    <>
+    <div ref={canvasContainerRef}>
       <canvas
         id="main-canvas"
         style={{ cursor }}
@@ -86,6 +96,6 @@ export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: Props) => {
         onWheel={handleWheel}
       />
       <canvas id="background-canvas" className={styles.backgroundCanvas} ref={setBackgroundCanvasRef} />
-    </>
+    </div>
   );
 };

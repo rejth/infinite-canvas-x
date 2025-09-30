@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { isCanvasRect, isCanvasText } from '@/entities/lib';
+import { CanvasEntityType } from '@/entities/interfaces';
+import { Point } from '@/entities/Point';
+
 import { DEFAULT_SCALE, SMALL_PADDING, DEFAULT_FONT_WEIGHT, DEFAULT_RECT_SIZE } from '@/shared/constants';
 import { CustomEvents, DoubleClickCustomEvent, FontStyle, TextDecoration } from '@/shared/interfaces';
 
 import { useCanvasContext, useActiveLayerContext, useTextEditorContext } from '@/context';
 
-import { isCanvasRect, isCanvasText } from '@/entities/lib';
-import { CanvasEntityType } from '@/entities/interfaces';
-import { Point } from '@/entities/Point';
-
 import { TextEditorMenu } from './TextEditorMenu/TextEditorMenu';
+
 import styles from './TextEditor.module.css';
 
 export const TextEditor = () => {

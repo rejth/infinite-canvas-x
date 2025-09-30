@@ -1,11 +1,11 @@
 import { COLORS, DEFAULT_RECT_SIZE, DEFAULT_SCALE, SMALL_PADDING } from '@/shared/constants';
 import { Tools } from '@/shared/interfaces';
 
-import { useCanvasContext, useActiveLayerContext, useToolbarContext } from '@/context';
-
 import { CanvasRect } from '@/entities/CanvasRect';
 import { Layer } from '@/entities/Layer';
 import { Point } from '@/entities/Point';
+
+import { useCanvasContext, useActiveLayerContext, useToolbarContext } from '@/context';
 
 import { useCanvasOnDoubleClick } from '@/features/useCanvasOnDoubleClick';
 

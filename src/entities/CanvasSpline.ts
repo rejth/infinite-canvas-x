@@ -1,10 +1,10 @@
 import { Point } from '@/shared/interfaces';
 import { COLORS } from '@/shared/constants';
 
-import { BezierCurve, Vector, MBR } from '@/services/Geometry';
-
 import { BaseDrawOptions, CanvasEntityType } from '@/entities/interfaces';
 import { BaseCanvasEntity } from '@/entities/BaseCanvasEntity';
+
+import { BezierCurve, Vector, MBR } from '@/services/Geometry';
 
 export interface SplineDrawOptions extends BaseDrawOptions {
   text: string;

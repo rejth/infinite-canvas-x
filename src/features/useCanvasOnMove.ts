@@ -1,10 +1,10 @@
 import { Tools } from '@/shared/interfaces';
 import { DEFAULT_CURSOR } from '@/shared/constants';
 
-import { useActiveLayerContext, useCanvasContext, useTextEditorContext, useToolbarContext } from '@/context';
-
 import { CanvasEntityType } from '@/entities/interfaces';
 import { isCanvasSelection, isCanvasSpline } from '@/entities/lib';
+
+import { useActiveLayerContext, useCanvasContext, useTextEditorContext, useToolbarContext } from '@/context';
 
 export function useCanvasOnMove() {
   const { renderManager, camera } = useCanvasContext();

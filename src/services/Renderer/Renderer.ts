@@ -305,6 +305,144 @@ export class Renderer {
     this.ctx.restore();
   }
 
+  drawImageWithFilters(image: CanvasImageSource, ctx: OffscreenCanvasRenderingContext2D, options: ImageDrawOptions) {
+    const { width, height, brightness, contrast, saturation, vibrance, hue, blur, noise, pixelate } = options;
+
+    const filters = [];
+
+    if (brightness !== undefined) {
+      // Convert from 0-100 range to CSS brightness (0-200%)
+      filters.push(`brightness(${Math.max(0, brightness * 2)}%)`);
+    }
+    if (contrast !== undefined) {
+      // Convert from 0-100 range to CSS contrast (0-200%)
+      filters.push(`contrast(${Math.max(0, contrast * 2)}%)`);
+    }
+    if (saturation !== undefined) {
+      // Convert from 0-100 range to CSS saturate (0-200%)
+      filters.push(`saturate(${Math.max(0, saturation * 2)}%)`);
+    }
+    if (hue !== undefined) {
+      // Convert from 0-100 range to hue rotation (0-360 degrees)
+      filters.push(`hue-rotate(${(hue / 100) * 360}deg)`);
+    }
+    if (blur !== undefined && blur > 0) {
+      // Convert from 0-100 range to blur pixels (0-10px)
+      filters.push(`blur(${Math.max(0, (blur / 100) * 10)}px)`);
+    }
+
+    // Apply CSS filters to the OffscreenCanvas context only
+    if (filters.length > 0) {
+      ctx.filter = filters.join(' ');
+    }
+
+    ctx.drawImage(image, 0, 0, width, height);
+
+    // Reset filter to avoid affecting subsequent operations
+    ctx.filter = 'none';
+
+    if (pixelate !== undefined && pixelate > 0) {
+      this.drawPixelatedImage(ctx, image, options, pixelate);
+    } else if (noise !== undefined && noise > 0) {
+      this.drawImageWithNoise(ctx, options, noise);
+    }
+
+    if (vibrance !== undefined && vibrance !== 50) {
+      this.applyVibranceEffect(ctx, options, vibrance);
+    }
+  }
+
+  private drawPixelatedImage(
+    ctx: OffscreenCanvasRenderingContext2D,
+    image: CanvasImageSource,
+    options: ImageDrawOptions,
+    pixelateLevel: number,
+  ) {
+    const { width, height } = options;
+
+    // Create a smaller version and scale it back up for pixelation effect
+    const pixelSize = Math.max(1, Math.floor((pixelateLevel / 100) * Math.min(width, height) * 0.1));
+    const smallWidth = Math.max(1, Math.floor(width / pixelSize));
+    const smallHeight = Math.max(1, Math.floor(height / pixelSize));
+
+    // Create temporary canvas for pixelation
+    const pixelatedCanvas = new OffscreenCanvas(smallWidth, smallHeight);
+    const pixelatedCtx = pixelatedCanvas.getContext('2d')!;
+
+    // Disable smoothing for sharp pixels
+    pixelatedCtx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = false;
+
+    // Draw small version
+    pixelatedCtx.drawImage(image, 0, 0, smallWidth, smallHeight);
+
+    // Clear the main offscreen canvas and draw scaled up version
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(pixelatedCanvas, 0, 0, width, height);
+
+    // Restore smoothing
+    ctx.imageSmoothingEnabled = true;
+  }
+
+  private drawImageWithNoise(ctx: OffscreenCanvasRenderingContext2D, options: ImageDrawOptions, noiseLevel: number) {
+    const { width, height, scale = DEFAULT_SCALE } = options;
+    const { pixelRatio } = this.getCanvasOptions();
+
+    // Calculate actual rendered image dimensions in the buffer
+    const effectiveWidth = Math.floor(width * scale * pixelRatio);
+    const effectiveHeight = Math.floor(height * scale * pixelRatio);
+
+    const imageData = ctx.getImageData(0, 0, effectiveWidth, effectiveHeight);
+    const data = imageData.data;
+    const noiseIntensity = (noiseLevel / 100) * 50; // Scale noise intensity
+
+    // Add random noise to each pixel
+    for (let i = 0; i < data.length; i += 4) {
+      if (Math.random() < noiseLevel / 100) {
+        const noise = (Math.random() - 0.5) * noiseIntensity;
+        data[i] = Math.max(0, Math.min(255, data[i] + noise)); // Red
+        data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + noise)); // Green
+        data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + noise)); // Blue
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  private applyVibranceEffect(ctx: OffscreenCanvasRenderingContext2D, options: ImageDrawOptions, vibrance: number) {
+    if (vibrance === 50) return;
+
+    const { width, height, scale = DEFAULT_SCALE } = options;
+    const { pixelRatio } = this.getCanvasOptions();
+
+    // Calculate actual rendered image dimensions in the buffer
+    const effectiveWidth = Math.floor(width * scale * pixelRatio);
+    const effectiveHeight = Math.floor(height * scale * pixelRatio);
+
+    const imageData = ctx.getImageData(0, 0, effectiveWidth, effectiveHeight);
+    const data = imageData.data;
+    const vibranceAdjustment = ((vibrance - 50) / 50) * 0.5; // Scale to -0.5 to 0.5
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i] / 255;
+      const g = data[i + 1] / 255;
+      const b = data[i + 2] / 255;
+
+      // Calculate the maximum and average of RGB
+      const max = Math.max(r, g, b);
+      const avg = (r + g + b) / 3;
+
+      // Apply vibrance (increase saturation of less saturated colors)
+      const amount = (max - avg) * vibranceAdjustment;
+
+      data[i] = Math.max(0, Math.min(255, data[i] * (1 + amount)));
+      data[i + 1] = Math.max(0, Math.min(255, data[i + 1] * (1 + amount)));
+      data[i + 2] = Math.max(0, Math.min(255, data[i + 2] * (1 + amount)));
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+  }
+
   drawTextUnderline(
     ctx: OffscreenCanvasRenderingContext2D,
     text: string,
@@ -351,27 +489,27 @@ export class Renderer {
 
     const { initialPixelRatio, pixelRatio } = this.getCanvasOptions();
 
-    const offscreenCanvas = new OffscreenCanvas(width, height);
-    offscreenCanvas.width = Math.floor(width * pixelRatio);
-    offscreenCanvas.height = Math.floor(height * pixelRatio);
+    const textCanvas = new OffscreenCanvas(width, height);
+    textCanvas.width = Math.floor(width * pixelRatio);
+    textCanvas.height = Math.floor(height * pixelRatio);
 
-    const ctx = offscreenCanvas.getContext('2d') as OffscreenCanvasRenderingContext2D;
+    const textCtx = textCanvas.getContext('2d')!;
 
-    ctx.textAlign = textAlign;
-    ctx.textBaseline = 'alphabetic';
-    ctx.font = `${fontStyle ? fontStyle : DEFAULT_FONT_WEIGHT} ${fontSize}px monospace`;
-    ctx.scale(scale * pixelRatio, scale * pixelRatio);
+    textCtx.textAlign = textAlign;
+    textCtx.textBaseline = 'alphabetic';
+    textCtx.font = `${fontStyle ? fontStyle : DEFAULT_FONT_WEIGHT} ${fontSize}px monospace`;
+    textCtx.scale(scale * pixelRatio, scale * pixelRatio);
 
-    const textMetrics = ctx.measureText(text);
-    const transform = ctx.getTransform();
+    const textMetrics = textCtx.measureText(text);
+    const transform = textCtx.getTransform();
     const lineHeight = textMetrics.fontBoundingBoxDescent + textMetrics.fontBoundingBoxAscent;
 
     let newX = SMALL_PADDING;
     if (textAlign === TextAlign.CENTER) {
-      newX = offscreenCanvas.width / transform.a / initialPixelRatio;
+      newX = textCanvas.width / transform.a / initialPixelRatio;
     }
     if (textAlign === TextAlign.RIGHT) {
-      newX = offscreenCanvas.width / transform.a - SMALL_PADDING;
+      newX = textCanvas.width / transform.a - SMALL_PADDING;
     }
 
     let newY = lineHeight;
@@ -379,17 +517,33 @@ export class Renderer {
       if (fragment === '') {
         newY += lineHeight;
       } else {
-        ctx.fillText(fragment, newX, newY);
+        textCtx.fillText(fragment, newX, newY);
         if (textDecoration === TextDecoration.UNDERLINE) {
-          this.drawTextUnderline(ctx, text, newX, newY, fontSize, textAlign);
+          this.drawTextUnderline(textCtx, text, newX, newY, fontSize, textAlign);
         }
         newY += lineHeight;
       }
     }
 
-    this.ctx.drawImage(offscreenCanvas, x, y, width, height);
+    this.ctx.drawImage(textCanvas, x, y, width, height);
 
-    return offscreenCanvas;
+    return textCanvas;
+  }
+
+  renderImage(options: ImageDrawOptions) {
+    const { width, height } = options;
+    const { pixelRatio } = this.getCanvasOptions();
+
+    const imgCanvas = new OffscreenCanvas(width, height);
+    imgCanvas.width = Math.floor(width * pixelRatio);
+    imgCanvas.height = Math.floor(height * pixelRatio);
+
+    const imgCtx = imgCanvas.getContext('2d')!;
+    imgCtx.scale(pixelRatio, pixelRatio);
+
+    this.drawImageWithFilters(options.image, imgCtx, options);
+
+    return imgCanvas;
   }
 
   drawSpline(curves: BezierCurve[], controlPoints: Point[], handles: Point[][]) {

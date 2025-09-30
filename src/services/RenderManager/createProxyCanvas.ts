@@ -39,13 +39,6 @@ export function createProxyCanvas(
   backgroundCanvas.width = Math.floor(window.innerWidth * DEFAULT_CANVAS_SCALE);
   backgroundCanvas.height = Math.floor(window.innerHeight * DEFAULT_CANVAS_SCALE);
 
-  const backgroundCanvasObserver = new MutationObserver(() => {
-    backgroundCanvas.width = canvas.width;
-    backgroundCanvas.height = canvas.height;
-  });
-
-  backgroundCanvasObserver.observe(canvas, { attributeFilter: ['width', 'height'] });
-
   const drawBackground = (rect: RectDimension) => {
     backgroundContext.clearRect(rect.x, rect.y, rect.width, rect.height);
 

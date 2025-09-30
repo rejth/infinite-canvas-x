@@ -68,7 +68,7 @@ export class CanvasText extends BaseCanvasEntity<TextDrawOptions> {
     this.setSnapshot(null);
   }
 
-  prepareText(text: string, fontSize: number, fontStyle = '') {
+  private prepareText(text: string, fontSize: number, fontStyle = '') {
     const { width, height, scale = DEFAULT_SCALE, canvasScale = DEFAULT_CANVAS_SCALE } = this.getOptions();
 
     const offscreenCanvas = new OffscreenCanvas(width, height);
