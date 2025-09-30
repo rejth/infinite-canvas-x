@@ -73,7 +73,11 @@ export function ImageDrawer({ open, onOpenChange }: ImageDrawerProps) {
   const { setImage } = useImageEditorContext();
 
   useDidMountEffect(() => {
-    fetch(`https://api.unsplash.com/photos/?client_id=${import.meta.env.VITE_UNSPLASH_API_KEY}`)
+    const apiKey = import.meta.env.VITE_UNSPLASH_API_KEY;
+
+    if (!apiKey) return;
+
+    fetch(`https://api.unsplash.com/photos/?client_id=${apiKey}`)
       .then((res) => res.json())
       .then((data) => {
         setPhotos(data);
@@ -128,34 +132,36 @@ export function ImageDrawer({ open, onOpenChange }: ImageDrawerProps) {
         </div>
 
         {/* Images */}
-        <div className="px-2 pb-2 flex-1 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-1 mt-2">
-            {photos.map((photo) => (
-              <div
-                tabIndex={0}
-                role="button"
-                key={photo.id}
-                className="relative group cursor-pointer overflow-hidden bg-gray-100 aspect-square"
-                onClick={() => handleAddImage(photo)}
-              >
-                <img
-                  src={photo.urls.small}
-                  alt={photo.alt_description}
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                <div className="absolute bottom-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    size="sm"
-                    className="bg-white/90 text-gray-900 hover:bg-white border border-gray-200 h-5 text-[10px] px-1.5"
-                  >
-                    Add to canvas
-                  </Button>
+        {photos.length > 0 && (
+          <div className="px-2 pb-2 flex-1 overflow-y-auto">
+            <div className="grid grid-cols-2 gap-1 mt-2">
+              {photos.map((photo) => (
+                <div
+                  tabIndex={0}
+                  role="button"
+                  key={photo.id}
+                  className="relative group cursor-pointer overflow-hidden bg-gray-100 aspect-square"
+                  onClick={() => handleAddImage(photo)}
+                >
+                  <img
+                    src={photo.urls.small}
+                    alt={photo.alt_description}
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                  <div className="absolute bottom-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      size="sm"
+                      className="bg-white/90 text-gray-900 hover:bg-white border border-gray-200 h-5 text-[10px] px-1.5"
+                    >
+                      Add to canvas
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </ImageDrawerContent>
     </Sheet>
   );
