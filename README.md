@@ -2,7 +2,7 @@
 
 I'm passionate about the low-level rendering technologies used by graphic editors, design tools, geo-maps, and virtual whiteboards. This is my implementation of a design tool / virtual whiteboard built with a homegrown 2D rendering engine.
 
-The rendering engine is built with **zero dependencies** using pure Canvas API and math. 
+The rendering engine is built with **zero dependencies** using pure Canvas API and math. \
 The application itself serves to demonstrate the capabilities of the engine.
 
 I plan to rewrite the rendering part of the canvas with C++ or Rust in the future, as well as use more low-level rendering technologies for 2D graphics with GPU acceleration, and eventually turn this project into a WebGL/WebGPU + WASM rendering engine to achieve better performance and experience.
