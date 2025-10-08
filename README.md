@@ -1,10 +1,13 @@
-# 🎨 Mini Rendering Engine
+# 🎨 2D Rendering Engine
 
-I'm very interested in the rendering technologies used by graphic editors, design tools, geo-maps, and virtual whiteboards. This is my humble attempt to understand and recreate the core ideas behind these tools, which use technologies like Canvas2D/SVG to render and manipulate 2D graphics in browsers.
+I'm passionate about the low-level rendering technologies used by graphic editors, design tools, geo-maps, and virtual whiteboards. This is my implementation of a design tool / virtual whiteboard built with a homegrown 2D rendering engine.
 
-Many editors and design tools use low-level rendering technologies for 2D graphics with GPU acceleration to achieve better performance and experience.
+The rendering engine is built with **zero dependencies** using pure Canvas API and math.
+The application itself serves to demonstrate the capabilities of the engine.
 
-I plan to rewrite the rendering part of the canvas with C++ or Rust in the future and turn this project into a WebGL/WebGPU + WASM rendering engine. However, the current project completion is still relatively low, and it's mainly a playground where I try different approaches and technologies:
+I plan to rewrite the rendering part of the canvas with C++ or Rust in the future, as well as use more low-level rendering technologies for 2D graphics with GPU acceleration, and eventually turn this project into a WebGL/WebGPU + WASM rendering engine to achieve better performance and experience.
+
+<img width="1400" height="929" alt="image" src="https://github.com/user-attachments/assets/ba8751be-390a-4704-aea5-2db90e8bc9e9" />
 
 ## ✨ **Features**
 
@@ -21,8 +24,14 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 - **🎨&nbsp;Rendering System**: Tile-based rendering. Only re-renders dirty regions to maximize performance.
 - **🔍&nbsp;Spatial Indexing**: `O(log n)` lookup times for canvas objects to maximize pickup efficiency.
 - **⚒️&nbsp;On-demand game loop** for minimal CPU consumption.
-- **📝&nbsp;Text and image snapshot caching** to avoid heavy re-rendering of unchanged content.
+- **📝&nbsp;Text and image snapshot caching** to avoid re-rendering of unchanged content.
 - **💾&nbsp;State persistence** with IndexedDB integration and online synchronization via PouchDB.
+
+### Performance Optimizations
+
+- 🗺️ **Tile-based indexing** divides canvas into 2048×2048 pixel tiles.
+- 🎭 **Dirty tile tracking** for minimal redraws and efficient hit testing.
+- 💾 **Text and image snapshot caching** to avoid re-rendering of unchanged content.
 
 ### Graphics Primitives
 
@@ -35,7 +44,7 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 ### Interaction & Navigation
 
 - 🎮 **Camera system** with pan, zoom, and smooth navigation.
-- 🖱️ **Mouse/touch input** with proper coordinate transformation.
+- 🖱️ **Mouse input** with proper coordinate transformation.
 - 🎯 **Layer picking** and selection based on screen coordinates.
 - ⌨️ **Keyboard shortcuts** for enhanced productivity.
 
@@ -45,11 +54,8 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 - 🔄 **Real-time online synchronization** via PouchDB.
 - 📦 **Layer serialization** for save/load functionality.
 
-### Performance Optimizations
-
-- 🗺️ **Tile-based indexing** divides canvas into 2048×2048 pixel tiles.
-- 🎭 **Dirty tile tracking** for minimal redraws and efficient hit testing.
-- 💾 **Text and image snapshot caching** to avoid heavy re-rendering of unchanged content.
+## 🚀 **Next steps**
+- Complete real-time online synchronization via PouchDB.
 
 ## 🚦 **Getting Started**
 
