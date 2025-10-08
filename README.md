@@ -1,4 +1,4 @@
-# 🎨 2D Rendering Engine
+# 🎨 2D Rendering Engine + Whiteboard X
 
 I'm passionate about the low-level rendering technologies used by graphic editors, design tools, geo-maps, and virtual whiteboards. This is my implementation of a design tool / virtual whiteboard built with a homegrown 2D rendering engine.
 
