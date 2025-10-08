@@ -14,7 +14,7 @@ export const useSaveText = () => {
 
   const createText = useCreateText();
 
-  return function () {
+  return () => {
     if (!activeLayer || !isLayerEditable) return;
 
     const textChild = activeLayer.getChildByType(CanvasEntityType.TEXT);

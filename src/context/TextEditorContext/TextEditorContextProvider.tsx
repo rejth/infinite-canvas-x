@@ -31,6 +31,16 @@ export const TextEditorProvider = ({ children }: Props) => {
     setIsLayerEditable(false);
   }, []);
 
+  const setTextEditor = useCallback((text: string) => {
+    setText(text);
+    setTextAlign(TextAlign.LEFT);
+    setFontSize(DEFAULT_FONT_SIZE);
+    setBold(false);
+    setItalic(false);
+    setUnderline(false);
+    setIsLayerEditable(false);
+  }, []);
+
   return (
     <TextEditorContext.Provider
       value={{
@@ -51,6 +61,7 @@ export const TextEditorProvider = ({ children }: Props) => {
         setItalic,
         setUnderline,
         resetTextEditor,
+        setTextEditor,
       }}
     >
       {children}

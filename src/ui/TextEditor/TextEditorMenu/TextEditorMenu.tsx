@@ -13,7 +13,8 @@ import {
 
 import { Point } from '@/entities/Point';
 import { CanvasEntityType } from '@/entities/interfaces';
-import { isCanvasRect, isCanvasText } from '@/entities/lib';
+import { isCanvasRect } from '@/entities/lib';
+import { RectSubtype } from '@/entities/CanvasRect';
 
 import { Button } from '@/components/ui/button';
 import { Menubar } from '@/components/ui/menubar';
@@ -22,9 +23,9 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
 
 import { COLORS, DEFAULT_SCALE } from '@/shared/constants';
-import { FontStyle, TextAlign, TextDecoration } from '@/shared/interfaces';
+import { FontStyle, TextAlign, TextDecoration, Tools } from '@/shared/interfaces';
 
-import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/context';
+import { useTextEditorContext, useActiveLayerContext, useCanvasContext, useToolbarContext } from '@/context';
 
 import { ColorTile } from '../ColorTile/ColorTile';
 
@@ -38,9 +39,10 @@ interface TextEditorMenuProps {
 
 export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: TextEditorMenuProps) => {
   const { renderer, renderManager } = useCanvasContext();
-  const { activeLayer } = useActiveLayerContext();
+  const { activeLayer, setActiveLayer } = useActiveLayerContext();
+  const { setTool } = useToolbarContext();
   const { text, textAlign, fontSize, bold, italic, underline, ...actions } = useTextEditorContext();
-  const { setTextAlign, setFontSize, setBold, setItalic, setUnderline } = actions;
+  const { setTextAlign, setFontSize, setBold, setItalic, setUnderline, resetTextEditor } = actions;
 
   const [backgroundColor, setBackgroundColor] = useState(() => {
     const rect = activeLayer?.getChildByType(CanvasEntityType.RECT);
@@ -48,7 +50,7 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
     return COLORS.TRANSPARENT;
   });
 
-  if (!activeLayer || !renderer) return null;
+  if (!activeLayer || !renderer || !renderManager) return null;
 
   const handleBackgroundColorChange = (color: COLORS) => {
     if (!activeLayer) return;
@@ -67,13 +69,17 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
     });
   };
 
-  const enableSplineMode = () => {
-    if (!activeLayer) return;
+  const enableTextTransformation = () => {
+    const rect = activeLayer.getChildByType(CanvasEntityType.RECT);
+    if (!text || !rect || !isCanvasRect(rect)) return;
 
-    const textChild = activeLayer.getChildByType(CanvasEntityType.TEXT);
-    if (!text || !textChild || !isCanvasText(textChild)) return;
+    const newLayer = rect.enableTextTransformation(text);
+    renderManager.removeLayer(activeLayer);
+    renderManager.addLayer(newLayer);
 
-    renderManager?.reDrawOnNextFrame();
+    resetTextEditor();
+    setActiveLayer(newLayer);
+    setTool(Tools.SELECT);
   };
 
   const handleFontSizeChange = (value: number) => {
@@ -158,6 +164,9 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
   const inverseScale = DEFAULT_SCALE / (transform.scaleX / transform.initialScale);
   const menuScale = scale === DEFAULT_SCALE ? scale / inverseScale : transform.scaleX / transform.initialScale;
 
+  const rect = activeLayer?.getChildByType(CanvasEntityType.RECT);
+  const isTextArea = rect && isCanvasRect(rect) && rect.subtype === RectSubtype.TEXT;
+
   return (
     <div
       id="text-editor-menu"
@@ -168,18 +177,21 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
       }}
     >
       <Menubar>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="cursor-pointer">
-              <span className="h-6 w-6" style={{ backgroundColor }} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <ColorTile onChange={handleBackgroundColorChange} />
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <Separator orientation="vertical" />
+        {!isTextArea && (
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="cursor-pointer">
+                  <span className="h-6 w-6" style={{ backgroundColor }} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <ColorTile onChange={handleBackgroundColorChange} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Separator orientation="vertical" />
+          </>
+        )}
 
         <ToggleGroup type="multiple" size="sm" value={fontStyle} onValueChange={() => {}}>
           {FONT_STYLE_LIST.map(({ value, ariaLabel, Icon, onClick }) => (
@@ -223,20 +235,22 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
           ))}
         </ToggleGroup>
 
-        <Separator orientation="vertical" />
-
-        <ToggleGroup type="single">
-          <ToggleGroupItem
-            key="curved"
-            value="curved"
-            aria-label="Toggle curved"
-            className="cursor-pointer"
-            disabled={true}
-            onClick={enableSplineMode}
-          >
-            <Spline className="h-6 w-6" strokeWidth={1.25} />
-          </ToggleGroupItem>
-        </ToggleGroup>
+        {isTextArea && (
+          <>
+            <Separator orientation="vertical" />
+            <ToggleGroup type="single">
+              <ToggleGroupItem
+                key="text-transformation"
+                value="text-transformation"
+                aria-label="Transform text"
+                className="cursor-pointer"
+                onClick={enableTextTransformation}
+              >
+                <Spline className="h-6 w-6" strokeWidth={1.25} />
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </>
+        )}
       </Menubar>
     </div>
   );

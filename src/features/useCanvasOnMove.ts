@@ -12,7 +12,7 @@ export function useCanvasOnMove() {
   const { tool, setCursor, setTool, resizeDirection, setResizeDirection } = useToolbarContext();
   const { setIsLayerEditable } = useTextEditorContext();
 
-  return function (e: React.MouseEvent<HTMLCanvasElement>) {
+  return (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!camera || !renderManager) return;
 
     if (activeLayer) {

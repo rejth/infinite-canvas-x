@@ -1,8 +1,10 @@
-import { DEFAULT_FONT, DEFAULT_RECT_SIZE } from '@/shared/constants';
+import { DEFAULT_FONT, DEFAULT_RECT_SIZE, DEFAULT_TEXT_AREA_HEIGHT, DEFAULT_TEXT_AREA_WIDTH } from '@/shared/constants';
 import { TextDecoration } from '@/shared/interfaces';
 
 import { CanvasEntityType } from '@/entities/interfaces';
 import { CanvasText } from '@/entities/CanvasText';
+import { RectSubtype } from '@/entities/CanvasRect';
+import { isCanvasRect } from '@/entities/lib';
 
 import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/context';
 
@@ -15,23 +17,27 @@ export function useCreateText() {
     if (!activeLayer || !renderer) return;
 
     const rect = activeLayer.getChildByType(CanvasEntityType.RECT);
-    if (!rect) return;
+    if (!rect || !isCanvasRect(rect)) return;
 
     const [x, y] = rect.getXY();
     const scale = rect.getScale();
     const { initialPixelRatio } = renderer.getCanvasOptions();
     const textDecoration = underline ? TextDecoration.UNDERLINE : TextDecoration.NONE;
     const font = DEFAULT_FONT;
+    const isTextArea = rect.subtype === RectSubtype.TEXT;
 
     let fontStyle = '';
     if (italic) fontStyle = `${fontStyle} italic`;
     if (bold) fontStyle = `${fontStyle} bold`;
 
+    const width = isTextArea ? DEFAULT_TEXT_AREA_WIDTH : DEFAULT_RECT_SIZE;
+    const height = isTextArea ? DEFAULT_TEXT_AREA_HEIGHT : DEFAULT_RECT_SIZE;
+
     const canvasText = new CanvasText({
       x,
       y,
-      width: DEFAULT_RECT_SIZE,
-      height: DEFAULT_RECT_SIZE,
+      width,
+      height,
       text,
       textAlign,
       textDecoration,

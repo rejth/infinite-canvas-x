@@ -42,9 +42,9 @@ export const useCreateSticker = () => {
 
     layer.addChild(sticker);
     layer.setActive(true);
-    setActiveLayer(layer);
     renderManager.addLayer(layer);
 
+    setActiveLayer(layer);
     showTextEditor(e, layer);
     setTool(Tools.SELECT);
   };

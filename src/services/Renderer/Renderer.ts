@@ -583,7 +583,7 @@ export class Renderer {
 
     const { text, shift, spread } = options;
 
-    this.ctx.font = `bold 70px monospace`;
+    this.ctx.font = `62px monospace`;
 
     const map = new SplineArcLengthMap(spline);
     const textLength = this.ctx.measureText(text).width;

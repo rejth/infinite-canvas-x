@@ -1,8 +1,10 @@
 import { Point } from '@/shared/interfaces';
-import { COLORS } from '@/shared/constants';
+import { COLORS, DEFAULT_SCALE, SMALL_PADDING } from '@/shared/constants';
 
 import { BaseDrawOptions, CanvasEntityType } from '@/entities/interfaces';
 import { BaseCanvasEntity } from '@/entities/BaseCanvasEntity';
+import { CanvasRect, RectSubtype } from '@/entities/CanvasRect';
+import { Layer } from '@/entities/Layer';
 
 import { BezierCurve, Vector, MBR } from '@/services/Geometry';
 
@@ -24,7 +26,7 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
   controlPointToSplineIndex: number[] = [];
   mbr: MBR;
 
-  // Add caching properties for control point dragging
+  // Caching properties for control point dragging
   private selectedControlPointIndex: number | null = null;
   private isDraggingControlPoint = false;
 
@@ -37,7 +39,7 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
     this.computeSpline();
   }
 
-  computeSpline = () => {
+  private computeSpline = () => {
     this.curves.length = 0;
     this.handles.length = 0;
     this.allControlPoints.length = 0;
@@ -71,7 +73,7 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
     }
   };
 
-  computeMBR = () => {
+  private computeMBR = () => {
     const baseMBR = new MBR(...this.spline.map((point) => new Vector(point[0], point[1])));
 
     // Add padding for control point radius and safety margin
@@ -87,7 +89,15 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
     return baseMBR;
   };
 
-  dragControlPoint = (cp: Point, cpIndex: number) => {
+  private vAdd(a: number[], b: number[]) {
+    return [a[0] + b[0], a[1] + b[1]];
+  }
+
+  private vSub(a: number[], b: number[]) {
+    return [a[0] - b[0], a[1] - b[1]];
+  }
+
+  private dragControlPoint = (cp: Point, cpIndex: number) => {
     const { x, y } = cp;
 
     // Map control point index to spline index
@@ -134,6 +144,23 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
     this.mbr = this.computeMBR();
   };
 
+  private getControlPointAtPosition = (x: number, y: number, threshold: number = 50): number | null => {
+    const thresholdSquared = threshold * threshold;
+
+    for (let i = 0; i < this.allControlPoints.length; i++) {
+      const controlPoint = this.allControlPoints[i];
+      const dx = x - controlPoint.x;
+      const dy = y - controlPoint.y;
+      const distanceSquared = dx * dx + dy * dy;
+
+      if (distanceSquared <= thresholdSquared) {
+        return i;
+      }
+    }
+
+    return null;
+  };
+
   // Method to start control point drag - call this on mousedown
   startControlPointDrag = (x: number, y: number, threshold: number = 50): number | null => {
     // If already dragging, return cached index
@@ -165,36 +192,35 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
     this.selectedControlPointIndex = null;
   };
 
-  getCachedControlPointIndex = (): number | null => {
-    return this.isDraggingControlPoint ? this.selectedControlPointIndex : null;
-  };
+  enableTextEditor() {
+    const x = this.mbr.min.x;
+    const y = this.mbr.min.y;
+    const bboxWidth = this.mbr.size().x;
+    const bboxHeight = this.mbr.size().y;
 
-  getIsDraggingControlPoint = (): boolean => {
-    return this.isDraggingControlPoint;
-  };
+    const textArea = new CanvasRect(
+      {
+        x,
+        y,
+        width: bboxWidth,
+        height: bboxHeight,
+        color: COLORS.TRANSPARENT,
+        scale: DEFAULT_SCALE,
+      },
+      RectSubtype.TEXT,
+    );
 
-  getControlPointAtPosition = (x: number, y: number, threshold: number = 50): number | null => {
-    const thresholdSquared = threshold * threshold;
+    const layer = new Layer({
+      x: x - SMALL_PADDING,
+      y: y - SMALL_PADDING,
+      width: bboxWidth + SMALL_PADDING * 2,
+      height: bboxHeight + SMALL_PADDING * 2,
+      scale: DEFAULT_SCALE,
+    });
 
-    for (let i = 0; i < this.allControlPoints.length; i++) {
-      const controlPoint = this.allControlPoints[i];
-      const dx = x - controlPoint.x;
-      const dy = y - controlPoint.y;
-      const distanceSquared = dx * dx + dy * dy;
+    layer.addChild(textArea);
+    layer.setActive(true);
 
-      if (distanceSquared <= thresholdSquared) {
-        return i;
-      }
-    }
-
-    return null;
-  };
-
-  private vAdd(a: number[], b: number[]) {
-    return [a[0] + b[0], a[1] + b[1]];
-  }
-
-  private vSub(a: number[], b: number[]) {
-    return [a[0] - b[0], a[1] - b[1]];
+    return layer;
   }
 }

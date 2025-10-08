@@ -4,7 +4,14 @@ import { isCanvasRect, isCanvasText } from '@/entities/lib';
 import { CanvasEntityType } from '@/entities/interfaces';
 import { Point } from '@/entities/Point';
 
-import { DEFAULT_SCALE, SMALL_PADDING, DEFAULT_FONT_WEIGHT, DEFAULT_RECT_SIZE } from '@/shared/constants';
+import {
+  DEFAULT_SCALE,
+  SMALL_PADDING,
+  DEFAULT_FONT_WEIGHT,
+  DEFAULT_RECT_SIZE,
+  DEFAULT_TEXT_AREA_WIDTH,
+  DEFAULT_TEXT_AREA_HEIGHT,
+} from '@/shared/constants';
 import { CustomEvents, DoubleClickCustomEvent, FontStyle, TextDecoration } from '@/shared/interfaces';
 
 import { useCanvasContext, useActiveLayerContext, useTextEditorContext } from '@/context';
@@ -12,6 +19,7 @@ import { useCanvasContext, useActiveLayerContext, useTextEditorContext } from '@
 import { TextEditorMenu } from './TextEditorMenu/TextEditorMenu';
 
 import styles from './TextEditor.module.css';
+import { RectSubtype } from '@/entities/CanvasRect';
 
 export const TextEditor = () => {
   const { renderer, camera } = useCanvasContext();
@@ -105,6 +113,10 @@ export const TextEditor = () => {
   const inverseScale = DEFAULT_SCALE / (transform.scaleX / transform.initialScale);
   const editorScale = scale / inverseScale;
   const isVisible = activeLayer && isLayerEditable;
+  const isTextArea = rect.subtype === RectSubtype.TEXT;
+
+  const width = isTextArea ? DEFAULT_TEXT_AREA_WIDTH : DEFAULT_RECT_SIZE;
+  const height = isTextArea ? DEFAULT_TEXT_AREA_HEIGHT : DEFAULT_RECT_SIZE;
 
   return (
     <>
@@ -122,8 +134,8 @@ export const TextEditor = () => {
           visibility: isVisible ? 'visible' : 'hidden',
           left: editorPosition.x + SMALL_PADDING * editorScale,
           top: editorPosition.y + SMALL_PADDING * editorScale,
-          width: DEFAULT_RECT_SIZE - SMALL_PADDING * 2,
-          height: DEFAULT_RECT_SIZE - SMALL_PADDING * 2,
+          width: width - SMALL_PADDING * 2,
+          height: height - SMALL_PADDING * 2,
           transform: `scale(${editorScale})`,
           textAlign: textAlign,
           fontSize: `${fontSize}px`,

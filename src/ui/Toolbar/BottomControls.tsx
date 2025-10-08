@@ -42,7 +42,7 @@ export function BottomControls() {
           variant="ghost"
           size="sm"
           onClick={() => {}}
-          className="h-8 w-8 p-0 text-black hover:bg-gray-100 rounded-full"
+          className="h-8 w-8 p-0 text-black hover:bg-gray-100 rounded-full cursor-pointer"
         >
           <Undo2 className="h-4 w-4" />
         </Button>
@@ -50,7 +50,7 @@ export function BottomControls() {
           variant="ghost"
           size="sm"
           onClick={() => {}}
-          className="h-8 w-8 p-0 text-black hover:bg-gray-100 rounded-full"
+          className="h-8 w-8 p-0 text-black hover:bg-gray-100 rounded-full cursor-pointer"
         >
           <Redo2 className="h-4 w-4" />
         </Button>
@@ -62,7 +62,7 @@ export function BottomControls() {
           variant="ghost"
           size="sm"
           onClick={zoomOut}
-          className="h-8 w-8 p-0 text-black hover:bg-gray-100 rounded-full"
+          className="h-8 w-8 p-0 text-black hover:bg-gray-100 rounded-full cursor-pointer"
         >
           <Minus className="h-4 w-4" />
         </Button>
@@ -73,7 +73,7 @@ export function BottomControls() {
           variant="ghost"
           size="sm"
           onClick={zoomIn}
-          className="h-8 w-8 p-0 text-black hover:bg-gray-100 rounded-full"
+          className="h-8 w-8 p-0 text-black hover:bg-gray-100 rounded-full cursor-pointer"
         >
           <Plus className="h-4 w-4" />
         </Button>

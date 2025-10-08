@@ -21,6 +21,7 @@ interface TextEditorContextInterface {
   setItalic: Dispatch<SetStateAction<boolean>>;
   setUnderline: Dispatch<SetStateAction<boolean>>;
   resetTextEditor: () => void;
+  setTextEditor: (text: string) => void;
 }
 
 export const TextEditorContext = createContext<TextEditorContextInterface>({
@@ -41,4 +42,5 @@ export const TextEditorContext = createContext<TextEditorContextInterface>({
   setItalic: () => false,
   setUnderline: () => false,
   resetTextEditor: () => null,
+  setTextEditor: () => null,
 });

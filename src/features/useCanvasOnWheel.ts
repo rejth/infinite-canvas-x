@@ -12,7 +12,7 @@ export function useCanvasOnWheel() {
   const [timerId, setTimerId] = useState(0);
 
   return (e: React.WheelEvent) => {
-    if (!renderManager || !camera || isLayerEditable) return;
+    if (isLayerEditable) return;
 
     camera.handleWheelChange(e.nativeEvent);
     clearTimeout(timerId);
