@@ -1,24 +1,24 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { Icons } from '@/shared/ui/icons';
-import { useDidMountEffect } from '@/shared/hooks/useDidMountEffect';
+import { Icons } from '@/app/shared/ui/icons';
+import { useDidMountEffect } from '@/app/shared/hooks/useDidMountEffect';
 
-import { Renderer } from '@/services/Renderer';
-import { Camera } from '@/services/Camera';
-import { type BaseRenderManager, RenderManager, createProxyCanvas } from '@/services/RenderManager';
+import { CanvasContextProvider } from '@/app/store/CanvasContext/CanvasContextProvider';
+import { ActiveLayerProvider } from '@/app/store/ActiveLayerContext/ActiveLayerContextProvider';
+import { TextEditorProvider } from '@/app/store/TextEditorContext/TextEditorContextProvider';
+import { ToolbarProvider } from '@/app/store/ToolbarContext/ToolbarContextProvider';
+import { ImageEditorProvider } from '@/app/store/ImageEditorContext/ImageEditorContextProvider';
 
-import { CanvasContextProvider } from '@/context/CanvasContext/CanvasContextProvider';
-import { ActiveLayerProvider } from '@/context/ActiveLayerContext/ActiveLayerContextProvider';
-import { TextEditorProvider } from '@/context/TextEditorContext/TextEditorContextProvider';
-import { ToolbarProvider } from '@/context/ToolbarContext/ToolbarContextProvider';
-import { ImageEditorProvider } from '@/context/ImageEditorContext/ImageEditorContextProvider';
+import { Canvas } from '@/app/ui/components/Canvas/Canvas';
+import { Toolbar } from '@/app/ui/components/Toolbar/Toolbar';
+import { TextEditor } from '@/app/ui/components/TextEditor/TextEditor';
+import { ElementsPanel } from '@/app/ui/components/ElementsPanel/ElementsPanel';
+import { BottomControls } from '@/app/ui/components/BottomControls/BottomControls';
+import { PropertiesSidebar } from '@/app/ui/components/PropertiesSidebar/PropertiesSidebar';
 
-import { Canvas } from '@/ui/Canvas/Canvas';
-import { Toolbar } from '@/ui/Toolbar/Toolbar';
-import { TextEditor } from '@/ui/TextEditor/TextEditor';
-import { PropertiesSidebar } from '@/ui/PropertiesSidebar/PropertiesSidebar';
-import { ElementsPanel } from '@/ui/ElementsPanel/ElementsPanel';
-import { BottomControls } from '@/ui/Toolbar/BottomControls';
+import { Renderer } from '@/core/services/Renderer';
+import { Camera } from '@/core/services/Camera';
+import { type BaseRenderManager, RenderManager, createProxyCanvas } from '@/core/services/RenderManager';
 
 import './App.module.css';
 

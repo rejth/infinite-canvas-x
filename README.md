@@ -55,6 +55,7 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 - 📦 **Layer serialization** for save/load functionality.
 
 ## 🚀 **Next steps**
+
 - Complete real-time online synchronization via PouchDB.
 
 ## 🚦 **Getting Started**
