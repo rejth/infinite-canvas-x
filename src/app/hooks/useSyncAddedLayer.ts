@@ -4,7 +4,7 @@ import { useActiveLayerContext } from '@/app/store';
 import { PouchDBService } from '@/app/services/PouchDBService';
 import { LayerDocument } from '@/app/services/interfaces';
 
-import { LayerSerializer } from '@/core/entities/LayerSerializer';
+import { LayerSerializer } from '@/core/services/LayerSerializer';
 
 export const useSyncAddedLayer = () => {
   const { activeLayer, lastActiveLayer } = useActiveLayerContext();

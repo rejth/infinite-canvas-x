@@ -1,44 +1,13 @@
-import { LayerId } from '@/core/interfaces';
+import { isCanvasImage, isCanvasSpline } from '@/core/lib';
+
+import { BaseCanvasEntityInterface, CanvasEntityType, LayerInterface } from '@/core/entities/interfaces';
 
 import { Layer } from '@/core/entities/Layer';
-import { CanvasRect, RectDrawOptions } from '@/core/entities/CanvasRect';
-import { CanvasText, TextDrawOptions } from '@/core/entities/CanvasText';
-import {
-  BaseCanvasEntityInterface,
-  BaseDrawOptions,
-  CanvasEntitySubtype,
-  CanvasEntityType,
-  LayerInterface,
-} from '@/core/entities/interfaces';
+import { CanvasRect } from '@/core/entities/CanvasRect';
+import { CanvasText } from '@/core/entities/CanvasText';
 
-import { isCanvasImage, isCanvasSpline } from './lib';
-
-export type SerializedLayer<T extends BaseDrawOptions = BaseDrawOptions> = {
-  id: LayerId | null;
-  type: CanvasEntityType;
-  subtype: CanvasEntitySubtype | null;
-  options: T;
-  children: SerializedCanvasObject<T>[];
-};
-
-export type SerializedCanvasObject<T extends BaseDrawOptions = BaseDrawOptions> = {
-  type: CanvasEntityType;
-  subtype: CanvasEntitySubtype | null;
-  options: T;
-  minDimension: number;
-};
-
-const isSerializedEntityRect = (
-  serializedEntity: SerializedCanvasObject,
-): serializedEntity is SerializedCanvasObject<RectDrawOptions> => {
-  return serializedEntity.type === CanvasEntityType.RECT;
-};
-
-const isSerializedEntityText = (
-  serializedEntity: SerializedCanvasObject,
-): serializedEntity is SerializedCanvasObject<TextDrawOptions> => {
-  return serializedEntity.type === CanvasEntityType.TEXT;
-};
+import { SerializedCanvasObject, SerializedLayer } from './types';
+import { isSerializedEntityRect, isSerializedEntityText } from './typeguards';
 
 export class LayerSerializer {
   private constructor() {}

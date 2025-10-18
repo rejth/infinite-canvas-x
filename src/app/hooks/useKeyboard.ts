@@ -4,7 +4,7 @@ import { useSyncDeletedLayer } from '@/app/hooks/useSyncDeletedLayer';
 import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/app/store';
 
 import { LayerInterface } from '@/core/entities/interfaces';
-import { LayerSerializer } from '@/core/entities/LayerSerializer';
+import { LayerSerializer } from '@/core/services/LayerSerializer';
 
 export function useKeyboard() {
   const { renderManager } = useCanvasContext();

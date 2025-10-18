@@ -7,7 +7,7 @@ export class PouchDBService {
 
   private readonly isDev = import.meta.env.DEV;
   private readonly localUrl = 'http://localhost:5984'; // go to http://localhost:5984/_utils/ for CouchDB UI
-  private readonly remoteUrl = 'https://my.cloudant.com/';
+  private readonly remoteUrl = 'https://my.cloudant.com/'; // go to https://cloud.ibm.com/ for IBM Cloudant
   private readonly remoteDBUrl: string;
 
   private static instance: PouchDBService | null = null;
