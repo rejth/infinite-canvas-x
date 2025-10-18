@@ -1,9 +1,9 @@
 import { Colors, Point } from '@/core/interfaces';
 import { DEFAULT_SCALE, SMALL_PADDING } from '@/core/constants';
 
-import { BaseDrawOptions, CanvasEntityType } from '@/core/entities/interfaces';
+import { BaseDrawOptions, CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
 import { BaseCanvasEntity } from '@/core/entities/BaseCanvasEntity';
-import { CanvasRect, RectSubtype } from '@/core/entities/CanvasRect';
+import { CanvasRect } from '@/core/entities/CanvasRect';
 import { Layer } from '@/core/entities/Layer';
 
 import { BezierCurve, Vector, MBR } from '@/core/math';
@@ -207,7 +207,7 @@ export class CanvasSpline extends BaseCanvasEntity<SplineDrawOptions> {
         color: Colors.TRANSPARENT,
         scale: DEFAULT_SCALE,
       },
-      RectSubtype.TEXT,
+      CanvasEntitySubtype.TEXT,
     );
 
     const layer = new Layer({

@@ -12,6 +12,11 @@ export const enum CanvasEntityType {
   IMAGE = 'IMAGE',
 }
 
+export const enum CanvasEntitySubtype {
+  RECT = 'RECT',
+  TEXT = 'TEXT',
+}
+
 export interface BaseDrawOptions {
   x: number;
   y: number;
@@ -32,6 +37,9 @@ export interface BaseCanvasEntityInterface<T extends BaseDrawOptions = BaseDrawO
 
   getType(): CanvasEntityType;
   setType(type: CanvasEntityType): void;
+
+  getSubtype(): CanvasEntitySubtype | null;
+  setSubtype(subtype: CanvasEntitySubtype | null): void;
 
   getXY(): number[];
   setXY(x: number, y: number): void;

@@ -1,22 +1,19 @@
 import { useCallback } from 'react';
 
 import { useActiveLayerContext } from '@/app/store';
+import { PouchDBService } from '@/app/services/PouchDBService';
+import { LayerDocument } from '@/app/services/interfaces';
 
-import { LayerDocument } from '@/core/storage/interfaces';
 import { LayerSerializer } from '@/core/entities/LayerSerializer';
-import { RenderManager } from '@/core/services/RenderManager';
 
-export const useSyncLayer = () => {
+export const useSyncAddedLayer = () => {
   const { activeLayer, lastActiveLayer } = useActiveLayerContext();
 
   const currentActiveLayer = activeLayer || lastActiveLayer;
 
   return useCallback(async () => {
-    const renderManager = RenderManager.getInstance();
-    if (!renderManager || !currentActiveLayer) return;
-
-    const db = renderManager.getSyncDBInstance()?.database;
-    if (!db) return;
+    const pouchdb = PouchDBService.getDatabase();
+    if (!currentActiveLayer || !pouchdb) return;
 
     const serializedLayer = LayerSerializer.serialize(currentActiveLayer);
     if (!serializedLayer) return;
@@ -27,15 +24,15 @@ export const useSyncLayer = () => {
     }
 
     try {
-      const doc = await db.get(String(docId));
+      const doc = await pouchdb.get(String(docId));
       (serializedLayer as LayerDocument)._rev = doc._rev;
 
       if (JSON.stringify(doc) === JSON.stringify(serializedLayer)) return;
 
-      await db.put(serializedLayer);
+      await pouchdb.put(serializedLayer);
     } catch {
       // If the layer is not found, create it
-      await db.put(serializedLayer);
+      await pouchdb.put(serializedLayer);
     }
   }, [currentActiveLayer]);
 };

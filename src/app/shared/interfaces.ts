@@ -1,4 +1,3 @@
-import { Layer } from '@/core/entities/Layer';
 import { Point, TextAlign } from '@/core/interfaces';
 
 export const enum Tools {
@@ -43,12 +42,4 @@ export const enum CustomEvents {
   DOUBLE_CLICK = 'double-click',
   OUT_CLICK = 'out-click',
   ZOOMING_STOPPED = 'zooming-stopped',
-}
-
-export interface DoubleClickCustomEvent {
-  pageX: number;
-  pageY: number;
-  transformedPageX: number;
-  transformedPageY: number;
-  layer: Layer;
 }

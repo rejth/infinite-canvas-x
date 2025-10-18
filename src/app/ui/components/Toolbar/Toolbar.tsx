@@ -3,6 +3,7 @@ import { CURSORS, DEFAULT_CURSOR } from '@/app/shared/constants';
 import { Icon } from '@/app/shared/ui/Icon/Icon';
 import { cn } from '@/app/shared/lib/utils';
 
+import { useSyncDeletedLayer } from '@/app/hooks/useSyncDeletedLayer';
 import { useActiveLayerContext, useCanvasContext, useTextEditorContext, useToolbarContext } from '@/app/store';
 
 import styles from './Toolbar.module.css';
@@ -64,6 +65,7 @@ export const Toolbar = () => {
   const { setIsLayerEditable, resetTextEditor } = useTextEditorContext();
   const { activeLayer, setActiveLayer, setLastActiveLayer } = useActiveLayerContext();
   const { tool, setTool, setCursor } = useToolbarContext();
+  const syncDeletedLayer = useSyncDeletedLayer();
 
   const resetActiveLayer = () => {
     setIsLayerEditable(false);
@@ -73,12 +75,14 @@ export const Toolbar = () => {
     activeLayer?.setActive(false);
   };
 
-  const handleClick = (tool: Tool) => {
+  const handleClick = async (tool: Tool) => {
     setTool(tool);
 
     if (tool === Tools.DELETE && activeLayer) {
       renderManager?.removeLayer(activeLayer);
       resetActiveLayer();
+      setTool(Tools.SELECT);
+      syncDeletedLayer(activeLayer);
     } else if (activeLayer) {
       resetActiveLayer();
       renderManager?.reDrawOnNextFrame();

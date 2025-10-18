@@ -1,4 +1,4 @@
-import { BaseStore } from './BaseStore';
+import { BaseStore } from '../BaseStore';
 import { StoreName } from '../interfaces';
 
 class TestStore extends BaseStore {

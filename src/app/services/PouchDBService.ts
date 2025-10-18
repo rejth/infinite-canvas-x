@@ -10,6 +10,8 @@ export class PouchDBService {
   private readonly remoteUrl = 'https://my.cloudant.com/';
   private readonly remoteDBUrl: string;
 
+  private static instance: PouchDBService | null = null;
+
   private constructor(dbName: string) {
     this.remoteDBUrl = this.isDev ? `${this.localUrl}/${dbName}` : `${this.remoteUrl}/${dbName}`;
     this.startSync = this.startSync.bind(this);
@@ -21,9 +23,23 @@ export class PouchDBService {
   }
 
   static async create(dbName: string): Promise<PouchDBService> {
+    if (PouchDBService.instance) {
+      return PouchDBService.instance;
+    }
+
     const instance = new PouchDBService(dbName);
+    PouchDBService.instance = instance;
+
     await instance.initialize(dbName);
     return instance;
+  }
+
+  static getInstance(): PouchDBService | null {
+    return PouchDBService.instance;
+  }
+
+  static getDatabase(): PouchDB.Database | null | undefined {
+    return PouchDBService.getInstance()?.database;
   }
 
   private async initialize(dbName: string): Promise<void> {

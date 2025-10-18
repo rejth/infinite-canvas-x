@@ -3,9 +3,8 @@ import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@
 import { DEFAULT_FONT, DEFAULT_RECT_SIZE, DEFAULT_TEXT_AREA_HEIGHT, DEFAULT_TEXT_AREA_WIDTH } from '@/core/constants';
 import { TextDecoration } from '@/core/interfaces';
 
-import { CanvasEntityType } from '@/core/entities/interfaces';
+import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
 import { CanvasText } from '@/core/entities/CanvasText';
-import { RectSubtype } from '@/core/entities/CanvasRect';
 import { isCanvasRect } from '@/core/entities/lib';
 
 export function useCreateText() {
@@ -24,7 +23,7 @@ export function useCreateText() {
     const { initialPixelRatio } = renderer.getCanvasOptions();
     const textDecoration = underline ? TextDecoration.UNDERLINE : TextDecoration.NONE;
     const font = DEFAULT_FONT;
-    const isTextArea = rect.subtype === RectSubtype.TEXT;
+    const isTextArea = rect.getSubtype() === CanvasEntitySubtype.TEXT;
 
     let fontStyle = '';
     if (italic) fontStyle = `${fontStyle} italic`;

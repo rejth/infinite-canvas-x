@@ -4,7 +4,6 @@ import { Point } from '@/core/entities/Point';
 
 import { MBR } from '@/core/math';
 
-import { removeLayerSync } from '@/core/services/lib';
 import { type Renderer } from '@/core/services/Renderer';
 import { SpatialTileIndex, TileKey } from '@/core/services/SpatialTileIndex';
 
@@ -79,7 +78,6 @@ export class TileBasedRenderManager extends BaseRenderManager {
     this.redrawDirtyTiles();
   }
 
-  @removeLayerSync()
   removeLayer(layer: LayerInterface): LayerInterface {
     const layerId = layer.getId();
     if (!layerId) return layer;

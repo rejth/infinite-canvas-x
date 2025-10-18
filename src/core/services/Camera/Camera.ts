@@ -1,4 +1,4 @@
-import type { DoubleClickCustomEvent } from '@/app/shared/interfaces';
+import type { DoubleClickCustomEvent } from '@/core/interfaces';
 import { ZOOM_MIN, ZOOM_MAX } from '@/core/constants';
 
 import { Point } from '@/core/entities/Point';

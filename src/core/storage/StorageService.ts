@@ -1,8 +1,8 @@
 import { CanvasStateStore } from './CanvasStateStore';
-import { generateMockData } from './testData';
+import { generateMockData } from './tests/testData';
 import { v1 } from './schemas';
 
-import { StoreName } from '../interfaces';
+import { StoreName } from './interfaces';
 
 export class StorageService {
   private static instance: StorageService | null = null;

@@ -6,9 +6,8 @@ import { Button } from '@/app/ui/primitives/button';
 import { Slider } from '@/app/ui/primitives/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/ui/primitives/select';
 
-import { CanvasEntityType } from '@/core/entities/interfaces';
+import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
 import { isCanvasImage, isCanvasRect } from '@/core/entities/lib';
-import { RectSubtype } from '@/core/entities/CanvasRect';
 
 import {
   useActiveLayerContext,
@@ -115,7 +114,7 @@ export function PropertiesSidebar() {
   const enableTextTransformation = () => {
     if (!activeLayer) return;
     const rect = activeLayer.getChildByType(CanvasEntityType.RECT);
-    const isTextArea = rect && isCanvasRect(rect) && rect.subtype === RectSubtype.TEXT;
+    const isTextArea = rect && isCanvasRect(rect) && rect.getSubtype() === CanvasEntitySubtype.TEXT;
     if (!isTextArea) return;
 
     const textChild = activeLayer.getChildByType(CanvasEntityType.TEXT);
@@ -135,7 +134,7 @@ export function PropertiesSidebar() {
   const image = activeLayer?.getChildByType(CanvasEntityType.IMAGE);
   const rect = activeLayer?.getChildByType(CanvasEntityType.RECT);
   const spline = activeLayer?.getChildByType(CanvasEntityType.SPLINE);
-  const showTextSidebar = spline || (rect && isCanvasRect(rect) && rect.subtype === RectSubtype.TEXT);
+  const showTextSidebar = spline || (rect && isCanvasRect(rect) && rect.getSubtype() === CanvasEntitySubtype.TEXT);
 
   return (
     <div className="fixed top-0 right-0 h-full w-56 bg-white border-l border-gray-200 z-50">

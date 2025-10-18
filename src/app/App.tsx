@@ -9,6 +9,8 @@ import { TextEditorProvider } from '@/app/store/TextEditorContext/TextEditorCont
 import { ToolbarProvider } from '@/app/store/ToolbarContext/ToolbarContextProvider';
 import { ImageEditorProvider } from '@/app/store/ImageEditorContext/ImageEditorContextProvider';
 
+// import { PouchDBService } from '@/app/services/PouchDBService';
+
 import { Canvas } from '@/app/ui/components/Canvas/Canvas';
 import { Toolbar } from '@/app/ui/components/Toolbar/Toolbar';
 import { TextEditor } from '@/app/ui/components/TextEditor/TextEditor';
@@ -44,6 +46,7 @@ function App() {
 
     cameraRef.current = new Camera(rendererRef.current);
     renderManagerRef.current = await RenderManager.create(rendererRef.current);
+    // await PouchDBService.create('canvas-db');
 
     setCanvas(canvas);
     setBackgroundCanvas(backgroundCanvas);

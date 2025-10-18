@@ -1,7 +1,7 @@
 import { setByPath } from '@/core/lib';
 import { filter, map, slice, take } from '@/core/lib/async-generators';
 
-import { StoreName } from '../interfaces';
+import { StoreName } from './interfaces';
 
 type TransactionOperation<T> = (stores: { objectStore: IDBObjectStore }) => Promise<T>;
 

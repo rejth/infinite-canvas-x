@@ -1,3 +1,5 @@
+import { Layer } from '@/core/entities/Layer';
+
 export type LayerId = number;
 export type PixelRatio = number;
 
@@ -152,6 +154,14 @@ export interface TransformationMatrix {
   skewY: number;
   skewX: number;
   initialScale: number;
+}
+
+export interface DoubleClickCustomEvent {
+  pageX: number;
+  pageY: number;
+  transformedPageX: number;
+  transformedPageY: number;
+  layer: Layer;
 }
 
 export const enum TextAlign {

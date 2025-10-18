@@ -1,11 +1,12 @@
 import { DEFAULT_FONT, DEFAULT_SCALE, SMALL_PADDING } from '@/core/constants';
 
-import { BaseDrawOptions, CanvasEntityType } from '@/core/entities/interfaces';
+import { BaseDrawOptions, CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
 import { BaseCanvasEntity } from '@/core/entities/BaseCanvasEntity';
 import { CanvasSpline } from '@/core/entities/CanvasSpline';
 import { Layer } from '@/core/entities/Layer';
 
 import { Vector, MBR } from '@/core/math';
+
 import { Colors } from '../interfaces';
 
 export interface RectDrawOptions extends BaseDrawOptions {
@@ -16,18 +17,11 @@ export interface RectDrawOptions extends BaseDrawOptions {
   shadowBlur?: number;
 }
 
-export const enum RectSubtype {
-  RECT = 'RECT',
-  TEXT = 'TEXT',
-}
-
 export class CanvasRect extends BaseCanvasEntity<RectDrawOptions> {
-  subtype: RectSubtype;
-
-  constructor(options: RectDrawOptions, subtype: RectSubtype = RectSubtype.RECT) {
+  constructor(options: RectDrawOptions, subtype: CanvasEntitySubtype | null = CanvasEntitySubtype.RECT) {
     super(options);
-    this.subtype = subtype;
     this.setType(CanvasEntityType.RECT);
+    this.setSubtype(subtype);
   }
 
   enableTextTransformation(text: string) {

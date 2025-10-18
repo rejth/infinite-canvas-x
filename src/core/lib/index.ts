@@ -1,20 +1,3 @@
-export type CreateDecoratorAction<T> = (
-  self: T,
-  originalMethod: (...args: unknown[]) => unknown,
-  ...args: unknown[]
-) => Promise<unknown> | void;
-
-export function createDecorator<T>(action: CreateDecoratorAction<T>) {
-  return (_target: T, _key: string, descriptor: PropertyDescriptor) => {
-    const originalMethod = descriptor.value;
-
-    descriptor.value = async function (...args: unknown[]) {
-      const _this = this as T;
-      await action(_this, originalMethod, ...args);
-    };
-  };
-}
-
 export function setByPath(object: Record<string, unknown>, path: string, value: unknown) {
   path.split('.').forEach((property, i, array) => {
     if (i === array.length - 1) {

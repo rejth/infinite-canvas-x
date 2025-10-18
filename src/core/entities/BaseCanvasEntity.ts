@@ -1,18 +1,25 @@
 import type { PixelRatio, RectCorners } from '@/core/interfaces';
 import { DEFAULT_RECT_SIZE, DEFAULT_SCALE } from '@/core/constants';
 
-import { BaseCanvasEntityInterface, BaseDrawOptions, CanvasEntityType } from '@/core/entities/interfaces';
+import {
+  BaseCanvasEntityInterface,
+  BaseDrawOptions,
+  CanvasEntitySubtype,
+  CanvasEntityType,
+} from '@/core/entities/interfaces';
 import { Point } from '@/core/entities/Point';
 
 import { geometry } from '@/core/math';
 
 export abstract class BaseCanvasEntity<T extends BaseDrawOptions> implements BaseCanvasEntityInterface<T> {
   private type: CanvasEntityType;
+  private subtype: CanvasEntitySubtype | null;
   private options: T;
   private minDimension: number;
 
   constructor(drawOptions: T, minDimension = DEFAULT_RECT_SIZE) {
     this.type = CanvasEntityType.BASE;
+    this.subtype = null;
 
     const { width, height, scale = DEFAULT_SCALE } = drawOptions;
     const initialWidth = drawOptions.initialWidth || width;
@@ -43,6 +50,14 @@ export abstract class BaseCanvasEntity<T extends BaseDrawOptions> implements Bas
 
   setType(type: CanvasEntityType) {
     this.type = type;
+  }
+
+  getSubtype(): CanvasEntitySubtype | null {
+    return this.subtype ?? null;
+  }
+
+  setSubtype(subtype: CanvasEntitySubtype | null) {
+    this.subtype = subtype;
   }
 
   getXY(): number[] {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { useSyncDeletedLayer } from '@/app/hooks/useSyncDeletedLayer';
 import { useTextEditorContext, useActiveLayerContext, useCanvasContext } from '@/app/store';
 
 import { LayerInterface } from '@/core/entities/interfaces';
@@ -10,6 +11,7 @@ export function useKeyboard() {
   const { activeLayer, setActiveLayer, setLastActiveLayer } = useActiveLayerContext();
   const { isLayerEditable } = useTextEditorContext();
   const { setIsLayerEditable } = useTextEditorContext();
+  const syncDeletedLayer = useSyncDeletedLayer();
 
   const [commandPressed, setCommandPressed] = useState(false);
   const [clipboard, setClipboard] = useState<LayerInterface | null>(null);
@@ -19,8 +21,9 @@ export function useKeyboard() {
       renderManager?.removeLayer(activeLayer);
       setLastActiveLayer(activeLayer);
       setActiveLayer(null);
+      syncDeletedLayer(activeLayer);
     }
-  }, [isLayerEditable, activeLayer, renderManager, setActiveLayer, setLastActiveLayer]);
+  }, [activeLayer, isLayerEditable, renderManager, setLastActiveLayer, setActiveLayer, syncDeletedLayer]);
 
   const handleKeyUp = useCallback(() => {
     setCommandPressed(false);

@@ -16,8 +16,6 @@ import * as guards from '@/core/entities/lib';
 import { type Renderer } from '@/core/services/Renderer';
 import { FpsManager } from '@/core/services/FpsManager';
 
-import { StorageService, PouchDBService } from '@/core/storage';
-
 export type RedrawOptions = {
   exceptType?: CanvasEntityType;
   exceptLayer?: LayerInterface;
@@ -29,26 +27,12 @@ export abstract class BaseRenderManager {
   protected layersCounter = 0;
   protected layerRegistry = new Map<LayerId, LayerInterface>();
 
-  protected localDB: StorageService | null = null;
-  protected syncedDB: PouchDBService | null = null;
-
   constructor(protected readonly renderer: Renderer) {}
 
   protected async initialize(enableFpsManager = false) {
-    // this.localDB = await StorageService.create();
-    // this.syncedDB = await PouchDBService.create('canvas-db');
-
     if (enableFpsManager) {
       new FpsManager();
     }
-  }
-
-  getLocalDBInstance(): StorageService | null {
-    return this.localDB;
-  }
-
-  getSyncDBInstance(): PouchDBService | null {
-    return this.syncedDB;
   }
 
   getContext() {

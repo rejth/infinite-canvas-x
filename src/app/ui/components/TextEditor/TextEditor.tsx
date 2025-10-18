@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { CustomEvents, DoubleClickCustomEvent } from '@/app/shared/interfaces';
+import { CustomEvents } from '@/app/shared/interfaces';
 import { useCanvasContext, useActiveLayerContext, useTextEditorContext } from '@/app/store';
 
 import { isCanvasRect, isCanvasText } from '@/core/entities/lib';
-import { CanvasEntityType } from '@/core/entities/interfaces';
+import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
 import { Point } from '@/core/entities/Point';
 
 import {
@@ -15,8 +15,7 @@ import {
   DEFAULT_TEXT_AREA_WIDTH,
   DEFAULT_TEXT_AREA_HEIGHT,
 } from '@/core/constants';
-import { FontStyle, TextDecoration } from '@/core/interfaces';
-import { RectSubtype } from '@/core/entities/CanvasRect';
+import { DoubleClickCustomEvent, FontStyle, TextDecoration } from '@/core/interfaces';
 
 import { TextEditorMenu } from './TextEditorMenu/TextEditorMenu';
 
@@ -114,7 +113,7 @@ export const TextEditor = () => {
   const inverseScale = DEFAULT_SCALE / (transform.scaleX / transform.initialScale);
   const editorScale = scale / inverseScale;
   const isVisible = activeLayer && isLayerEditable;
-  const isTextArea = rect.subtype === RectSubtype.TEXT;
+  const isTextArea = rect.getSubtype() === CanvasEntitySubtype.TEXT;
 
   const width = isTextArea ? DEFAULT_TEXT_AREA_WIDTH : DEFAULT_RECT_SIZE;
   const height = isTextArea ? DEFAULT_TEXT_AREA_HEIGHT : DEFAULT_RECT_SIZE;

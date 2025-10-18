@@ -12,9 +12,8 @@ import { useCanvasOnMove } from '@/app/hooks/useCanvasOnMove';
 import { useCanvasOnWheel } from '@/app/hooks/useCanvasOnWheel';
 import { useCanvasOnDoubleClick } from '@/app/hooks/useCanvasOnDoubleClick';
 import { useCacheControlPoints } from '@/app/hooks/useCacheControlPoints';
-// import { useRestoreCanvasState } from '@/app/hooks/useRestoreCanvasState';
-// import { useAutosave } from '@/app/hooks/useAutosave';
-// import { useSyncLayer } from '@/app/hooks/useSyncLayer';
+import { useRestoreCanvasState } from '@/app/hooks/useRestoreCanvasState';
+import { useSyncAddedLayer } from '@/app/hooks/useSyncAddedLayer';
 
 import styles from './Canvas.module.css';
 
@@ -34,11 +33,10 @@ export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: Props) => {
   const handleMove = useCanvasOnMove();
   const handleDoubleClick = useCanvasOnDoubleClick();
   const { cacheControlPoint, stopCacheControlPoint } = useCacheControlPoints();
-  // const restoreCanvasState = useRestoreCanvasState();
-  // const syncLayerChanges = useSyncLayer();
+  const restoreCanvasState = useRestoreCanvasState();
+  const syncLayerChanges = useSyncAddedLayer();
 
   useKeyboard();
-  // useAutosave();
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     camera?.handleMouseDown(e.nativeEvent);
@@ -49,8 +47,7 @@ export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: Props) => {
   const handleMouseUp = async () => {
     camera?.handleMouseUp();
     stopCacheControlPoint();
-
-    // await syncLayerChanges();
+    syncLayerChanges();
   };
 
   const handleZoomStopped = useCallback(() => {
@@ -59,9 +56,9 @@ export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: Props) => {
 
   const handleTouchMove = () => null;
 
-  // useEffect(() => {
-  //   restoreCanvasState();
-  // }, [restoreCanvasState]);
+  useEffect(() => {
+    restoreCanvasState();
+  }, [restoreCanvasState]);
 
   useEffect(() => {
     document.addEventListener(CustomEvents.ZOOMING_STOPPED, handleZoomStopped);

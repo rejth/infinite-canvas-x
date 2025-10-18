@@ -5,7 +5,8 @@ import { useCanvasContext, useActiveLayerContext, useToolbarContext, useTextEdit
 import { Colors } from '@/core/interfaces';
 import { Layer } from '@/core/entities/Layer';
 import { Point } from '@/core/entities/Point';
-import { CanvasRect, RectSubtype } from '@/core/entities/CanvasRect';
+import { CanvasRect } from '@/core/entities/CanvasRect';
+import { CanvasEntitySubtype } from '@/core/entities/interfaces';
 import { DEFAULT_SCALE, DEFAULT_TEXT_AREA_HEIGHT, DEFAULT_TEXT_AREA_WIDTH, SMALL_PADDING } from '@/core/constants';
 
 export const useCreateTextArea = () => {
@@ -28,7 +29,7 @@ export const useCreateTextArea = () => {
         color: Colors.TRANSPARENT,
         scale: DEFAULT_SCALE,
       },
-      RectSubtype.TEXT,
+      CanvasEntitySubtype.TEXT,
     );
 
     const layer = new Layer({

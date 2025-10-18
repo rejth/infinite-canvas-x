@@ -4,7 +4,6 @@ import { Point } from '@/core/entities/Point';
 import { MBR } from '@/core/math';
 
 import { type Renderer } from '@/core/services/Renderer';
-import { removeLayerSync } from '@/core/services/lib';
 
 import { BaseRenderManager, RedrawOptions } from './BaseRenderManager';
 
@@ -68,7 +67,6 @@ export class RenderManager extends BaseRenderManager {
     this.reDrawMainCanvasOnNextFrame();
   }
 
-  @removeLayerSync()
   removeLayer(layer: LayerInterface): LayerInterface {
     const layerId = layer.getId();
     if (!layerId) return layer;

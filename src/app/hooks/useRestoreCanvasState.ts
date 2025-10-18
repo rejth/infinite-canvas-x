@@ -1,23 +1,21 @@
 import { useCallback } from 'react';
 
-import { useCanvasContext, useToolbarContext } from '@/app/store';
+import { useCanvasContext } from '@/app/store';
+import { PouchDBService } from '@/app/services/PouchDBService';
+import { LayerDocument } from '@/app/services/interfaces';
 
-import { map, take } from '@/core/lib/sync-generators';
-import { LayerInterface } from '@/core/entities/interfaces';
 import { LayerSerializer } from '@/core/entities/LayerSerializer';
-import { CanvasSettingsDocument, LayerDocument } from '@/core/storage/interfaces';
 
 export const useRestoreCanvasState = () => {
   const { renderManager } = useCanvasContext();
-  const { setZoomPercentage } = useToolbarContext();
 
   return useCallback(async () => {
     if (!renderManager) return;
 
-    const db = renderManager.getSyncDBInstance()?.database;
-    if (!db) return;
+    const pouchdb = PouchDBService.getDatabase();
+    if (!pouchdb) return;
 
-    db.allDocs({ include_docs: true }).then((docs) => {
+    pouchdb.allDocs({ include_docs: true }).then((docs) => {
       const { rows, total_rows } = docs;
 
       if (total_rows === 0) {
@@ -25,17 +23,12 @@ export const useRestoreCanvasState = () => {
         return;
       }
 
-      const canvasSettings = rows[total_rows - 1].doc;
-      const { zoomPercentage, transformMatrix } = canvasSettings as CanvasSettingsDocument;
-
-      const layers = map<(typeof rows)[number], LayerInterface>(take(rows, total_rows - 1), [
-        (row) => LayerSerializer.deserialize(row.doc as LayerDocument)!,
-      ]);
+      const layers = rows
+        .map((row) => LayerSerializer.deserialize(row.doc as LayerDocument))
+        .filter((layer) => layer !== null);
 
       renderManager.bulkAdd([...layers]);
-      renderManager.setTransformMatrix(transformMatrix);
       renderManager.reDrawOnNextFrame({ forceRender: true });
-      setZoomPercentage(zoomPercentage);
     });
-  }, [renderManager, setZoomPercentage]);
+  }, [renderManager]);
 };

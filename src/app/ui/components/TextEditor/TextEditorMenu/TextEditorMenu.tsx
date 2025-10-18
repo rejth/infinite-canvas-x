@@ -23,10 +23,9 @@ import { useTextEditorContext, useActiveLayerContext, useCanvasContext, useToolb
 
 import { DEFAULT_SCALE } from '@/core/constants';
 import { FontStyle, TextAlign, TextDecoration } from '@/core/interfaces';
-import { CanvasEntityType } from '@/core/entities/interfaces';
-import { Point } from '@/core/entities/Point';
+import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
 import { isCanvasRect } from '@/core/entities/lib';
-import { RectSubtype } from '@/core/entities/CanvasRect';
+import { Point } from '@/core/entities/Point';
 
 import { ColorTile } from '../ColorTile/ColorTile';
 
@@ -166,7 +165,7 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
   const menuScale = scale === DEFAULT_SCALE ? scale / inverseScale : transform.scaleX / transform.initialScale;
 
   const rect = activeLayer?.getChildByType(CanvasEntityType.RECT);
-  const isTextArea = rect && isCanvasRect(rect) && rect.subtype === RectSubtype.TEXT;
+  const isTextArea = rect && isCanvasRect(rect) && rect.getSubtype() === CanvasEntitySubtype.TEXT;
 
   return (
     <div
