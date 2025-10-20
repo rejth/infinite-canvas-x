@@ -11,7 +11,7 @@ import { CanvasImage } from '@/core/entities/CanvasImage';
 import { CanvasCircle } from '@/core/entities/CanvasCirce';
 import { CanvasSpline } from '@/core/entities/CanvasSpline';
 import { Point } from '@/core/entities/Point';
-import * as guards from '@/core/entities/lib';
+import * as guards from '@/core/lib';
 
 import { type Renderer } from '@/core/services/Renderer';
 import { FpsManager } from '@/core/services/FpsManager';

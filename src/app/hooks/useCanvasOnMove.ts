@@ -3,7 +3,7 @@ import { DEFAULT_CURSOR } from '@/app/shared/constants';
 import { useActiveLayerContext, useCanvasContext, useTextEditorContext, useToolbarContext } from '@/app/store';
 
 import { CanvasEntityType } from '@/core/entities/interfaces';
-import { isCanvasSelection, isCanvasSpline } from '@/core/entities/lib';
+import { isCanvasSelection, isCanvasSpline } from '@/core/lib';
 
 export function useCanvasOnMove() {
   const { renderManager, camera } = useCanvasContext();

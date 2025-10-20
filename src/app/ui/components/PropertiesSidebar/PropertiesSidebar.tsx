@@ -7,7 +7,7 @@ import { Slider } from '@/app/ui/primitives/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/ui/primitives/select';
 
 import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
-import { isCanvasImage, isCanvasRect } from '@/core/entities/lib';
+import { isCanvasImage, isCanvasRect } from '@/core/lib';
 
 import {
   useActiveLayerContext,

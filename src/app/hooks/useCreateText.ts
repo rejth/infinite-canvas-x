@@ -5,7 +5,7 @@ import { TextDecoration } from '@/core/interfaces';
 
 import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
 import { CanvasText } from '@/core/entities/CanvasText';
-import { isCanvasRect } from '@/core/entities/lib';
+import { isCanvasRect } from '@/core/lib';
 
 export function useCreateText() {
   const { renderer } = useCanvasContext();

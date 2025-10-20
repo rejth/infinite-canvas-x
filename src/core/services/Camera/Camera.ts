@@ -2,7 +2,7 @@ import type { DoubleClickCustomEvent } from '@/core/interfaces';
 import { ZOOM_MIN, ZOOM_MAX } from '@/core/constants';
 
 import { Point } from '@/core/entities/Point';
-import { isCanvasRect } from '@/core/entities/lib';
+import { isCanvasRect } from '@/core/lib';
 import { CanvasEntityType, LayerInterface } from '@/core/entities/interfaces';
 
 import { type Renderer } from '@/core/services/Renderer';

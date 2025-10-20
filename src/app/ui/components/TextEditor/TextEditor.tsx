@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CustomEvents } from '@/app/shared/interfaces';
 import { useCanvasContext, useActiveLayerContext, useTextEditorContext } from '@/app/store';
 
-import { isCanvasRect, isCanvasText } from '@/core/entities/lib';
+import { isCanvasRect, isCanvasText } from '@/core/lib';
 import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
 import { Point } from '@/core/entities/Point';
 

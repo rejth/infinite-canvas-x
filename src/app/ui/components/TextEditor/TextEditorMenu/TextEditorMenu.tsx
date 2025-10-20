@@ -24,7 +24,7 @@ import { useTextEditorContext, useActiveLayerContext, useCanvasContext, useToolb
 import { DEFAULT_SCALE } from '@/core/constants';
 import { FontStyle, TextAlign, TextDecoration } from '@/core/interfaces';
 import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
-import { isCanvasRect } from '@/core/entities/lib';
+import { isCanvasRect } from '@/core/lib';
 import { Point } from '@/core/entities/Point';
 
 import { ColorTile } from '../ColorTile/ColorTile';

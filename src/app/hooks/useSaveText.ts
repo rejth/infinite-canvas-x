@@ -3,7 +3,7 @@ import { useTextEditorContext, useActiveLayerContext } from '@/app/store';
 
 import { TextDecoration } from '@/core/interfaces';
 import { CanvasEntityType } from '@/core/entities/interfaces';
-import { isCanvasText } from '@/core/entities/lib';
+import { isCanvasText } from '@/core/lib';
 
 export const useSaveText = () => {
   const { isLayerEditable, text, textAlign, fontSize, bold, italic, underline } = useTextEditorContext();
