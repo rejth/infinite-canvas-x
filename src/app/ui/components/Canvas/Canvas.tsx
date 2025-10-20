@@ -17,12 +17,12 @@ import { useSyncAddedLayer } from '@/app/hooks/useSyncAddedLayer';
 
 import styles from './Canvas.module.css';
 
-type Props = {
+interface CanvasProps {
   setCanvasRef: (canvas: HTMLCanvasElement) => void;
   setBackgroundCanvasRef: (backgroundCanvas: HTMLCanvasElement) => void;
-};
+}
 
-export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: Props) => {
+export const Canvas = ({ setCanvasRef, setBackgroundCanvasRef }: CanvasProps) => {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
 
   const { renderManager, camera } = useCanvasContext();

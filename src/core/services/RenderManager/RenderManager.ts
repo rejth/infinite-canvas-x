@@ -54,7 +54,7 @@ export class RenderManager extends BaseRenderManager {
   }
 
   bulkAdd(layers: LayerInterface[]) {
-    this.layersCounter = layers.length;
+    this.layersCounter = Math.max(0, ...layers.map((layer) => layer.getId() ?? 0));
 
     for (const layer of layers) {
       const layerId = layer.getId();
