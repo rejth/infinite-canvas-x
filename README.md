@@ -1,11 +1,11 @@
 # 🎨 2D Rendering Engine + Whiteboard X
 
-I'm passionate about the low-level rendering technologies used by graphic editors, design tools, geo-maps, and virtual whiteboards. This is my implementation of a design tool / virtual whiteboard built with a homegrown 2D rendering engine.
+I'm passionate about the low-level rendering technologies used by graphic editors, design tools, geo-maps, and virtual whiteboards. This is my implementation of a graphic editor / virtual whiteboard built with a homegrown 2D rendering engine (CPU-based).
 
 The rendering engine is built with **zero dependencies** using pure Canvas API and math.  
 The application itself is built with React and serves to demonstrate the capabilities of the engine.
 
-I plan to rewrite the rendering part of the canvas with C++ or Rust in the future, as well as use more low-level rendering technologies for 2D graphics with GPU acceleration, and eventually turn this project into a WebGL/WebGPU + WASM rendering engine to achieve better performance and experience.
+I plan to rewrite the rendering part of the canvas with Rust in the future, as well as use more low-level rendering technologies for 2D graphics with GPU acceleration, and eventually turn this project into a Rust + WASM + WebGPU rendering engine to achieve better performance and experience.
 
 <img width="1400" height="929" alt="image" src="https://github.com/user-attachments/assets/ba8751be-390a-4704-aea5-2db90e8bc9e9" />
 
@@ -17,7 +17,7 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 - 🌃&nbsp;Photo editor with filters and effects.
 - 📝&nbsp;Text transformations with highly interactive curves to create aesthetically pleasing shapes.
 - ⚒️&nbsp;Movable and resizable stickers with in-place text editing and formatting.
-- 💾&nbsp;Local-first support (autosaves to the browser) with online synchronization.
+- 💾&nbsp;Local-first support (autosaves to the browser).
 
 ## 🛠️ **Engineering**
 
@@ -25,7 +25,7 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 - **🔍&nbsp;Spatial Indexing**: `O(log n)` lookup times for canvas objects to maximize pickup efficiency.
 - **⚒️&nbsp;On-demand game loop** for minimal CPU consumption.
 - **📝&nbsp;Text and image snapshot caching** to avoid re-rendering of unchanged content.
-- **💾&nbsp;State persistence** with IndexedDB integration and online synchronization via PouchDB.
+- **💾&nbsp;State persistence** with IndexedDB browser storage via PouchDB.
 
 ### Performance Optimizations
 
@@ -51,7 +51,6 @@ I plan to rewrite the rendering part of the canvas with C++ or Rust in the futur
 ### Data Management
 
 - 💾 **Scene persistence** with IndexedDB.
-- 🔄 **Real-time online synchronization** via PouchDB.
 - 📦 **Layer serialization** for save/load functionality.
 
 ## 🚀 **Next steps**
