@@ -1,11 +1,11 @@
 # 🎨 2D Rendering Engine + Whiteboard X
 
-I'm passionate about the low-level rendering technologies used by graphic editors, design tools, geo-maps, and virtual whiteboards. This is my implementation of a graphic editor / virtual whiteboard built with a homegrown 2D rendering engine (CPU-based).
+I'm passionate about the low-level rendering technologies used by graphic editors, design tools, geo-maps, and infinite whiteboards. This project is my implementation of an infinite whiteboard with some image-editor capabilities, built from scratch without relying on any graphics libraries.
 
-The rendering engine is built with **zero dependencies** using pure Canvas API and math.  
-The application itself is built with React and serves to demonstrate the capabilities of the engine.
+The rendering engine is implemented with zero dependencies, using the pure Canvas API.
+The web application itself is built with React and serves mainly as a showcase for the engine's capabilities.
 
-I plan to rewrite the rendering part of the canvas with Rust in the future, as well as use more low-level rendering technologies for 2D graphics with GPU acceleration, and eventually turn this project into a Rust + WASM + WebGPU rendering engine to achieve better performance and experience.
+I plan to rewrite the rendering part of the canvas with Rust in the future, as well as use more low-level rendering technologies for 2D graphics with GPU acceleration, and eventually turn this project into a Rust + WebAssembly + WebGPU rendering engine to achieve better performance and experience.
 
 <img width="1400" height="929" alt="image" src="https://github.com/user-attachments/assets/ba8751be-390a-4704-aea5-2db90e8bc9e9" />
 
@@ -23,9 +23,9 @@ I plan to rewrite the rendering part of the canvas with Rust in the future, as w
 
 - **🎨&nbsp;Rendering System**: Tile-based rendering. Only re-renders dirty regions to maximize performance.
 - **🔍&nbsp;Spatial Indexing**: `O(log n)` lookup times for canvas objects to maximize pickup efficiency.
-- **⚒️&nbsp;On-demand game loop** for minimal CPU consumption.
+- **⚒️&nbsp;On-demand render loop** for minimal CPU consumption.
 - **📝&nbsp;Text and image snapshot caching** to avoid re-rendering of unchanged content.
-- **💾&nbsp;State persistence** with IndexedDB browser storage via PouchDB.
+- **💾&nbsp;State persistence** with IndexedDB.
 
 ### Performance Optimizations
 
@@ -52,10 +52,6 @@ I plan to rewrite the rendering part of the canvas with Rust in the future, as w
 
 - 💾 **Scene persistence** with IndexedDB.
 - 📦 **Layer serialization** for save/load functionality.
-
-## 🚀 **Next steps**
-
-- Complete real-time online synchronization via PouchDB.
 
 ## 🚦 **Getting Started**
 
