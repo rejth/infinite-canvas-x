@@ -1,9 +1,12 @@
-import { TextAlign, TextDecoration } from '@/core/interfaces';
-import { CANVAS_STATE_ID, DEFAULT_ZOOM_PERCENTAGE } from '@/core/constants';
+import {
+  CANVAS_STATE_ID,
+  CanvasEntityType,
+  DEFAULT_ZOOM_PERCENTAGE,
+  TextAlign,
+  TextDecoration,
+} from '@infinite-canvas-x/canvas-engine'
 
-import { CanvasEntityType } from '@/core/entities/interfaces';
-
-import { StoreName } from '../interfaces';
+import { StoreName } from '../interfaces'
 
 const layer1 = {
   id: 1,
@@ -56,7 +59,7 @@ const layer1 = {
       minDimension: 200,
     },
   ],
-};
+}
 
 const layer2 = {
   id: 2,
@@ -109,7 +112,7 @@ const layer2 = {
       minDimension: 200,
     },
   ],
-};
+}
 
 const layer3 = {
   id: 3,
@@ -162,7 +165,7 @@ const layer3 = {
       minDimension: 180,
     },
   ],
-};
+}
 
 const layer4 = {
   id: 4,
@@ -215,7 +218,7 @@ const layer4 = {
       minDimension: 200,
     },
   ],
-};
+}
 
 const layer5 = {
   id: 5,
@@ -268,7 +271,7 @@ const layer5 = {
       minDimension: 160,
     },
   ],
-};
+}
 
 const mockData = {
   id: CANVAS_STATE_ID,
@@ -283,10 +286,10 @@ const mockData = {
     initialScale: 1,
   },
   zoomPercentage: DEFAULT_ZOOM_PERCENTAGE,
-};
+}
 
 export const generateMockData = (transaction: IDBTransaction | null) => {
-  if (!transaction) return;
+  if (!transaction) return
 
-  transaction.objectStore(StoreName.CANVAS_STATE).add(mockData);
-};
+  transaction.objectStore(StoreName.CANVAS_STATE).add(mockData)
+}

@@ -11,5 +11,5 @@ export const TextIcon = () => {
         fill="black"
       />
     </svg>
-  );
-};
+  )
+}

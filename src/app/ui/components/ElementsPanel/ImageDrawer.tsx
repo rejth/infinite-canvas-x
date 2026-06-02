@@ -1,38 +1,36 @@
-import type React from 'react';
-import { useState } from 'react';
-import { Dialog as SheetPrimitive } from 'radix-ui';
-import { Camera, X } from 'lucide-react';
+import type React from 'react'
+import { useState } from 'react'
+import { createCursorFromImage, getImageBitmap } from '@infinite-canvas-x/canvas-engine'
+import { Camera, X } from 'lucide-react'
+import { Dialog as SheetPrimitive } from 'radix-ui'
 
-import { cn } from '@/app/shared/lib/utils';
-import { Button } from '@/app/ui/primitives/button';
-import { Sheet, SheetPortal, SheetHeader, SheetTitle } from '@/app/ui/primitives/sheet';
-
-import { Tools } from '@/app/shared/interfaces';
-import { useDidMountEffect } from '@/app/shared/hooks/useDidMountEffect';
-import { useImageEditorContext, useToolbarContext } from '@/app/store';
-
-import { createCursorFromImage, getImageBitmap } from '@/core/lib';
+import { useDidMountEffect } from '@/app/shared/hooks/useDidMountEffect'
+import { Tools } from '@/app/shared/interfaces'
+import { cn } from '@/app/shared/lib/utils'
+import { useImageEditorContext, useToolbarContext } from '@/app/store'
+import { Button } from '@/app/ui/primitives/button'
+import { Sheet, SheetHeader, SheetPortal, SheetTitle } from '@/app/ui/primitives/sheet'
 
 interface ImageDrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
 interface Photo {
-  id: string;
+  id: string
   urls: {
-    raw: string;
-    full: string;
-    regular: string;
-    small: string;
-    thumb: string;
-  };
-  alt_description: string;
-  width: number;
-  height: number;
+    raw: string
+    full: string
+    regular: string
+    small: string
+    thumb: string
+  }
+  alt_description: string
+  width: number
+  height: number
   user: {
-    name: string;
-  };
+    name: string
+  }
 }
 
 function ImageDrawerContent({
@@ -41,7 +39,7 @@ function ImageDrawerContent({
   side = 'left',
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
-  side?: 'top' | 'right' | 'bottom' | 'left';
+  side?: 'top' | 'right' | 'bottom' | 'left'
 }) {
   return (
     <SheetPortal>
@@ -62,38 +60,38 @@ function ImageDrawerContent({
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
     </SheetPortal>
-  );
+  )
 }
 
 export function ImageDrawer({ open, onOpenChange }: ImageDrawerProps) {
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useState<Photo[]>([])
 
-  const { setCursor, setTool } = useToolbarContext();
-  const { setImage } = useImageEditorContext();
+  const { setCursor, setTool } = useToolbarContext()
+  const { setImage } = useImageEditorContext()
 
   useDidMountEffect(() => {
     fetch('/api/photos')
       .then((response) => {
-        if (!response.ok) return [];
-        return response.json();
+        if (!response.ok) return []
+        return response.json()
       })
-      .then(setPhotos);
-  });
+      .then(setPhotos)
+  })
 
   const handleAddImage = async (photo: Photo) => {
     try {
       const [bitmap, url] = await Promise.all([
         getImageBitmap(photo.urls.regular),
         createCursorFromImage(photo.urls.thumb),
-      ]);
-      setImage(bitmap);
-      setTool(Tools.IMAGE);
-      setCursor(`url(${url}) 16 16, crosshair`);
-      onOpenChange(false);
+      ])
+      setImage(bitmap)
+      setTool(Tools.IMAGE)
+      setCursor(`url(${url}) 16 16, crosshair`)
+      onOpenChange(false)
     } catch {
-      setCursor('crosshair');
+      setCursor('crosshair')
     }
-  };
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -160,5 +158,5 @@ export function ImageDrawer({ open, onOpenChange }: ImageDrawerProps) {
         )}
       </ImageDrawerContent>
     </Sheet>
-  );
+  )
 }

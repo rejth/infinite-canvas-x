@@ -1,22 +1,22 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react'
 
-import { DEFAULT_FILTERS, ImageEditorContext, ImageFilterState } from './ImageEditorContext';
+import { DEFAULT_FILTERS, ImageEditorContext, ImageFilterState } from './ImageEditorContext'
 
 type Props = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 export const ImageEditorProvider = ({ children }: Props) => {
-  const [image, setImage] = useState<CanvasImageSource | null>(null);
-  const [filters, setFilters] = useState<ImageFilterState>(DEFAULT_FILTERS);
+  const [image, setImage] = useState<CanvasImageSource | null>(null)
+  const [filters, setFilters] = useState<ImageFilterState>(DEFAULT_FILTERS)
 
   const handleSetFilters = useCallback((newFilters: Partial<ImageFilterState>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-  }, []);
+    setFilters((prev) => ({ ...prev, ...newFilters }))
+  }, [])
 
   const resetImageEditor = useCallback(() => {
-    setFilters(DEFAULT_FILTERS);
-  }, []);
+    setFilters(DEFAULT_FILTERS)
+  }, [])
 
   return (
     <ImageEditorContext.Provider
@@ -30,5 +30,5 @@ export const ImageEditorProvider = ({ children }: Props) => {
     >
       {children}
     </ImageEditorContext.Provider>
-  );
-};
+  )
+}

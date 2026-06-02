@@ -1,22 +1,22 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react'
 
 export interface ImageFilterState {
-  brightness: number;
-  contrast: number;
-  saturation: number;
-  vibrance: number;
-  hue: number;
-  blur: number;
-  noise: number;
-  pixelate: number;
+  brightness: number
+  contrast: number
+  saturation: number
+  vibrance: number
+  hue: number
+  blur: number
+  noise: number
+  pixelate: number
 }
 
 interface ImageEditorContextInterface {
-  image: CanvasImageSource | null;
-  filters: ImageFilterState;
-  setImage: Dispatch<SetStateAction<CanvasImageSource | null>>;
-  setFilters: (newFilters: Partial<ImageFilterState>) => void;
-  resetImageEditor: () => void;
+  image: CanvasImageSource | null
+  filters: ImageFilterState
+  setImage: Dispatch<SetStateAction<CanvasImageSource | null>>
+  setFilters: (newFilters: Partial<ImageFilterState>) => void
+  resetImageEditor: () => void
 }
 
 export const DEFAULT_FILTERS: ImageFilterState = {
@@ -28,7 +28,7 @@ export const DEFAULT_FILTERS: ImageFilterState = {
   blur: 0,
   noise: 0,
   pixelate: 0,
-};
+}
 
 export const ImageEditorContext = createContext<ImageEditorContextInterface>({
   image: null,
@@ -36,4 +36,4 @@ export const ImageEditorContext = createContext<ImageEditorContextInterface>({
   setImage: () => {},
   setFilters: () => {},
   resetImageEditor: () => {},
-});
+})

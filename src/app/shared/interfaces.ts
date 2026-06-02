@@ -1,4 +1,4 @@
-import { Point, TextAlign } from '@/core/interfaces';
+import { Point, TextAlign } from '@infinite-canvas-x/canvas-engine'
 
 export const enum Tools {
   STICKER = 'STICKER',
@@ -18,24 +18,24 @@ export const enum ShapeType {
   TEXT = 'TEXT',
 }
 
-export type Tool = keyof typeof Tools;
+export type Tool = keyof typeof Tools
 
 export interface TextEditorData {
-  anchorId: string;
-  position: Point;
-  text: string;
-  bold: boolean;
-  underline: boolean;
-  italic: boolean;
-  font: string;
-  fontSize: number;
-  textAlign: TextAlign;
-  isEditable: boolean;
+  anchorId: string
+  position: Point
+  text: string
+  bold: boolean
+  underline: boolean
+  italic: boolean
+  font: string
+  fontSize: number
+  textAlign: TextAlign
+  isEditable: boolean
 }
 
 export interface Color {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 export const enum CustomEvents {

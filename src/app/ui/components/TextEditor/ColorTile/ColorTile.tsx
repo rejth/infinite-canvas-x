@@ -1,13 +1,12 @@
-import { COLOR_LIST, Colors } from '@/app/shared/constants';
-
-import styles from './ColorTile.module.css';
+import styles from './ColorTile.module.css'
+import { COLOR_LIST, Colors } from '@/app/shared/constants'
 
 type Props = {
-  onChange: (color: Colors) => void;
-};
+  onChange: (color: Colors) => void
+}
 
 export const ColorTile = ({ onChange }: Props) => {
-  const handleColorChange = (value: string) => onChange(value as Colors);
+  const handleColorChange = (value: string) => onChange(value as Colors)
 
   return (
     <div className={`${styles.colors} ${styles.iconGroup}`}>
@@ -28,5 +27,5 @@ export const ColorTile = ({ onChange }: Props) => {
         onClick={() => handleColorChange('transparent')}
       />
     </div>
-  );
-};
+  )
+}

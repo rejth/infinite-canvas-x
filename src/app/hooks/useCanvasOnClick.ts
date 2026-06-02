@@ -1,36 +1,34 @@
-import { Tools } from '@/app/shared/interfaces';
-
-import { useCreateSticker } from '@/app/hooks/useCreateSticker';
-import { useSelectTool } from '@/app/hooks/useSelectTool';
-import { useCreateImage } from '@/app/hooks/useCreateImage';
-import { useCreateTextArea } from '@/app/hooks/useCreateTextArea';
-
-import { useCanvasContext, useImageEditorContext, useToolbarContext } from '@/app/store';
+import { useCreateImage } from '@/app/hooks/useCreateImage'
+import { useCreateSticker } from '@/app/hooks/useCreateSticker'
+import { useCreateTextArea } from '@/app/hooks/useCreateTextArea'
+import { useSelectTool } from '@/app/hooks/useSelectTool'
+import { Tools } from '@/app/shared/interfaces'
+import { useCanvasContext, useImageEditorContext, useToolbarContext } from '@/app/store'
 
 export const useCanvasOnClick = () => {
-  const { camera } = useCanvasContext();
-  const { tool } = useToolbarContext();
-  const { image } = useImageEditorContext();
+  const { camera } = useCanvasContext()
+  const { tool } = useToolbarContext()
+  const { image } = useImageEditorContext()
 
-  const createSticker = useCreateSticker();
-  const createImage = useCreateImage();
-  const selectTool = useSelectTool();
-  const createTextArea = useCreateTextArea();
+  const createSticker = useCreateSticker()
+  const createImage = useCreateImage()
+  const selectTool = useSelectTool()
+  const createTextArea = useCreateTextArea()
 
   return (e: React.MouseEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-    if (!camera) return;
+    e.preventDefault()
+    if (!camera) return
 
-    const currentTransformedPosition = camera.handleClick(e.nativeEvent);
+    const currentTransformedPosition = camera.handleClick(e.nativeEvent)
 
     if (tool === Tools.STICKER) {
-      createSticker(e, currentTransformedPosition);
+      createSticker(e, currentTransformedPosition)
     } else if (tool === Tools.TEXT) {
-      createTextArea(e, currentTransformedPosition);
+      createTextArea(e, currentTransformedPosition)
     } else if (tool === Tools.IMAGE && image instanceof ImageBitmap) {
-      createImage(e, currentTransformedPosition, image);
+      createImage(e, currentTransformedPosition, image)
     } else if (tool === Tools.SELECT) {
-      selectTool(e, currentTransformedPosition);
+      selectTool(e, currentTransformedPosition)
     }
-  };
-};
+  }
+}

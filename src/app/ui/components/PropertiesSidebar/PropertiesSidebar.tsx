@@ -1,36 +1,44 @@
-import { useState } from 'react';
-import { Download } from 'lucide-react';
+import { useState } from 'react'
+import {
+  CanvasEntitySubtype,
+  CanvasEntityType,
+  isCanvasImage,
+  isCanvasRect,
+} from '@infinite-canvas-x/canvas-engine'
+import { Download } from 'lucide-react'
 
-import { Tools } from '@/app/shared/interfaces';
-import { Button } from '@/app/ui/primitives/button';
-import { Slider } from '@/app/ui/primitives/slider';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/ui/primitives/select';
+import { Angle } from './icons/Angle'
+import { Arch } from './icons/Arch'
+import { Circle } from './icons/Circle'
+import { Custom } from './icons/Custom'
+import { Distort } from './icons/Distort'
+import { Flag } from './icons/Flag'
+import { Rise } from './icons/Rise'
+import { Wave } from './icons/Wave'
 
-import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
-import { isCanvasImage, isCanvasRect } from '@/core/lib';
-
+import { Tools } from '@/app/shared/interfaces'
 import {
   useActiveLayerContext,
   useCanvasContext,
   useImageEditorContext,
   useTextEditorContext,
   useToolbarContext,
-} from '@/app/store';
-import { ImageFilterState } from '@/app/store/ImageEditorContext/ImageEditorContext';
+} from '@/app/store'
+import { ImageFilterState } from '@/app/store/ImageEditorContext/ImageEditorContext'
+import { Button } from '@/app/ui/primitives/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/ui/primitives/select'
+import { Slider } from '@/app/ui/primitives/slider'
 
-import { Custom } from './icons/Custom';
-import { Distort } from './icons/Distort';
-import { Angle } from './icons/Angle';
-import { Arch } from './icons/Arch';
-import { Rise } from './icons/Rise';
-import { Wave } from './icons/Wave';
-import { Flag } from './icons/Flag';
-import { Circle } from './icons/Circle';
-
-import './PropertiesSidebar.css';
+import './PropertiesSidebar.css'
 
 interface TextStyleState {
-  font: string;
+  font: string
 }
 
 const filterConfigs = [
@@ -42,7 +50,7 @@ const filterConfigs = [
   { key: 'blur' as const, label: 'Blur', min: 0, max: 100 },
   { key: 'noise' as const, label: 'Noise', min: 0, max: 100 },
   { key: 'pixelate' as const, label: 'Pixelate', min: 0, max: 100 },
-];
+]
 
 const transformOptions = [
   { key: 'CUSTOM', icon: Custom, disabled: false },
@@ -53,88 +61,89 @@ const transformOptions = [
   { key: 'RISE', icon: Rise, disabled: true },
   { key: 'WAVE', icon: Wave, disabled: true },
   { key: 'FLAG', icon: Flag, disabled: true },
-];
+]
 
 const formatValue = (key: keyof ImageFilterState, value: number): string => {
   switch (key) {
     case 'brightness':
-      return `${Math.round((value - 50) * 1.8)}%`;
+      return `${Math.round((value - 50) * 1.8)}%`
     case 'contrast':
-      return `${Math.round((value - 50) * 2)}%`;
+      return `${Math.round((value - 50) * 2)}%`
     case 'saturation':
-      return `${Math.round((value - 50) * 1.8)}%`;
+      return `${Math.round((value - 50) * 1.8)}%`
     case 'vibrance':
-      return `${Math.round((value - 50) * 2)}%`;
+      return `${Math.round((value - 50) * 2)}%`
     case 'blur':
-      return `${Math.round(value * 0.4)}%`;
+      return `${Math.round(value * 0.4)}%`
     case 'noise':
-      return `${Math.round(value * 1.1)}%`;
+      return `${Math.round(value * 1.1)}%`
     case 'hue':
     case 'pixelate':
-      return Math.round(value / 50).toString();
+      return Math.round(value / 50).toString()
     default:
-      return value.toString();
+      return value.toString()
   }
-};
+}
 
 export function PropertiesSidebar() {
-  const { renderManager } = useCanvasContext();
-  const { setTool } = useToolbarContext();
-  const { filters, setFilters } = useImageEditorContext();
-  const { text, resetTextEditor } = useTextEditorContext();
-  const { activeLayer, opacity, setOpacity, setActiveLayer } = useActiveLayerContext();
+  const { renderManager } = useCanvasContext()
+  const { setTool } = useToolbarContext()
+  const { filters, setFilters } = useImageEditorContext()
+  const { text, resetTextEditor } = useTextEditorContext()
+  const { activeLayer, opacity, setOpacity, setActiveLayer } = useActiveLayerContext()
 
-  const [textStyle, setTextStyle] = useState<TextStyleState>({ font: 'Arial' });
+  const [textStyle, setTextStyle] = useState<TextStyleState>({ font: 'Arial' })
 
-  const [selectedTransform, setSelectedTransform] = useState('CUSTOM');
+  const [selectedTransform, setSelectedTransform] = useState('CUSTOM')
 
-  if (!renderManager) return null;
+  if (!renderManager) return null
 
   const updateFilter = (key: keyof ImageFilterState, value: number[]) => {
-    const activeImage = activeLayer?.getChildByType(CanvasEntityType.IMAGE);
-    if (!activeImage || !isCanvasImage(activeImage)) return;
+    const activeImage = activeLayer?.getChildByType(CanvasEntityType.IMAGE)
+    if (!activeImage || !isCanvasImage(activeImage)) return
 
-    const newValue = value[0];
-    activeImage.applyFilters({ [key]: newValue });
-    setFilters({ [key]: newValue });
+    const newValue = value[0]
+    activeImage.applyFilters({ [key]: newValue })
+    setFilters({ [key]: newValue })
 
-    renderManager.reDrawOnNextFrame();
-  };
+    renderManager.reDrawOnNextFrame()
+  }
 
   const updateOpacity = (value: number[]) => {
-    if (!activeLayer) return;
+    if (!activeLayer) return
 
-    const newValue = value[0];
-    activeLayer.setOpacity(newValue / 100);
-    setOpacity(newValue);
+    const newValue = value[0]
+    activeLayer.setOpacity(newValue / 100)
+    setOpacity(newValue)
 
-    renderManager.reDrawOnNextFrame();
-  };
+    renderManager.reDrawOnNextFrame()
+  }
 
   const enableTextTransformation = () => {
-    if (!activeLayer) return;
-    const rect = activeLayer.getChildByType(CanvasEntityType.RECT);
-    const isTextArea = rect && isCanvasRect(rect) && rect.getSubtype() === CanvasEntitySubtype.TEXT;
-    if (!isTextArea) return;
+    if (!activeLayer) return
+    const rect = activeLayer.getChildByType(CanvasEntityType.RECT)
+    const isTextArea = rect && isCanvasRect(rect) && rect.getSubtype() === CanvasEntitySubtype.TEXT
+    if (!isTextArea) return
 
-    const textChild = activeLayer.getChildByType(CanvasEntityType.TEXT);
-    const renderedText = textChild?.getOptions().text;
-    const finalText = renderedText || text;
-    if (!finalText || !rect || !isCanvasRect(rect) || !isTextArea) return;
+    const textChild = activeLayer.getChildByType(CanvasEntityType.TEXT)
+    const renderedText = textChild?.getOptions().text
+    const finalText = renderedText || text
+    if (!finalText || !rect || !isCanvasRect(rect) || !isTextArea) return
 
-    const layer = rect.enableTextTransformation(finalText);
-    renderManager.removeLayer(activeLayer);
-    renderManager.addLayer(layer);
+    const layer = rect.enableTextTransformation(finalText)
+    renderManager.removeLayer(activeLayer)
+    renderManager.addLayer(layer)
 
-    resetTextEditor();
-    setActiveLayer(layer);
-    setTool(Tools.SELECT);
-  };
+    resetTextEditor()
+    setActiveLayer(layer)
+    setTool(Tools.SELECT)
+  }
 
-  const image = activeLayer?.getChildByType(CanvasEntityType.IMAGE);
-  const rect = activeLayer?.getChildByType(CanvasEntityType.RECT);
-  const spline = activeLayer?.getChildByType(CanvasEntityType.SPLINE);
-  const showTextSidebar = spline || (rect && isCanvasRect(rect) && rect.getSubtype() === CanvasEntitySubtype.TEXT);
+  const image = activeLayer?.getChildByType(CanvasEntityType.IMAGE)
+  const rect = activeLayer?.getChildByType(CanvasEntityType.RECT)
+  const spline = activeLayer?.getChildByType(CanvasEntityType.SPLINE)
+  const showTextSidebar =
+    spline || (rect && isCanvasRect(rect) && rect.getSubtype() === CanvasEntitySubtype.TEXT)
 
   return (
     <div className="fixed top-0 right-0 h-full w-56 bg-white border-l border-gray-200 z-50">
@@ -264,7 +273,9 @@ export function PropertiesSidebar() {
                 <div key={key} className="space-y-1">
                   <div className="flex items-center justify-between">
                     <label className="text-gray-900 text-xs font-normal">{label}</label>
-                    <span className="text-gray-900 text-xs font-normal">{formatValue(key, filters[key])}</span>
+                    <span className="text-gray-900 text-xs font-normal">
+                      {formatValue(key, filters[key])}
+                    </span>
                   </div>
 
                   <div className="relative">
@@ -284,5 +295,5 @@ export function PropertiesSidebar() {
         </div>
       </div>
     </div>
-  );
+  )
 }

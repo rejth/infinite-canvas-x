@@ -1,38 +1,37 @@
-import { useCallback } from 'react';
+import { useCallback } from 'react'
+import { LayerSerializer } from '@infinite-canvas-x/canvas-engine'
 
-import { useActiveLayerContext } from '@/app/store';
-import { PouchDBService } from '@/app/services/PouchDBService';
-import { LayerDocument } from '@/app/services/interfaces';
-
-import { LayerSerializer } from '@/core/services/LayerSerializer';
+import { LayerDocument } from '@/app/services/interfaces'
+import { PouchDBService } from '@/app/services/PouchDBService'
+import { useActiveLayerContext } from '@/app/store'
 
 export const useSyncAddedLayer = () => {
-  const { activeLayer, lastActiveLayer } = useActiveLayerContext();
+  const { activeLayer, lastActiveLayer } = useActiveLayerContext()
 
-  const currentActiveLayer = activeLayer || lastActiveLayer;
+  const currentActiveLayer = activeLayer || lastActiveLayer
 
   return useCallback(async () => {
-    const pouchdb = PouchDBService.getDatabase();
-    if (!currentActiveLayer || !pouchdb) return;
+    const pouchdb = PouchDBService.getDatabase()
+    if (!currentActiveLayer || !pouchdb) return
 
-    const serializedLayer = LayerSerializer.serialize(currentActiveLayer);
-    if (!serializedLayer) return;
+    const serializedLayer = LayerSerializer.serialize(currentActiveLayer)
+    if (!serializedLayer) return
 
-    const docId = serializedLayer.id;
+    const docId = serializedLayer.id
     if (docId) {
-      (serializedLayer as LayerDocument)._id = String(docId);
+      ;(serializedLayer as LayerDocument)._id = String(docId)
     }
 
     try {
-      const doc = await pouchdb.get(String(docId));
-      (serializedLayer as LayerDocument)._rev = doc._rev;
+      const doc = await pouchdb.get(String(docId))
+      ;(serializedLayer as LayerDocument)._rev = doc._rev
 
-      if (JSON.stringify(doc) === JSON.stringify(serializedLayer)) return;
+      if (JSON.stringify(doc) === JSON.stringify(serializedLayer)) return
 
-      await pouchdb.put(serializedLayer);
+      await pouchdb.put(serializedLayer)
     } catch {
       // If the layer is not found, create it
-      await pouchdb.put(serializedLayer);
+      await pouchdb.put(serializedLayer)
     }
-  }, [currentActiveLayer]);
-};
+  }, [currentActiveLayer])
+}

@@ -1,17 +1,14 @@
-import { createContext } from 'react';
-
-import { type Camera } from '@/core/services/Camera';
-import { type Renderer } from '@/core/services/Renderer';
-import { type BaseRenderManager } from '@/core/services/RenderManager';
+import { createContext } from 'react'
+import type { BaseRenderManager, Camera, Renderer } from '@infinite-canvas-x/canvas-engine'
 
 export interface CanvasContextInterface {
-  renderer: Renderer | null;
-  renderManager: BaseRenderManager | null;
-  camera: Camera | null;
+  renderer: Renderer | null
+  renderManager: BaseRenderManager | null
+  camera: Camera | null
 }
 
 export const CanvasContext = createContext<CanvasContextInterface>({
   renderer: null,
   renderManager: null,
   camera: null,
-});
+})

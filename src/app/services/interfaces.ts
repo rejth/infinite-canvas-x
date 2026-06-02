@@ -1,6 +1,6 @@
-import { SerializedLayer } from '@/core/services/LayerSerializer';
+import { SerializedLayer } from '@infinite-canvas-x/canvas-engine'
 
 export interface LayerDocument extends SerializedLayer {
-  _id: string;
-  _rev: string;
+  _id: string
+  _rev: string
 }

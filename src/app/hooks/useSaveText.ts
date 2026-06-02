@@ -1,34 +1,33 @@
-import { useCreateText } from '@/app/hooks/useCreateText';
-import { useTextEditorContext, useActiveLayerContext } from '@/app/store';
+import { CanvasEntityType, isCanvasText, TextDecoration } from '@infinite-canvas-x/canvas-engine'
 
-import { TextDecoration } from '@/core/interfaces';
-import { CanvasEntityType } from '@/core/entities/interfaces';
-import { isCanvasText } from '@/core/lib';
+import { useCreateText } from '@/app/hooks/useCreateText'
+import { useActiveLayerContext, useTextEditorContext } from '@/app/store'
 
 export const useSaveText = () => {
-  const { isLayerEditable, text, textAlign, fontSize, bold, italic, underline } = useTextEditorContext();
-  const { activeLayer } = useActiveLayerContext();
+  const { isLayerEditable, text, textAlign, fontSize, bold, italic, underline } =
+    useTextEditorContext()
+  const { activeLayer } = useActiveLayerContext()
 
-  const createText = useCreateText();
+  const createText = useCreateText()
 
   return () => {
-    if (!activeLayer || !isLayerEditable) return;
+    if (!activeLayer || !isLayerEditable) return
 
-    const textChild = activeLayer.getChildByType(CanvasEntityType.TEXT);
-    const options = textChild?.getOptions();
+    const textChild = activeLayer.getChildByType(CanvasEntityType.TEXT)
+    const options = textChild?.getOptions()
 
     // If there is a text string but no text on the active layer, create a new text object and add it to the active layer
     if (!textChild && text) {
-      createText();
+      createText()
     } else if (textChild && isCanvasText(textChild) && (text || text !== options?.text)) {
       // If there is a text on the active layer and the new text is different from the text on the active layer, update it
-      const textDecoration = underline ? TextDecoration.UNDERLINE : TextDecoration.NONE;
+      const textDecoration = underline ? TextDecoration.UNDERLINE : TextDecoration.NONE
 
-      let fontStyle = '';
-      if (italic) fontStyle = `${fontStyle} italic`;
-      if (bold) fontStyle = `${fontStyle} bold`;
+      let fontStyle = ''
+      if (italic) fontStyle = `${fontStyle} italic`
+      if (bold) fontStyle = `${fontStyle} bold`
 
-      textChild.setText(text, fontSize, fontStyle, textAlign, textDecoration);
+      textChild.setText(text, fontSize, fontStyle, textAlign, textDecoration)
     }
-  };
-};
+  }
+}

@@ -1,4 +1,4 @@
-& .transformation-button svg:not([class*='size-']) {
+& .transformation-button svg:not([class*="size-"]) {
   width: revert !important;
   height: revert !important;
 }

@@ -32,5 +32,5 @@ export const Angle = () => {
         fill="#676F7E"
       ></path>
     </svg>
-  );
-};
+  )
+}

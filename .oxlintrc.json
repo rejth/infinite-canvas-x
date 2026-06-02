@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "import", "typescript", "jest", "oxc"],
+  "rules": {
+    "no-console": "off",
+    "no-debugger": "error",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "ignorePatterns": ["src/wasm/**", "storybook-static/**"]
+}

@@ -1,123 +1,138 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
+  CanvasEntitySubtype,
+  CanvasEntityType,
+  DEFAULT_SCALE,
+  FontStyle,
+  isCanvasRect,
+  Point,
+  TextAlign,
+  TextDecoration,
+} from '@infinite-canvas-x/canvas-engine'
+import {
+  AArrowDown,
+  AArrowUp,
   AlignCenter,
   AlignLeft,
   AlignRight,
-  AArrowDown,
-  AArrowUp,
   Bold,
   Italic,
-  Underline,
   Spline,
-} from 'lucide-react';
+  Underline,
+} from 'lucide-react'
 
-import { Button } from '@/app/ui/primitives/button';
-import { Menubar } from '@/app/ui/primitives/menubar';
-import { Separator } from '@/app/ui/primitives/separator';
-import { ToggleGroup, ToggleGroupItem } from '@/app/ui/primitives/toggle-group';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from '@/app/ui/primitives/dropdown-menu';
+import { ColorTile } from '../ColorTile/ColorTile'
 
-import { Tools } from '@/app/shared/interfaces';
-import { Colors } from '@/app/shared/constants';
-import { useTextEditorContext, useActiveLayerContext, useCanvasContext, useToolbarContext } from '@/app/store';
-
-import { DEFAULT_SCALE } from '@/core/constants';
-import { FontStyle, TextAlign, TextDecoration } from '@/core/interfaces';
-import { CanvasEntitySubtype, CanvasEntityType } from '@/core/entities/interfaces';
-import { isCanvasRect } from '@/core/lib';
-import { Point } from '@/core/entities/Point';
-
-import { ColorTile } from '../ColorTile/ColorTile';
-
-import styles from './TextEditorMenu.module.css';
+import styles from './TextEditorMenu.module.css'
+import { Colors } from '@/app/shared/constants'
+import { Tools } from '@/app/shared/interfaces'
+import {
+  useActiveLayerContext,
+  useCanvasContext,
+  useTextEditorContext,
+  useToolbarContext,
+} from '@/app/store'
+import { Button } from '@/app/ui/primitives/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/app/ui/primitives/dropdown-menu'
+import { Menubar } from '@/app/ui/primitives/menubar'
+import { Separator } from '@/app/ui/primitives/separator'
+import { ToggleGroup, ToggleGroupItem } from '@/app/ui/primitives/toggle-group'
 
 interface TextEditorMenuProps {
-  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
-  position: Point;
-  onFontSizeChange: (fontSize: number) => void;
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>
+  position: Point
+  onFontSizeChange: (fontSize: number) => void
 }
 
-export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: TextEditorMenuProps) => {
-  const { renderer, renderManager } = useCanvasContext();
-  const { activeLayer, setActiveLayer } = useActiveLayerContext();
-  const { setTool } = useToolbarContext();
-  const { text, textAlign, fontSize, bold, italic, underline, ...actions } = useTextEditorContext();
-  const { setTextAlign, setFontSize, setBold, setItalic, setUnderline, resetTextEditor } = actions;
+export const TextEditorMenu = ({
+  textareaRef,
+  position,
+  onFontSizeChange,
+}: TextEditorMenuProps) => {
+  const { renderer, renderManager } = useCanvasContext()
+  const { activeLayer, setActiveLayer } = useActiveLayerContext()
+  const { setTool } = useToolbarContext()
+  const { text, textAlign, fontSize, bold, italic, underline, ...actions } = useTextEditorContext()
+  const { setTextAlign, setFontSize, setBold, setItalic, setUnderline, resetTextEditor } = actions
 
   const [backgroundColor, setBackgroundColor] = useState(() => {
-    const rect = activeLayer?.getChildByType(CanvasEntityType.RECT);
-    if (rect && isCanvasRect(rect)) return rect.getOptions().color;
-    return Colors.TRANSPARENT;
-  });
+    const rect = activeLayer?.getChildByType(CanvasEntityType.RECT)
+    if (rect && isCanvasRect(rect)) return rect.getOptions().color
+    return Colors.TRANSPARENT
+  })
 
-  if (!activeLayer || !renderer || !renderManager) return null;
+  if (!activeLayer || !renderer || !renderManager) return null
 
   const handleBackgroundColorChange = (color: Colors) => {
-    if (!activeLayer) return;
+    if (!activeLayer) return
 
-    const rect = activeLayer.getChildByType(CanvasEntityType.RECT);
-    if (!rect || !isCanvasRect(rect)) return;
+    const rect = activeLayer.getChildByType(CanvasEntityType.RECT)
+    if (!rect || !isCanvasRect(rect)) return
 
-    rect.setOptions({ color });
-    setBackgroundColor(color);
+    rect.setOptions({ color })
+    setBackgroundColor(color)
 
     renderManager?.reDrawOnNextFrame({
       exceptLayer: activeLayer,
       callBack: () => {
-        renderManager?.drawLayer(activeLayer, { exceptType: CanvasEntityType.TEXT });
+        renderManager?.drawLayer(activeLayer, { exceptType: CanvasEntityType.TEXT })
       },
-    });
-  };
+    })
+  }
 
   const enableTextTransformation = () => {
-    const rect = activeLayer.getChildByType(CanvasEntityType.RECT);
-    if (!text || !rect || !isCanvasRect(rect)) return;
+    const rect = activeLayer.getChildByType(CanvasEntityType.RECT)
+    if (!text || !rect || !isCanvasRect(rect)) return
 
-    const newLayer = rect.enableTextTransformation(text);
-    renderManager.removeLayer(activeLayer);
-    renderManager.addLayer(newLayer);
+    const newLayer = rect.enableTextTransformation(text)
+    renderManager.removeLayer(activeLayer)
+    renderManager.addLayer(newLayer)
 
-    resetTextEditor();
-    setActiveLayer(newLayer);
-    setTool(Tools.SELECT);
-  };
+    resetTextEditor()
+    setActiveLayer(newLayer)
+    setTool(Tools.SELECT)
+  }
 
   const handleFontSizeChange = (value: number) => {
-    const newFontSize = fontSize + value;
-    setFontSize(newFontSize);
-    onFontSizeChange(newFontSize);
-    textareaRef?.current?.focus();
-  };
+    const newFontSize = fontSize + value
+    setFontSize(newFontSize)
+    onFontSizeChange(newFontSize)
+    textareaRef?.current?.focus()
+  }
 
   const handleFontStyleChange = (field: FontStyle | TextDecoration) => {
     if (field === FontStyle.BOLD) {
-      setBold((state) => !state);
+      setBold((state) => !state)
     } else if (field === FontStyle.ITALIC) {
-      setItalic((state) => !state);
+      setItalic((state) => !state)
     } else if (field === TextDecoration.UNDERLINE) {
-      setUnderline((state) => !state);
+      setUnderline((state) => !state)
     }
-    textareaRef?.current?.focus();
-  };
+    textareaRef?.current?.focus()
+  }
 
   const handleTextAlignChange = () => {
-    let newAlign: TextAlign;
+    let newAlign: TextAlign
 
     switch (textAlign) {
       case TextAlign.LEFT:
-        newAlign = TextAlign.CENTER;
-        break;
+        newAlign = TextAlign.CENTER
+        break
       case TextAlign.CENTER:
-        newAlign = TextAlign.RIGHT;
-        break;
+        newAlign = TextAlign.RIGHT
+        break
       default:
-        newAlign = TextAlign.LEFT;
-        break;
+        newAlign = TextAlign.LEFT
+        break
     }
 
-    setTextAlign(newAlign);
-    textareaRef?.current?.focus();
-  };
+    setTextAlign(newAlign)
+    textareaRef?.current?.focus()
+  }
 
   const FONT_STYLE_LIST = [
     {
@@ -138,34 +153,49 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
       Icon: Underline,
       onClick: () => handleFontStyleChange(TextDecoration.UNDERLINE),
     },
-  ];
+  ]
 
   const TEXT_ALIGN_OPTION = {
     value: textAlign,
     ariaLabel: 'Toggle alignment',
-    Icon: { [TextAlign.LEFT]: AlignLeft, [TextAlign.CENTER]: AlignCenter, [TextAlign.RIGHT]: AlignRight }[textAlign],
-  };
+    Icon: {
+      [TextAlign.LEFT]: AlignLeft,
+      [TextAlign.CENTER]: AlignCenter,
+      [TextAlign.RIGHT]: AlignRight,
+    }[textAlign],
+  }
 
   const FONT_SIZE_OPTIONS = [
-    { value: 'decrease', ariaLabel: 'Decrease font size', Icon: AArrowDown, onClick: () => handleFontSizeChange(-2) },
-    { value: 'increase', ariaLabel: 'Increase font size', Icon: AArrowUp, onClick: () => handleFontSizeChange(2) },
-  ];
+    {
+      value: 'decrease',
+      ariaLabel: 'Decrease font size',
+      Icon: AArrowDown,
+      onClick: () => handleFontSizeChange(-2),
+    },
+    {
+      value: 'increase',
+      ariaLabel: 'Increase font size',
+      Icon: AArrowUp,
+      onClick: () => handleFontSizeChange(2),
+    },
+  ]
 
   const fontStyle = [
     bold ? FontStyle.BOLD : '',
     italic ? FontStyle.ITALIC : '',
     underline ? TextDecoration.UNDERLINE : '',
-  ].filter(Boolean);
+  ].filter(Boolean)
 
-  const [width] = activeLayer.getWidthHeight();
-  const { scale } = activeLayer.getOptions();
-  const transform = renderer.getTransformMatrix();
+  const [width] = activeLayer.getWidthHeight()
+  const { scale } = activeLayer.getOptions()
+  const transform = renderer.getTransformMatrix()
 
-  const inverseScale = DEFAULT_SCALE / (transform.scaleX / transform.initialScale);
-  const menuScale = scale === DEFAULT_SCALE ? scale / inverseScale : transform.scaleX / transform.initialScale;
+  const inverseScale = DEFAULT_SCALE / (transform.scaleX / transform.initialScale)
+  const menuScale =
+    scale === DEFAULT_SCALE ? scale / inverseScale : transform.scaleX / transform.initialScale
 
-  const rect = activeLayer?.getChildByType(CanvasEntityType.RECT);
-  const isTextArea = rect && isCanvasRect(rect) && rect.getSubtype() === CanvasEntitySubtype.TEXT;
+  const rect = activeLayer?.getChildByType(CanvasEntityType.RECT)
+  const isTextArea = rect && isCanvasRect(rect) && rect.getSubtype() === CanvasEntitySubtype.TEXT
 
   return (
     <div
@@ -253,5 +283,5 @@ export const TextEditorMenu = ({ textareaRef, position, onFontSizeChange }: Text
         )}
       </Menubar>
     </div>
-  );
-};
+  )
+}

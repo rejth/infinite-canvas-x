@@ -22,5 +22,5 @@ export const Flag = () => {
         fill="#676F7E"
       ></path>
     </svg>
-  );
-};
+  )
+}

@@ -32,5 +32,5 @@ export const Custom = () => {
         fill="#676F7E"
       ></path>
     </svg>
-  );
-};
+  )
+}

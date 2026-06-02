@@ -1,34 +1,34 @@
-import { useCallback, useMemo, useState } from 'react';
-import { ImageIcon } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react'
+import { ImageIcon } from 'lucide-react'
 
-import { Button } from '@/app/ui/primitives/button';
-import { useActiveLayerContext, useCanvasContext } from '@/app/store';
+import { ImageDrawer } from './ImageDrawer'
 
-import { ImageDrawer } from './ImageDrawer';
+import { useActiveLayerContext, useCanvasContext } from '@/app/store'
+import { Button } from '@/app/ui/primitives/button'
 
 export function ElementsPanel() {
-  const [isImagesOpen, setIsImagesOpen] = useState(false);
+  const [isImagesOpen, setIsImagesOpen] = useState(false)
 
-  const { activeLayer, setActiveLayer } = useActiveLayerContext();
-  const { renderManager } = useCanvasContext();
+  const { activeLayer, setActiveLayer } = useActiveLayerContext()
+  const { renderManager } = useCanvasContext()
 
   const handleOpenDrawer = useCallback(
     (open: boolean) => {
-      setIsImagesOpen(open);
+      setIsImagesOpen(open)
 
       if (activeLayer) {
-        activeLayer.setActive(false);
-        setActiveLayer(null);
-        renderManager?.reDrawOnNextFrame();
+        activeLayer.setActive(false)
+        setActiveLayer(null)
+        renderManager?.reDrawOnNextFrame()
       }
     },
     [activeLayer, renderManager, setActiveLayer],
-  );
+  )
 
   const sidebarItems = useMemo(
     () => [{ icon: ImageIcon, label: 'Images', onClick: () => handleOpenDrawer(true) }],
     [handleOpenDrawer],
-  );
+  )
 
   return (
     <>
@@ -59,5 +59,5 @@ export function ElementsPanel() {
 
       <ImageDrawer open={isImagesOpen} onOpenChange={handleOpenDrawer} />
     </>
-  );
+  )
 }

@@ -1,17 +1,16 @@
-import { useState } from 'react';
+import { useState } from 'react'
+import { LayerInterface } from '@infinite-canvas-x/canvas-engine'
 
-import { LayerInterface } from '@/core/entities/interfaces';
-
-import { ActiveLayerContext } from './ActiveLayerContext';
+import { ActiveLayerContext } from './ActiveLayerContext'
 
 type Props = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 export const ActiveLayerProvider = ({ children }: Props) => {
-  const [activeLayer, setActiveLayer] = useState<LayerInterface | null>(null);
-  const [lastActiveLayer, setLastActiveLayer] = useState<LayerInterface | null>(null);
-  const [opacity, setOpacity] = useState(100);
+  const [activeLayer, setActiveLayer] = useState<LayerInterface | null>(null)
+  const [lastActiveLayer, setLastActiveLayer] = useState<LayerInterface | null>(null)
+  const [opacity, setOpacity] = useState(100)
 
   return (
     <ActiveLayerContext.Provider
@@ -26,5 +25,5 @@ export const ActiveLayerProvider = ({ children }: Props) => {
     >
       {children}
     </ActiveLayerContext.Provider>
-  );
-};
+  )
+}

@@ -10,5 +10,5 @@ export const PanIcon = () => {
         fill="#00263A"
       />
     </svg>
-  );
-};
+  )
+}

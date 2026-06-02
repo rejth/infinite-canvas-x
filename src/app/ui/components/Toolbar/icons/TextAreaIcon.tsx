@@ -12,5 +12,5 @@ export const TextAreaIcon = () => {
         fill="white"
       />
     </svg>
-  );
-};
+  )
+}

@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Slider as SliderPrimitive } from 'radix-ui';
+import * as React from 'react'
+import { Slider as SliderPrimitive } from 'radix-ui'
 
-import { cn } from '@/app/shared/lib/utils';
+import { cn } from '@/app/shared/lib/utils'
 
 function Slider({
   className,
@@ -14,7 +14,7 @@ function Slider({
   const _values = React.useMemo(
     () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
     [value, defaultValue, min, max],
-  );
+  )
 
   return (
     <SliderPrimitive.Root
@@ -37,7 +37,9 @@ function Slider({
       >
         <SliderPrimitive.Range
           data-slot="slider-range"
-          className={'bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full'}
+          className={
+            'bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full'
+          }
         />
       </SliderPrimitive.Track>
       {Array.from({ length: _values.length }, (_, index) => (
@@ -48,7 +50,7 @@ function Slider({
         />
       ))}
     </SliderPrimitive.Root>
-  );
+  )
 }
 
-export { Slider };
+export { Slider }

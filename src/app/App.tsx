@@ -1,70 +1,73 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react'
 
-import { Icons } from '@/app/shared/ui/icons';
-import { useDidMountEffect } from '@/app/shared/hooks/useDidMountEffect';
-
-import { CanvasContextProvider } from '@/app/store/CanvasContext/CanvasContextProvider';
-import { ActiveLayerProvider } from '@/app/store/ActiveLayerContext/ActiveLayerContextProvider';
-import { TextEditorProvider } from '@/app/store/TextEditorContext/TextEditorContextProvider';
-import { ToolbarProvider } from '@/app/store/ToolbarContext/ToolbarContextProvider';
-import { ImageEditorProvider } from '@/app/store/ImageEditorContext/ImageEditorContextProvider';
+import { useDidMountEffect } from '@/app/shared/hooks/useDidMountEffect'
+import { Icons } from '@/app/shared/ui/icons'
+import { ActiveLayerProvider } from '@/app/store/ActiveLayerContext/ActiveLayerContextProvider'
+import { CanvasContextProvider } from '@/app/store/CanvasContext/CanvasContextProvider'
+import { ImageEditorProvider } from '@/app/store/ImageEditorContext/ImageEditorContextProvider'
+import { TextEditorProvider } from '@/app/store/TextEditorContext/TextEditorContextProvider'
+import { ToolbarProvider } from '@/app/store/ToolbarContext/ToolbarContextProvider'
 
 // import { PouchDBService } from '@/app/services/PouchDBService';
 
-import { Canvas } from '@/app/ui/components/Canvas/Canvas';
-import { Toolbar } from '@/app/ui/components/Toolbar/Toolbar';
-import { TextEditor } from '@/app/ui/components/TextEditor/TextEditor';
-import { ElementsPanel } from '@/app/ui/components/ElementsPanel/ElementsPanel';
-import { BottomControls } from '@/app/ui/components/BottomControls/BottomControls';
-import { PropertiesSidebar } from '@/app/ui/components/PropertiesSidebar/PropertiesSidebar';
+import {
+  type BaseRenderManager,
+  Camera,
+  createProxyCanvas,
+  Renderer,
+  RenderManager,
+} from '@infinite-canvas-x/canvas-engine'
 
-import { Renderer } from '@/core/services/Renderer';
-import { Camera } from '@/core/services/Camera';
-import { type BaseRenderManager, RenderManager, createProxyCanvas } from '@/core/services/RenderManager';
+import { BottomControls } from '@/app/ui/components/BottomControls/BottomControls'
+import { Canvas } from '@/app/ui/components/Canvas/Canvas'
+import { ElementsPanel } from '@/app/ui/components/ElementsPanel/ElementsPanel'
+import { PropertiesSidebar } from '@/app/ui/components/PropertiesSidebar/PropertiesSidebar'
+import { TextEditor } from '@/app/ui/components/TextEditor/TextEditor'
+import { Toolbar } from '@/app/ui/components/Toolbar/Toolbar'
 
-import './App.module.css';
+import './App.module.css'
 
 function App() {
-  const [, setCanvas] = useState<HTMLCanvasElement | null>(null);
-  const [, setBackgroundCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [, setCanvas] = useState<HTMLCanvasElement | null>(null)
+  const [, setBackgroundCanvas] = useState<HTMLCanvasElement | null>(null)
 
-  const rendererRef = useRef<Renderer | null>(null);
-  const renderManagerRef = useRef<BaseRenderManager | null>(null);
-  const cameraRef = useRef<Camera | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const backgroundCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const rendererRef = useRef<Renderer | null>(null)
+  const renderManagerRef = useRef<BaseRenderManager | null>(null)
+  const cameraRef = useRef<Camera | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const backgroundCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const initializeCanvas = useCallback(async () => {
-    const canvas = canvasRef.current;
-    const backgroundCanvas = backgroundCanvasRef.current;
-    if (!canvas || !backgroundCanvas) return;
+    const canvas = canvasRef.current
+    const backgroundCanvas = backgroundCanvasRef.current
+    if (!canvas || !backgroundCanvas) return
 
-    const context = createProxyCanvas(canvas, backgroundCanvas);
+    const context = createProxyCanvas(canvas, backgroundCanvas)
 
-    rendererRef.current = new Renderer(context);
-    rendererRef.current.drawBackground();
+    rendererRef.current = new Renderer(context)
+    rendererRef.current.drawBackground()
 
-    cameraRef.current = new Camera(rendererRef.current);
-    renderManagerRef.current = await RenderManager.create(rendererRef.current);
+    cameraRef.current = new Camera(rendererRef.current)
+    renderManagerRef.current = await RenderManager.create(rendererRef.current)
     // await PouchDBService.create('canvas-db');
 
-    setCanvas(canvas);
-    setBackgroundCanvas(backgroundCanvas);
-  }, []);
+    setCanvas(canvas)
+    setBackgroundCanvas(backgroundCanvas)
+  }, [])
 
   const setCanvasRef = useCallback((canvas: HTMLCanvasElement) => {
-    canvasRef.current = canvas;
-  }, []);
+    canvasRef.current = canvas
+  }, [])
 
   const setBackgroundCanvasRef = useCallback((canvas: HTMLCanvasElement) => {
-    backgroundCanvasRef.current = canvas;
-  }, []);
+    backgroundCanvasRef.current = canvas
+  }, [])
 
   useDidMountEffect(() => {
     if (canvasRef.current && backgroundCanvasRef.current) {
-      initializeCanvas();
+      initializeCanvas()
     }
-  });
+  })
 
   return (
     <ToolbarProvider>
@@ -85,14 +88,17 @@ function App() {
                 <PropertiesSidebar />
                 <BottomControls />
                 <TextEditor />
-                <Canvas setCanvasRef={setCanvasRef} setBackgroundCanvasRef={setBackgroundCanvasRef} />
+                <Canvas
+                  setCanvasRef={setCanvasRef}
+                  setBackgroundCanvasRef={setBackgroundCanvasRef}
+                />
               </>
             </ImageEditorProvider>
           </TextEditorProvider>
         </ActiveLayerProvider>
       </CanvasContextProvider>
     </ToolbarProvider>
-  );
+  )
 }
 
-export default App;
+export default App

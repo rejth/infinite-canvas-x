@@ -1,27 +1,30 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
-
-import { DEFAULT_FONT_SIZE, DEFAULT_SCALE } from '@/core/constants';
-import { TextAlign, type PixelRatio } from '@/core/interfaces';
+import { createContext, Dispatch, SetStateAction } from 'react'
+import {
+  DEFAULT_FONT_SIZE,
+  DEFAULT_SCALE,
+  type PixelRatio,
+  TextAlign,
+} from '@infinite-canvas-x/canvas-engine'
 
 interface TextEditorContextInterface {
-  isLayerEditable: boolean;
-  text: string;
-  textScale: PixelRatio;
-  textAlign: TextAlign;
-  fontSize: number;
-  bold: boolean;
-  italic: boolean;
-  underline: boolean;
-  setIsLayerEditable: Dispatch<SetStateAction<boolean>>;
-  setText: Dispatch<SetStateAction<string>>;
-  setTextScale: Dispatch<SetStateAction<PixelRatio>>;
-  setTextAlign: Dispatch<SetStateAction<TextAlign>>;
-  setFontSize: Dispatch<SetStateAction<number>>;
-  setBold: Dispatch<SetStateAction<boolean>>;
-  setItalic: Dispatch<SetStateAction<boolean>>;
-  setUnderline: Dispatch<SetStateAction<boolean>>;
-  resetTextEditor: () => void;
-  setTextEditor: (text: string) => void;
+  isLayerEditable: boolean
+  text: string
+  textScale: PixelRatio
+  textAlign: TextAlign
+  fontSize: number
+  bold: boolean
+  italic: boolean
+  underline: boolean
+  setIsLayerEditable: Dispatch<SetStateAction<boolean>>
+  setText: Dispatch<SetStateAction<string>>
+  setTextScale: Dispatch<SetStateAction<PixelRatio>>
+  setTextAlign: Dispatch<SetStateAction<TextAlign>>
+  setFontSize: Dispatch<SetStateAction<number>>
+  setBold: Dispatch<SetStateAction<boolean>>
+  setItalic: Dispatch<SetStateAction<boolean>>
+  setUnderline: Dispatch<SetStateAction<boolean>>
+  resetTextEditor: () => void
+  setTextEditor: (text: string) => void
 }
 
 export const TextEditorContext = createContext<TextEditorContextInterface>({
@@ -43,4 +46,4 @@ export const TextEditorContext = createContext<TextEditorContextInterface>({
   setUnderline: () => false,
   resetTextEditor: () => null,
   setTextEditor: () => null,
-});
+})

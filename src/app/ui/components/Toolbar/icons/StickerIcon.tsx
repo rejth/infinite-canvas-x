@@ -12,5 +12,5 @@ export const StickerIcon = () => {
         fill="white"
       />
     </svg>
-  );
-};
+  )
+}

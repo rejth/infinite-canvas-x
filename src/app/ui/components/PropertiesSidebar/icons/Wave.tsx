@@ -22,5 +22,5 @@ export const Wave = () => {
         fill="#676F7E"
       ></path>
     </svg>
-  );
-};
+  )
+}

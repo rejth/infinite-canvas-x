@@ -1,20 +1,23 @@
-import { Tools, Tool } from '@/app/shared/interfaces';
-import { CURSORS, DEFAULT_CURSOR } from '@/app/shared/constants';
-import { Icon } from '@/app/shared/ui/Icon/Icon';
-import { cn } from '@/app/shared/lib/utils';
-
-import { useSyncDeletedLayer } from '@/app/hooks/useSyncDeletedLayer';
-import { useActiveLayerContext, useCanvasContext, useTextEditorContext, useToolbarContext } from '@/app/store';
-
-import styles from './Toolbar.module.css';
+import styles from './Toolbar.module.css'
+import { useSyncDeletedLayer } from '@/app/hooks/useSyncDeletedLayer'
+import { CURSORS, DEFAULT_CURSOR } from '@/app/shared/constants'
+import { Tool, Tools } from '@/app/shared/interfaces'
+import { cn } from '@/app/shared/lib/utils'
+import { Icon } from '@/app/shared/ui/Icon/Icon'
+import {
+  useActiveLayerContext,
+  useCanvasContext,
+  useTextEditorContext,
+  useToolbarContext,
+} from '@/app/store'
 
 interface ToolItem {
-  id: string;
-  label: string;
-  type: Tool;
-  icon: string;
-  hoverText: string;
-  disabled: boolean;
+  id: string
+  label: string
+  type: Tool
+  icon: string
+  hoverText: string
+  disabled: boolean
 }
 
 const tools: ToolItem[] = [
@@ -58,50 +61,50 @@ const tools: ToolItem[] = [
     hoverText: 'Delete selected item(s)',
     disabled: false,
   },
-];
+]
 
 export const Toolbar = () => {
-  const { renderManager } = useCanvasContext();
-  const { setIsLayerEditable, resetTextEditor } = useTextEditorContext();
-  const { activeLayer, setActiveLayer, setLastActiveLayer } = useActiveLayerContext();
-  const { tool, setTool, setCursor } = useToolbarContext();
-  const syncDeletedLayer = useSyncDeletedLayer();
+  const { renderManager } = useCanvasContext()
+  const { setIsLayerEditable, resetTextEditor } = useTextEditorContext()
+  const { activeLayer, setActiveLayer, setLastActiveLayer } = useActiveLayerContext()
+  const { tool, setTool, setCursor } = useToolbarContext()
+  const syncDeletedLayer = useSyncDeletedLayer()
 
   const resetActiveLayer = () => {
-    setIsLayerEditable(false);
-    resetTextEditor();
-    setLastActiveLayer(activeLayer);
-    setActiveLayer(null);
-    activeLayer?.setActive(false);
-  };
+    setIsLayerEditable(false)
+    resetTextEditor()
+    setLastActiveLayer(activeLayer)
+    setActiveLayer(null)
+    activeLayer?.setActive(false)
+  }
 
   const handleClick = async (tool: Tool) => {
-    setTool(tool);
+    setTool(tool)
 
     if (tool === Tools.DELETE && activeLayer) {
-      renderManager?.removeLayer(activeLayer);
-      resetActiveLayer();
-      setTool(Tools.SELECT);
-      syncDeletedLayer(activeLayer);
+      renderManager?.removeLayer(activeLayer)
+      resetActiveLayer()
+      setTool(Tools.SELECT)
+      syncDeletedLayer(activeLayer)
     } else if (activeLayer) {
-      resetActiveLayer();
-      renderManager?.reDrawOnNextFrame();
+      resetActiveLayer()
+      renderManager?.reDrawOnNextFrame()
     }
 
     if (tool === Tools.HAND) {
-      setCursor(CURSORS[tool]);
+      setCursor(CURSORS[tool])
     } else {
-      setCursor(DEFAULT_CURSOR);
+      setCursor(DEFAULT_CURSOR)
     }
-  };
+  }
 
   const getActiveStyle = (selectedTool: Tool, disabled: boolean) => {
-    return selectedTool === tool && !disabled ? styles.active : '';
-  };
+    return selectedTool === tool && !disabled ? styles.active : ''
+  }
 
   const getDisabledStyle = (disabled: boolean) => {
-    return disabled ? styles.disabled : '';
-  };
+    return disabled ? styles.disabled : ''
+  }
 
   return (
     <ul id="toolbar" className={styles.toolbar}>
@@ -123,5 +126,5 @@ export const Toolbar = () => {
         </li>
       ))}
     </ul>
-  );
-};
+  )
+}

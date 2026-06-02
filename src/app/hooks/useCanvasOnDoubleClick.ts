@@ -1,21 +1,20 @@
-import { CustomEvents } from '@/app/shared/interfaces';
-import { useActiveLayerContext, useCanvasContext, useTextEditorContext } from '@/app/store';
+import { CanvasEntityType, Layer } from '@infinite-canvas-x/canvas-engine'
 
-import { CanvasEntityType } from '@/core/entities/interfaces';
-import { Layer } from '@/core/entities/Layer';
+import { CustomEvents } from '@/app/shared/interfaces'
+import { useActiveLayerContext, useCanvasContext, useTextEditorContext } from '@/app/store'
 
 export const useCanvasOnDoubleClick = () => {
-  const { camera, renderManager } = useCanvasContext();
-  const { activeLayer } = useActiveLayerContext();
-  const { setIsLayerEditable } = useTextEditorContext();
+  const { camera, renderManager } = useCanvasContext()
+  const { activeLayer } = useActiveLayerContext()
+  const { setIsLayerEditable } = useTextEditorContext()
 
   return (e: React.MouseEvent<HTMLCanvasElement>, layer?: Layer) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const currentActiveLayer = layer || activeLayer;
-    if (!currentActiveLayer || !renderManager || !camera) return;
+    const currentActiveLayer = layer || activeLayer
+    if (!currentActiveLayer || !renderManager || !camera) return
 
-    const { x, y } = camera.handleClick(e.nativeEvent);
+    const { x, y } = camera.handleClick(e.nativeEvent)
 
     window.dispatchEvent(
       new CustomEvent(CustomEvents.DOUBLE_CLICK, {
@@ -27,10 +26,10 @@ export const useCanvasOnDoubleClick = () => {
           layer: currentActiveLayer,
         },
       }),
-    );
+    )
 
-    setIsLayerEditable(true);
-    renderManager.reDrawSync({ exceptLayer: currentActiveLayer });
-    renderManager.drawLayer(currentActiveLayer, { exceptType: CanvasEntityType.TEXT });
-  };
-};
+    setIsLayerEditable(true)
+    renderManager.reDrawSync({ exceptLayer: currentActiveLayer })
+    renderManager.drawLayer(currentActiveLayer, { exceptType: CanvasEntityType.TEXT })
+  }
+}

@@ -1,19 +1,18 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react'
+import { DEFAULT_RESIZE_DIRECTION, DEFAULT_ZOOM_PERCENTAGE } from '@infinite-canvas-x/canvas-engine'
 
-import { Tool } from '@/app/shared/interfaces';
-import { DEFAULT_CURSOR, DEFAULT_TOOL } from '@/app/shared/constants';
-
-import { DEFAULT_RESIZE_DIRECTION, DEFAULT_ZOOM_PERCENTAGE } from '@/core/constants';
+import { DEFAULT_CURSOR, DEFAULT_TOOL } from '@/app/shared/constants'
+import { Tool } from '@/app/shared/interfaces'
 
 interface ToolbarContextInterface {
-  cursor: string;
-  tool: Tool;
-  resizeDirection: string;
-  zoomPercentage: number;
-  setCursor: Dispatch<SetStateAction<string>>;
-  setTool: Dispatch<SetStateAction<Tool>>;
-  setResizeDirection: Dispatch<SetStateAction<string>>;
-  setZoomPercentage: Dispatch<SetStateAction<number>>;
+  cursor: string
+  tool: Tool
+  resizeDirection: string
+  zoomPercentage: number
+  setCursor: Dispatch<SetStateAction<string>>
+  setTool: Dispatch<SetStateAction<Tool>>
+  setResizeDirection: Dispatch<SetStateAction<string>>
+  setZoomPercentage: Dispatch<SetStateAction<number>>
 }
 
 export const ToolbarContext = createContext<ToolbarContextInterface>({
@@ -25,4 +24,4 @@ export const ToolbarContext = createContext<ToolbarContextInterface>({
   setTool: () => DEFAULT_TOOL,
   setResizeDirection: () => DEFAULT_RESIZE_DIRECTION,
   setZoomPercentage: () => DEFAULT_ZOOM_PERCENTAGE,
-});
+})

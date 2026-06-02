@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "pnpm --filter @infinite-canvas-x/canvas-engine build && pnpm --filter @infinite-canvas-x/indexed-db-store build && tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "prettier --check . && eslint .",
-    "format": "prettier --write .",
+    "test": "pnpm --filter @infinite-canvas-x/canvas-engine test && pnpm --filter @infinite-canvas-x/indexed-db-store test",
+    "lint": "pnpm oxlint src",
+    "lint:fix": "pnpm oxlint src --fix",
+    "format": "pnpm biome format --write src",
+    "check": "pnpm biome check --write src",
     "check-updates": "pnpm npm-check-updates",
     "update-packages": "pnpm npm-check-updates -u",
     "knip": "knip",
@@ -16,6 +19,8 @@
     "pre-push": "pnpm lefthook run pre-push"
   },
   "dependencies": {
+    "@infinite-canvas-x/canvas-engine": "workspace:*",
+    "@infinite-canvas-x/indexed-db-store": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "events": "^3.3.0",
@@ -29,23 +34,19 @@
     "tw-animate-css": "^1.2.5"
   },
   "devDependencies": {
-    "@eslint/js": "^9.21.0",
+    "@biomejs/biome": "^2.4.8",
     "@tailwindcss/vite": "^4.1.4",
     "@types/node": "^22.14.1",
     "@types/pouchdb": "^6.4.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.21.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "knip": "^5.50.5",
     "lefthook": "^1.11.10",
     "npm-check-updates": "^17.1.18",
-    "prettier": "^3.5.3",
+    "oxlint": "1.57.0",
     "typescript": "~5.7.2",
-    "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0"
   },
   "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"

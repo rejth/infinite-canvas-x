@@ -22,5 +22,5 @@ export const Rise = () => {
         fill="#676F7E"
       ></path>
     </svg>
-  );
-};
+  )
+}

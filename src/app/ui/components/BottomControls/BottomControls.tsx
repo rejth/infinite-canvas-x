@@ -1,37 +1,41 @@
-import { useCallback } from 'react';
-import { Undo2, Redo2, Minus, Plus } from 'lucide-react';
+import { useCallback } from 'react'
+import { ZOOM_MAX, ZOOM_MIN, ZOOM_STEP } from '@infinite-canvas-x/canvas-engine'
+import { Minus, Plus, Redo2, Undo2 } from 'lucide-react'
 
-import { Button } from '@/app/ui/primitives/button';
-import { useActiveLayerContext, useCanvasContext, useToolbarContext } from '@/app/store';
-
-import { ZOOM_MAX, ZOOM_MIN, ZOOM_STEP } from '@/core/constants';
+import { useActiveLayerContext, useCanvasContext, useToolbarContext } from '@/app/store'
+import { Button } from '@/app/ui/primitives/button'
 
 export function BottomControls() {
-  const { renderManager, camera } = useCanvasContext();
-  const { activeLayer } = useActiveLayerContext();
-  const { zoomPercentage, setZoomPercentage } = useToolbarContext();
+  const { renderManager, camera } = useCanvasContext()
+  const { activeLayer } = useActiveLayerContext()
+  const { zoomPercentage, setZoomPercentage } = useToolbarContext()
 
   const zoomCanvas = useCallback(
     (step: number, edge: number) => {
-      if (!renderManager || !camera) return;
+      if (!renderManager || !camera) return
 
-      const { isZoomed, nextZoomPercentage } = camera.zoomCanvasWithStep(zoomPercentage, step, edge, activeLayer);
+      const { isZoomed, nextZoomPercentage } = camera.zoomCanvasWithStep(
+        zoomPercentage,
+        step,
+        edge,
+        activeLayer,
+      )
 
       if (isZoomed) {
-        renderManager.reDrawOnNextFrame({ forceRender: true });
-        setZoomPercentage(nextZoomPercentage);
+        renderManager.reDrawOnNextFrame({ forceRender: true })
+        setZoomPercentage(nextZoomPercentage)
       }
     },
     [renderManager, camera, activeLayer, zoomPercentage, setZoomPercentage],
-  );
+  )
 
   const zoomIn = useCallback(() => {
-    zoomCanvas(ZOOM_STEP, ZOOM_MAX);
-  }, [zoomCanvas]);
+    zoomCanvas(ZOOM_STEP, ZOOM_MAX)
+  }, [zoomCanvas])
 
   const zoomOut = useCallback(() => {
-    zoomCanvas(-ZOOM_STEP, ZOOM_MIN);
-  }, [zoomCanvas]);
+    zoomCanvas(-ZOOM_STEP, ZOOM_MIN)
+  }, [zoomCanvas])
 
   return (
     <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
@@ -66,7 +70,9 @@ export function BottomControls() {
           <Minus className="h-4 w-4" />
         </Button>
 
-        <div className="px-3 py-1 text-black text-sm font-medium min-w-[3rem] text-center">{zoomPercentage}%</div>
+        <div className="px-3 py-1 text-black text-sm font-medium min-w-[3rem] text-center">
+          {zoomPercentage}%
+        </div>
 
         <Button
           variant="ghost"
@@ -78,5 +84,5 @@ export function BottomControls() {
         </Button>
       </div>
     </div>
-  );
+  )
 }

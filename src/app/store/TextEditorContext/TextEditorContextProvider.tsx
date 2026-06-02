@@ -1,45 +1,43 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react'
+import { DEFAULT_FONT_SIZE, DEFAULT_SCALE, TextAlign } from '@infinite-canvas-x/canvas-engine'
 
-import { DEFAULT_FONT_SIZE, DEFAULT_SCALE } from '@/core/constants';
-import { TextAlign } from '@/core/interfaces';
-
-import { TextEditorContext } from './TextEditorContext';
+import { TextEditorContext } from './TextEditorContext'
 
 type Props = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 export const TextEditorProvider = ({ children }: Props) => {
-  const [isLayerEditable, setIsLayerEditable] = useState(false);
+  const [isLayerEditable, setIsLayerEditable] = useState(false)
 
-  const [text, setText] = useState('');
-  const [textScale, setTextScale] = useState(DEFAULT_SCALE);
-  const [textAlign, setTextAlign] = useState<TextAlign>(TextAlign.LEFT);
+  const [text, setText] = useState('')
+  const [textScale, setTextScale] = useState(DEFAULT_SCALE)
+  const [textAlign, setTextAlign] = useState<TextAlign>(TextAlign.LEFT)
 
-  const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE);
-  const [bold, setBold] = useState(false);
-  const [italic, setItalic] = useState(false);
-  const [underline, setUnderline] = useState(false);
+  const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE)
+  const [bold, setBold] = useState(false)
+  const [italic, setItalic] = useState(false)
+  const [underline, setUnderline] = useState(false)
 
   const resetTextEditor = useCallback(() => {
-    setText('');
-    setTextAlign(TextAlign.LEFT);
-    setFontSize(DEFAULT_FONT_SIZE);
-    setBold(false);
-    setItalic(false);
-    setUnderline(false);
-    setIsLayerEditable(false);
-  }, []);
+    setText('')
+    setTextAlign(TextAlign.LEFT)
+    setFontSize(DEFAULT_FONT_SIZE)
+    setBold(false)
+    setItalic(false)
+    setUnderline(false)
+    setIsLayerEditable(false)
+  }, [])
 
   const setTextEditor = useCallback((text: string) => {
-    setText(text);
-    setTextAlign(TextAlign.LEFT);
-    setFontSize(DEFAULT_FONT_SIZE);
-    setBold(false);
-    setItalic(false);
-    setUnderline(false);
-    setIsLayerEditable(false);
-  }, []);
+    setText(text)
+    setTextAlign(TextAlign.LEFT)
+    setFontSize(DEFAULT_FONT_SIZE)
+    setBold(false)
+    setItalic(false)
+    setUnderline(false)
+    setIsLayerEditable(false)
+  }, [])
 
   return (
     <TextEditorContext.Provider
@@ -66,5 +64,5 @@ export const TextEditorProvider = ({ children }: Props) => {
     >
       {children}
     </TextEditorContext.Provider>
-  );
-};
+  )
+}

@@ -1,15 +1,13 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
-
-import { DEFAULT_OPACITY } from '@/core/constants';
-import { LayerInterface } from '@/core/entities/interfaces';
+import { createContext, Dispatch, SetStateAction } from 'react'
+import { DEFAULT_OPACITY, LayerInterface } from '@infinite-canvas-x/canvas-engine'
 
 interface ActiveLayerContextInterface {
-  activeLayer: LayerInterface | null;
-  lastActiveLayer: LayerInterface | null;
-  opacity: number;
-  setActiveLayer: Dispatch<SetStateAction<LayerInterface | null>>;
-  setLastActiveLayer: Dispatch<SetStateAction<LayerInterface | null>>;
-  setOpacity: Dispatch<SetStateAction<number>>;
+  activeLayer: LayerInterface | null
+  lastActiveLayer: LayerInterface | null
+  opacity: number
+  setActiveLayer: Dispatch<SetStateAction<LayerInterface | null>>
+  setLastActiveLayer: Dispatch<SetStateAction<LayerInterface | null>>
+  setOpacity: Dispatch<SetStateAction<number>>
 }
 
 export const ActiveLayerContext = createContext<ActiveLayerContextInterface>({
@@ -19,4 +17,4 @@ export const ActiveLayerContext = createContext<ActiveLayerContextInterface>({
   setActiveLayer: () => null,
   setLastActiveLayer: () => null,
   setOpacity: () => null,
-});
+})
