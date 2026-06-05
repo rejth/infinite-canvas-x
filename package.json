@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm --filter @infinite-canvas-x/canvas-engine build && pnpm --filter @infinite-canvas-x/indexed-db-store build && tsc -b && vite build",
+    "build": "pnpm --filter @infinite-canvas-x/canvas-engine build && tsc -b && vite build",
     "preview": "vite preview",
-    "test": "pnpm --filter @infinite-canvas-x/canvas-engine test && pnpm --filter @infinite-canvas-x/indexed-db-store test",
+    "test": "pnpm --filter @infinite-canvas-x/canvas-engine test",
     "lint": "pnpm oxlint src",
     "lint:fix": "pnpm oxlint src --fix",
     "format": "pnpm biome format --write src",
@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@infinite-canvas-x/canvas-engine": "workspace:*",
-    "@infinite-canvas-x/indexed-db-store": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "events": "^3.3.0",
@@ -31,6 +30,7 @@
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.2.0",
     "tailwindcss": "^4.1.4",
+    "tiny-idb-store": "^0.1.0",
     "tw-animate-css": "^1.2.5"
   },
   "devDependencies": {
