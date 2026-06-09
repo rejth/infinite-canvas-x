@@ -10,7 +10,7 @@ This is a work-in-progress playground. Future directions include local-first sto
 
 <img width="1400" height="929" alt="image" src="https://github.com/user-attachments/assets/ba8751be-390a-4704-aea5-2db90e8bc9e9" />
 
-## ✨ **Features**
+## **Features**
 
 - Infinite, canvas-based whiteboard with panning and zooming.
 - Selectable, movable, and resizable layers.
@@ -19,7 +19,7 @@ This is a work-in-progress playground. Future directions include local-first sto
 - Per-image filters such as brightness, contrast, saturation, vibrance, hue, blur, noise, and pixelation.
 - Experimental text-on-curve editing based on Bezier spline control points to create aesthetically pleasing shapes.
 
-## 🛠️ **Engineering**
+## **Engineering**
 
 - **Rendering System**: Tile-based rendering. Only re-renders dirty regions to maximize performance.
 - **On-demand render loop** for minimal CPU consumption.
@@ -39,7 +39,7 @@ This is a work-in-progress playground. Future directions include local-first sto
 - **Text transformations** with highly interactive curves to create aesthetically pleasing shapes.
 - **Selection handles** with interactive corner markers.
 
-## 🚦 **Getting Started**
+## **Getting Started**
 
 ```bash
 # Install dependencies
