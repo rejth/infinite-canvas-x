@@ -1,57 +1,43 @@
-# 🎨 2D Rendering Engine + Whiteboard X
+# 🎨 Infinite Canvas X
 
-I'm passionate about the low-level rendering technologies used by graphic editors, design tools, geo-maps, and infinite whiteboards. This project is my implementation of an infinite whiteboard with some image-editor capabilities, built from scratch without relying on any graphics libraries.
+An experimental infinite whiteboard built around a custom Canvas 2D engine.
 
-The rendering engine is implemented with zero dependencies, using the pure Canvas API.
-The web application itself is built with React and serves mainly as a showcase for the engine's capabilities.
+It is a playground for the kind of architecture behind whiteboards, design tools, and map-like canvases: a scene made of interactive layers, a camera that transforms user input into world coordinates, selective redraws, spatial indexing, object serialization, and UI workflows built on top of those primitives.
 
-I plan to rewrite the rendering part of the canvas with Rust in the future, as well as use more low-level rendering technologies for 2D graphics with GPU acceleration, and eventually turn this project into a Rust + WebAssembly + WebGPU rendering engine to achieve better performance and experience.
+The React app is the user-facing whiteboard; the internal `@infinite-canvas-x/canvas-engine` workspace package contains the reusable canvas entities, renderer, camera, render manager, spatial index, math utilities, and serialization code.
+
+This is a work-in-progress playground. Future directions include local-first storage, more complete text transformation presets, undo/redo, asset upload, and experiments with lower-level rendering backends such as Rust, WebAssembly, and WebGPU.
 
 <img width="1400" height="929" alt="image" src="https://github.com/user-attachments/assets/ba8751be-390a-4704-aea5-2db90e8bc9e9" />
 
 ## ✨ **Features**
 
-- 🎨&nbsp;Infinite, canvas-based whiteboard.
-- 🔍&nbsp;Zoom and panning support.
-- 📋&nbsp;Copy-paste support.
-- 🌃&nbsp;Photo editor with filters and effects.
-- 📝&nbsp;Text transformations with highly interactive curves to create aesthetically pleasing shapes.
-- ⚒️&nbsp;Movable and resizable stickers with in-place text editing and formatting.
-- 💾&nbsp;Local-first support (autosaves to the browser).
+- Infinite, canvas-based whiteboard with panning and zooming.
+- Selectable, movable, and resizable layers.
+- Sticky-note style objects with in-place text editing and formatting.
+- Copy, paste, escape-to-deselect, and backspace-to-delete shortcuts.
+- Per-image filters such as brightness, contrast, saturation, vibrance, hue, blur, noise, and pixelation.
+- Experimental text-on-curve editing based on Bezier spline control points to create aesthetically pleasing shapes.
 
 ## 🛠️ **Engineering**
 
-- **🎨&nbsp;Rendering System**: Tile-based rendering. Only re-renders dirty regions to maximize performance.
-- **🔍&nbsp;Spatial Indexing**: `O(log n)` lookup times for canvas objects to maximize pickup efficiency.
-- **⚒️&nbsp;On-demand render loop** for minimal CPU consumption.
-- **📝&nbsp;Text and image snapshot caching** to avoid re-rendering of unchanged content.
-- **💾&nbsp;State persistence** with IndexedDB.
+- **Rendering System**: Tile-based rendering. Only re-renders dirty regions to maximize performance.
+- **On-demand render loop** for minimal CPU consumption.
+- **Text and image snapshot caching** to avoid re-rendering of unchanged content.
 
 ### Performance Optimizations
 
-- 🗺️ **Tile-based indexing** divides canvas into 2048×2048 pixel tiles.
-- 🎭 **Dirty tile tracking** for minimal redraws and efficient hit testing.
-- 💾 **Text and image snapshot caching** to avoid re-rendering of unchanged content.
+- **Tile-based indexing** divides canvas into 2048×2048 pixel tiles.
+- **Dirty tile tracking** for minimal redraws and efficient hit testing.
+- **Text and image snapshot caching** to avoid re-rendering of unchanged content.
 
 ### Graphics Primitives
 
-- ✨ **Shapes**: Rectangles, rounded rectangles, circles, curves.
-- 🖼️ **Image rendering** with filters and effects.
-- 🔤 **Text rendering** with alignment, decorations, font styles, and snapshot caching.
-- 📝 **Text transformations** with highly interactive curves to create aesthetically pleasing shapes.
-- 🎯 **Selection handles** with interactive corner markers.
-
-### Interaction & Navigation
-
-- 🎮 **Camera system** with pan, zoom, and smooth navigation.
-- 🖱️ **Mouse input** with proper coordinate transformation.
-- 🎯 **Layer picking** and selection based on screen coordinates.
-- ⌨️ **Keyboard shortcuts** for enhanced productivity.
-
-### Data Management
-
-- 💾 **Scene persistence** with IndexedDB.
-- 📦 **Layer serialization** for save/load functionality.
+- **Shapes**: Rectangles, rounded rectangles, circles, curves.
+- **Image rendering** with filters and effects.
+- **Text rendering** with alignment, decorations, font styles, and snapshot caching.
+- **Text transformations** with highly interactive curves to create aesthetically pleasing shapes.
+- **Selection handles** with interactive corner markers.
 
 ## 🚦 **Getting Started**
 
