@@ -6,7 +6,7 @@ It is a playground for the kind of architecture behind whiteboards, design tools
 
 The React app is the user-facing whiteboard; the internal `@infinite-canvas-x/canvas-engine` workspace package contains the reusable canvas entities, renderer, camera, render manager, spatial index, math utilities, and serialization code.
 
-This is a work-in-progress playground. Future directions include local-first storage, more complete text transformation presets, undo/redo, asset upload, and experiments with lower-level rendering backends such as Rust, WebAssembly, and WebGPU.
+This is a work-in-progress playground. Future directions include local-first storage, more complete text transformation presets, undo/redo, asset upload, and experiments with lower-level rendering backends such as Rust, WebAssembly and WebGPU.
 
 <img width="1400" height="929" alt="image" src="https://github.com/user-attachments/assets/ba8751be-390a-4704-aea5-2db90e8bc9e9" />
 
