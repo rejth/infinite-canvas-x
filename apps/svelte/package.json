@@ -1,0 +1,32 @@
+{
+  "name": "@infinite-canvas-x/svelte-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "svelte-check --tsconfig ./tsconfig.app.json && vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json"
+  },
+  "dependencies": {
+    "@infinite-canvas-x/canvas-app": "workspace:*",
+    "@infinite-canvas-x/canvas-engine": "workspace:*",
+    "bits-ui": "^1.3.19",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-svelte": "^0.544.0",
+    "tailwind-merge": "^3.2.0",
+    "tw-animate-css": "^1.2.5"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@tailwindcss/vite": "^4.1.4",
+    "@tsconfig/svelte": "^5.0.4",
+    "svelte": "^5.28.2",
+    "svelte-check": "^4.1.6",
+    "tailwindcss": "^4.1.4",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0"
+  }
+}

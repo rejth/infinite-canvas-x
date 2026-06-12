@@ -3,8 +3,9 @@ import {
   DEFAULT_RESIZE_DIRECTION,
   DEFAULT_SCALE,
   DEFAULT_SELECTION_LINE_WIDTH,
+  SMALL_PADDING,
 } from '../constants'
-import { Colors, LayerId } from '../interfaces'
+import { Colors, LayerId, type RectDimension } from '../interfaces'
 
 import { BaseCanvasEntity } from './BaseCanvasEntity'
 import {
@@ -70,6 +71,62 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
 
   addChild<T extends BaseDrawOptions>(child: BaseCanvasEntityInterface<T>) {
     this.children.push(child)
+    this.syncSelectionBounds()
+  }
+
+  getContentBounds(): RectDimension | null {
+    const contentChildren = this.children.filter(
+      (child) => child.getType() !== CanvasEntityType.SELECTION,
+    )
+
+    if (contentChildren.length === 0) {
+      return null
+    }
+
+    let minX = Number.POSITIVE_INFINITY
+    let minY = Number.POSITIVE_INFINITY
+    let maxX = Number.NEGATIVE_INFINITY
+    let maxY = Number.NEGATIVE_INFINITY
+
+    for (const child of contentChildren) {
+      const { x, y, width, height } = child.getOptions()
+      minX = Math.min(minX, x)
+      minY = Math.min(minY, y)
+      maxX = Math.max(maxX, x + width)
+      maxY = Math.max(maxY, y + height)
+    }
+
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+    }
+  }
+
+  syncSelectionFromBounds(bounds: RectDimension, padding = SMALL_PADDING) {
+    const paddedX = bounds.x - padding
+    const paddedY = bounds.y - padding
+    const paddedWidth = bounds.width + padding * 2
+    const paddedHeight = bounds.height + padding * 2
+    const selection = this.getChildByType(CanvasEntityType.SELECTION)
+
+    if (selection) {
+      selection.setXY(paddedX, paddedY)
+      selection.setWidthHeight(paddedWidth, paddedHeight)
+    }
+
+    this.setXY(paddedX, paddedY)
+    this.setWidthHeight(paddedWidth, paddedHeight)
+  }
+
+  syncSelectionBounds(padding = SMALL_PADDING) {
+    const bounds = this.getContentBounds()
+    if (!bounds) {
+      return
+    }
+
+    this.syncSelectionFromBounds(bounds, padding)
   }
 
   getChildren<T extends BaseDrawOptions>(): Array<BaseCanvasEntityInterface<T>> {
@@ -77,16 +134,15 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
   }
 
   move(movementX: number, movementY: number) {
-    const { x, y } = this.getOptions()
-    const layerX = x + movementX
-    const layerY = y + movementY
-
-    this.setXY(layerX, layerY)
     this.moveChildrenAccordingly(movementX, movementY)
+    this.syncSelectionBounds()
   }
 
   moveChildrenAccordingly(movementX: number, movementY: number) {
     for (const child of this.children) {
+      if (child.getType() === CanvasEntityType.SELECTION) {
+        continue
+      }
       child.move(movementX, movementY)
     }
   }
@@ -115,6 +171,7 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
       this.setWidthHeight(width + movement, height + movement)
       this.resizeChildrenAccordingly(movement, movement)
     }
+    this.syncSelectionBounds()
   }
 
   resizeBottomLeft(movementX: number, movementY: number) {
@@ -134,6 +191,7 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
         this.resizeChildrenAccordingly(-movement, -movement)
       }
     }
+    this.syncSelectionBounds()
   }
 
   resizeTopRight(movementX: number, movementY: number) {
@@ -153,6 +211,7 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
         this.resizeChildrenAccordingly(-movement, -movement)
       }
     }
+    this.syncSelectionBounds()
   }
 
   resizeTopLeft(movementX: number, movementY: number) {
@@ -173,10 +232,14 @@ export class Layer extends BaseCanvasEntity<BaseDrawOptions> implements LayerInt
         this.setWidthHeight(width - movement, height - movement)
       }
     }
+    this.syncSelectionBounds()
   }
 
   resizeChildrenAccordingly(movementX: number, movementY: number) {
     for (const child of this.children) {
+      if (child.getType() === CanvasEntityType.SELECTION) {
+        continue
+      }
       child.resize(movementX, movementY)
     }
   }

@@ -11,5 +11,5 @@
     "browser": true,
     "es2022": true
   },
-  "ignorePatterns": ["src/wasm/**", "storybook-static/**"]
+  "ignorePatterns": ["apps/react/src/wasm/**", "storybook-static/**"]
 }

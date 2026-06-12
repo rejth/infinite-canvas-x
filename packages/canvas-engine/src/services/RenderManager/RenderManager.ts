@@ -1,4 +1,4 @@
-import { CanvasEntityType, LayerInterface } from '../../entities/interfaces'
+import { LayerInterface } from '../../entities/interfaces'
 import { Point } from '../../entities/Point'
 import { MBR } from '../../math'
 import { type Renderer } from '../Renderer'
@@ -77,15 +77,15 @@ export class RenderManager extends BaseRenderManager {
 
   setLayerSize(layer: LayerInterface, bbox: MBR) {
     const size = bbox.size()
-    const selection = layer.getChildByType(CanvasEntityType.SELECTION)
-
-    if (selection) {
-      selection.setXY(bbox.min.x, bbox.min.y)
-      selection.setWidthHeight(size.x, size.y)
-    }
-
-    layer.setXY(bbox.min.x, bbox.min.y)
-    layer.setWidthHeight(size.x, size.y)
+    layer.syncSelectionFromBounds(
+      {
+        x: bbox.min.x,
+        y: bbox.min.y,
+        width: size.x,
+        height: size.y,
+      },
+      0,
+    )
     this.reDrawMainCanvasOnNextFrame()
   }
 

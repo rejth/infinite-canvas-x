@@ -1,4 +1,5 @@
 import { DEFAULT_CORNER } from '../constants'
+import type { RectCorners, RectDimension } from '../interfaces'
 import { geometry } from '../math'
 
 import { BaseCanvasEntity } from './BaseCanvasEntity'
@@ -16,9 +17,26 @@ export class Selection extends BaseCanvasEntity<StrokeDrawOptions> {
     this.setType(CanvasEntityType.SELECTION)
   }
 
+  getStrokeBounds(): RectDimension {
+    const { x, y, width, height, lineWidth } = this.getOptions()
+    const inset = lineWidth / 2
+
+    return {
+      x: x + inset,
+      y: y + inset,
+      width: width - lineWidth,
+      height: height - lineWidth,
+    }
+  }
+
+  getStrokeCorners(): RectCorners {
+    const { x, y, width, height } = this.getStrokeBounds()
+    return geometry.getRectCorners(x, y, width, height)
+  }
+
   isPointInStroke(pointX: number, pointY: number): string | null {
-    const { height } = this.getOptions()
-    const { topLeft, topRight, bottomLeft, bottomRight } = this.getCorners()
+    const { height } = this.getStrokeBounds()
+    const { topLeft, topRight, bottomLeft, bottomRight } = this.getStrokeCorners()
     const point = new Point(pointX, pointY)
 
     if (!this.isPointInside(point, DEFAULT_CORNER)) {
@@ -53,7 +71,7 @@ export class Selection extends BaseCanvasEntity<StrokeDrawOptions> {
   }
 
   isPointInCorner(pointX: number, pointY: number): string | null {
-    const { topLeft, topRight, bottomLeft, bottomRight } = this.getCorners()
+    const { topLeft, topRight, bottomLeft, bottomRight } = this.getStrokeCorners()
     const point = new Point(pointX, pointY)
 
     if (geometry.getDistanceBetweenPoints(point, topLeft) <= DEFAULT_CORNER * 2) {
