@@ -1,0 +1,5 @@
+export { default as CanvasAppProvider } from './CanvasAppProvider.svelte'
+export { getCanvasAppContext, setCanvasAppContext } from './context'
+export { createCanvasSliceStore } from './createCanvasSliceStore.svelte'
+export type { CanvasAppContextValue, CanvasSliceKey, CanvasSliceRefMap } from './keys'
+export { useCanvasApp } from './useCanvasApp.svelte'

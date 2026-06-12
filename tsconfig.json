@@ -2,16 +2,22 @@
   "files": [],
   "references": [
     {
-      "path": "./tsconfig.app.json"
+      "path": "./packages/canvas-engine"
     },
     {
-      "path": "./tsconfig.node.json"
+      "path": "./packages/canvas-app"
+    },
+    {
+      "path": "./apps/react"
+    },
+    {
+      "path": "./apps/vue"
+    },
+    {
+      "path": "./apps/svelte"
+    },
+    {
+      "path": "./apps/solid"
     }
-  ],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+  ]
 }

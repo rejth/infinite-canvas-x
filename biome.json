@@ -8,7 +8,13 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!dist/**", "!node_modules/**", "!src/wasm/**", "!storybook-static/**"]
+    "includes": [
+      "**",
+      "!**/dist/**",
+      "!**/node_modules/**",
+      "!apps/react/src/wasm/**",
+      "!storybook-static/**"
+    ]
   },
   "formatter": {
     "enabled": true,

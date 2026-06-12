@@ -122,18 +122,32 @@ export abstract class BaseRenderManager {
   }
 
   private drawSelection(child: Selection) {
-    const drawOptions = child.getOptions()
-    const corners = child.getCorners()
+    const { lineWidth, color, scale } = child.getOptions()
+    const { x, y, width, height } = child.getStrokeBounds()
+    const corners = child.getStrokeCorners()
     let corner: keyof typeof corners
 
     for (corner in corners) {
       if (corners[corner]) {
-        const { x, y } = corners[corner]
-        this.renderer.fillCircle({ x, y, radius: DEFAULT_CORNER, color: Colors.SELECTION })
+        const { x: cornerX, y: cornerY } = corners[corner]
+        this.renderer.fillCircle({
+          x: cornerX,
+          y: cornerY,
+          radius: DEFAULT_CORNER,
+          color: Colors.SELECTION,
+        })
       }
     }
 
-    this.renderer.strokeRect(drawOptions)
+    this.renderer.strokeRect({
+      x,
+      y,
+      width,
+      height,
+      lineWidth,
+      color,
+      scale,
+    })
   }
 
   private drawCircle(child: CanvasCircle) {

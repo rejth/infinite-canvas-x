@@ -4,7 +4,7 @@ An experimental infinite whiteboard built around a custom Canvas 2D engine.
 
 It is a playground for the kind of architecture behind whiteboards, design tools, and map-like canvases: a scene made of interactive layers, a camera that transforms user input into world coordinates, selective redraws, spatial indexing, object serialization, and UI workflows built on top of those primitives.
 
-The React app is the user-facing whiteboard; the internal `@infinite-canvas-x/canvas-engine` workspace package contains the reusable canvas entities, renderer, camera, render manager, spatial index, math utilities, and serialization code.
+The UI lives in framework adapters under `apps/` (Vue is the default); shared canvas logic lives in `@infinite-canvas-x/canvas-engine` and `@infinite-canvas-x/canvas-app`.
 
 This is a work-in-progress playground. Future directions include local-first storage, more complete text transformation presets, undo/redo, asset upload, and experiments with lower-level rendering backends such as Rust, WebAssembly and WebGPU.
 
@@ -45,15 +45,40 @@ This is a work-in-progress playground. Future directions include local-first sto
 # Install dependencies
 pnpm install
 
-# Start development server
+# Start development server (Vue by default)
 pnpm dev
 
-# Build for production
+# Run a specific UI adapter
+pnpm dev:vue
+pnpm dev:svelte
+pnpm dev:solid
+pnpm dev:react
+
+# Build for production (Vue by default)
 pnpm build
+
+# Build a specific adapter
+pnpm build:vue
+pnpm build:svelte
+pnpm build:solid
+pnpm build:react
 
 # Run linting
 pnpm lint
 
 # Format code
 pnpm format
+```
+
+### Project layout
+
+```
+packages/
+  canvas-engine/   # Canvas entities, renderer, camera, spatial index
+  canvas-app/      # App state, tools, slices (framework-agnostic)
+apps/
+  vue/             # Default UI adapter
+  svelte/
+  solid/
+  react/
 ```

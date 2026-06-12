@@ -1,4 +1,4 @@
-import { LayerId, PixelRatio, RectCorners } from '../interfaces'
+import { LayerId, PixelRatio, RectCorners, RectDimension } from '../interfaces'
 
 import { Point } from './Point'
 
@@ -89,6 +89,10 @@ export interface LayerInterface extends BaseCanvasEntityInterface<BaseDrawOption
   getChildByType<T extends BaseDrawOptions>(
     type: CanvasEntityType,
   ): BaseCanvasEntityInterface<T> | null
+
+  getContentBounds(): RectDimension | null
+  syncSelectionFromBounds(bounds: RectDimension, padding?: number): void
+  syncSelectionBounds(padding?: number): void
 
   setShouldBeRendered(shouldRender: boolean): void
   shouldBeRendered(): boolean
