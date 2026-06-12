@@ -1,6 +1,6 @@
 # 🎨 Infinite Canvas X
 
-An experimental infinite whiteboard built around a custom Canvas 2D engine.
+An experimental infinite whiteboard built around a custom Canvas 2D engine, tile-based rendering, and layered editor architecture. Canvas logic lives in shared packages; the same app runs through React, Vue, Svelte, or Solid adapters so you can compare how different frameworks wire up the same editor.
 
 It is a playground for the kind of architecture behind whiteboards, design tools, and map-like canvases: a scene made of interactive layers, a camera that transforms user input into world coordinates, selective redraws, spatial indexing, object serialization, and UI workflows built on top of those primitives.
 
